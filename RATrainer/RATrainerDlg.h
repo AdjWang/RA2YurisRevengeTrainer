@@ -4,7 +4,6 @@
 
 #pragma once
 #include "DataTableDlg.h"
-#include "trainerfunctions.h"
 
 // CRATrainerDlg 对话框
 class CRATrainerDlg : public CDialogEx
@@ -28,9 +27,8 @@ public:
 // 修改功能
 protected:
 	HICON m_hIcon;
-	TrainerFunctions trainer;	// 修改器功能全局对象
-	CSliderCtrl mSlider;	//调速Slider对象
-	DWORD SliderPos;		//Slider位置记录防止多余触发
+	CSliderCtrl m_Slider;	//调速Slider对象
+	DWORD Slider_Pos;		//Slider位置记录防止多余触发
 
 	BOOL CRATrainerDlg::PreTranslateMessage(MSG* pMsg);
 	// 生成的消息映射函数

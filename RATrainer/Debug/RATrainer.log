@@ -1,0 +1,45 @@
+﻿Build started 2018/3/29 0:01:15.
+     1>Project "D:\VSProjects\RATrainer\RATrainer\RATrainer.vcxproj" on node 2 (Build target(s)).
+       Project file contains ToolsVersion="14.0". This toolset may be unknown or missing, in which case you may be able to resolve this by installing the appropriate version of MSBuild, or the build may have been forced to a particular ToolsVersion for policy reasons. Treating the project as if it had ToolsVersion="4.0". For more information, please see http://go.microsoft.com/fwlink/?LinkId=291333.
+     1>ClCompile:
+         D:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _MBCS /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yc"stdafx.h" /Fp"Debug\RATrainer.pch" /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt stdafx.cpp
+         stdafx.cpp
+         D:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _MBCS /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\RATrainer.pch" /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt DataTableDlg.cpp RATrainer.cpp RATrainerDlg.cpp trainerbase.cpp trainerfunctions.cpp
+         trainerfunctions.cpp
+         trainerbase.cpp
+         RATrainerDlg.cpp
+     1>d:\program files (x86)\microsoft visual studio 11.0\vc\atlmfc\include\afxdialogex.h(27): error C2011: “CDialogEx”:“class”类型重定义
+                 d:\program files (x86)\microsoft visual studio 11.0\vc\atlmfc\include\afxdialogex.h(27) : 参见“CDialogEx”的声明
+     1>d:\vsprojects\ratrainer\ratrainer\ratrainerdlg.cpp(19): error C2504: “CDialogEx”: 未定义基类
+     1>d:\vsprojects\ratrainer\ratrainer\ratrainerdlg.cpp(35): error C2614: “CAboutDlg”: 非法的成员初始化:“CDialogEx”不是基或成员
+     1>d:\vsprojects\ratrainer\ratrainer\ratrainerdlg.cpp(40): error C2027: 使用了未定义类型“CDialogEx”
+                 d:\program files (x86)\microsoft visual studio 11.0\vc\atlmfc\include\afxdialogex.h(27) : 参见“CDialogEx”的声明
+     1>d:\vsprojects\ratrainer\ratrainer\ratrainerdlg.cpp(44): error C2027: 使用了未定义类型“CDialogEx”
+                 d:\program files (x86)\microsoft visual studio 11.0\vc\atlmfc\include\afxdialogex.h(27) : 参见“CDialogEx”的声明
+     1>d:\vsprojects\ratrainer\ratrainer\ratrainerdlg.cpp(53): error C2027: 使用了未定义类型“CDialogEx”
+                 d:\program files (x86)\microsoft visual studio 11.0\vc\atlmfc\include\afxdialogex.h(27) : 参见“CDialogEx”的声明
+     1>d:\vsprojects\ratrainer\ratrainer\ratrainerdlg.cpp(53): error C2227: “->{ctor}”的左边必须指向类/结构/联合/泛型类型
+                 d:\program files (x86)\microsoft visual studio 11.0\vc\atlmfc\include\afxdialogex.h(27) : 参见“CDialogEx”的声明
+     1>d:\vsprojects\ratrainer\ratrainer\ratrainerdlg.cpp(53): error C2227: “->{dtor}”的左边必须指向类/结构/联合/泛型类型
+     1>d:\vsprojects\ratrainer\ratrainer\ratrainerdlg.cpp(53): fatal error C1903: 无法从以前的错误中恢复；正在停止编译
+         DataTableDlg.cpp
+     1>d:\program files (x86)\microsoft visual studio 11.0\vc\atlmfc\include\afxdialogex.h(27): error C2011: “CDialogEx”:“class”类型重定义
+                 d:\program files (x86)\microsoft visual studio 11.0\vc\atlmfc\include\afxdialogex.h(27) : 参见“CDialogEx”的声明
+     1>d:\vsprojects\ratrainer\ratrainer\datatabledlg.cpp(12): error C2027: 使用了未定义类型“CDialogEx”
+                 d:\program files (x86)\microsoft visual studio 11.0\vc\atlmfc\include\afxdialogex.h(27) : 参见“CDialogEx”的声明
+     1>d:\vsprojects\ratrainer\ratrainer\datatabledlg.cpp(12): error C2065: “classCDialogEx”: 未声明的标识符
+     1>d:\vsprojects\ratrainer\ratrainer\datatabledlg.cpp(16): error C2027: 使用了未定义类型“CDialogEx”
+                 d:\program files (x86)\microsoft visual studio 11.0\vc\atlmfc\include\afxdialogex.h(27) : 参见“CDialogEx”的声明
+     1>d:\vsprojects\ratrainer\ratrainer\datatabledlg.cpp(16): error C2227: “->{ctor}”的左边必须指向类/结构/联合/泛型类型
+                 d:\program files (x86)\microsoft visual studio 11.0\vc\atlmfc\include\afxdialogex.h(27) : 参见“CDialogEx”的声明
+     1>d:\vsprojects\ratrainer\ratrainer\datatabledlg.cpp(16): error C2227: “->{dtor}”的左边必须指向类/结构/联合/泛型类型
+     1>d:\vsprojects\ratrainer\ratrainer\datatabledlg.cpp(16): fatal error C1903: 无法从以前的错误中恢复；正在停止编译
+         正在生成代码...
+         正在编译...
+         RATrainer.cpp
+         正在生成代码...
+     1>Done Building Project "D:\VSProjects\RATrainer\RATrainer\RATrainer.vcxproj" (Build target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:14.13

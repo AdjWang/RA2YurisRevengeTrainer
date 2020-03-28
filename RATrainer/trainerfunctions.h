@@ -34,65 +34,143 @@ public:
 	static void DeleteThis_Assemble();
 	void DeleteThis();
 	//代码注入
-	bool NoLoad(int command);
-	void NoPower();		// 开发中，暂停使用
-	bool PutAsWill(int command);
-	bool AutoRepair(int command);
+	static void NoLoad_Assemble();
+	void NoLoad();
+	void FreeNoLoad();
+	static void NoPower_Assemble();
+	void NoPower();
+	void FreeNoPower();
+	static void PutAsWill_Assemble();
+	void PutAsWill();
+	void FreePutAsWill();
+	static void PutWaterAble_Assemble();
+	void PutWaterAble();
+	void FreePutWaterAble();
+	static void AutoRepair_Assemble();
+	void AutoRepair();
+	void FreeAutoRepair();
+	static void AutoRepairStruc_Assemble();
+	void AutoRepairStruc();
+	void FreeAutoRepairStruc();
+	static void RevengeYuri_Assemble();
+	void RevengeYuri();
+	void FreeRevengeYuri();
+	static void PermanentYuri_Assemble();
+	void PermanentYuri();
+	void FreePermanentYuri();
+	static void MineAttack_Assemble();
+	void MineAttack();
+	void FreeMineAttack();
+	static void MineBuildIn_Assemble();
+	void MineBuildIn();
+	void FreeMineBuildIn();
+	static void MineUnEngineer_Assemble();
+	void MineUnEngineer();
+	void FreeMineUnEngineer();
+	static void BuildImme_Assemble();
+	void BuildImme();
+	void FreeBuildImme();
 
+	static void Unbeatable_Assemble();
+	static void SecKill_Assemble();
+	static void UnbeatableSecKill_Assemble();
+	void UnbeatableSecKill_Pre();
+	void Unbeatable();
+	void SecKill();
+	void UnbeatableSecKill();
+	void FreeUnbeatableSecKill();
+	static void AntiChrono_Assemble();
+	void AntiChrono();
+	void FreeAntiChrono();
+	static void AntiChronoDisbuild_Assemble();
+	void AntiChronoDisbuild();
+	void FreeAntiChronoDisbuild();
+	void AntiChronoDisable();
+	void FreeAntiChronoDisable();
 
-	bool RevengeYuri(int command);
-	bool MineAttack(int command);
-	bool MineBuildIn(int command);
-	bool MineUnEngineer(int command);
-	bool BuildImme(int command);
+	static void UnRepair_Assemble();
+	void UnRepair();
+	void FreeUnRepair();
 
-	bool Unbeatable(int command);
-	bool AntiChrono(int command);
-	bool AntiChronoDisable(int command);
+	void UnRefreshCon();
+	void FreeUnRefreshCon();
+	static void AllBuild_Assemble();
+	void AllBuild();
+	void FreeAllBuild();
+	static void AllCarBoat_Assemble();
+	void AllCarBoat();
+	void FreeAllCarBoat();
+	static void AllSoldier_Assemble();
+	void AllSoldier();
+	void FreeAllSoldier();
+	static void AllPlane_Assemble();
+	void AllPlane();
+	void FreeAllPlane();
 
-	bool UnRepair(int command);
+	static void FastAttack_Assemble();
+	void FastAttack();
+	void FreeFastAttack();
+	static void FastTurnBattery_Assemble();
+	void FastTurnBattery();
+	void FreeFastTurnBattery();
+	static void FastTurnRound_Assemble();
+	void FastTurnRound();
+	void FreeFastTurnRound();
+	static void FastReload_Assemble();
+	void FastReload();
+	void FreeFastReload();
+	static void FullAmmunition_Assemble();
+	void FullAmmunition();
+	void FreeFullAmmunition();
 
-	bool UnRefreshCon(int command);
-	bool AllBuild(int command);
-	bool AllCarBoat(int command);
-	bool AllSoldier(int command);
-	bool AllPlane(int command);
+	static void AllRangeAttack_Assemble();
+	void AllRangeAttack();
+	void FreeAllRangeAttack();
+	static void AllRangeAlert_Assemble();
+	void AllRangeAlert();
+	void FreeAllRangeAlert();
 
-	bool FastAttack(int command);
-	bool FastTurnBattery(int command);
-	bool FastTurnRound(int command);
-	bool FastReload(int command);
-	bool FullAmmunition(int command);
+	static void InstantChronoMove_Assemble();
+	void InstantChronoMove();
+	void FreeInstantChronoMove();
+	static void InstantChronoAttack_Assemble();
+	void InstantChronoAttack();
+	void FreeInstantChronoAttack();
 
-	bool AllRangeAttack(int command);
-	bool AllRangeAlert(int command);
+	static void AntiSpy_Assemble();
+	void AntiSpy();
+	void FreeAntiSpy();
 
-	bool InstantChronoMove(int command);
-	bool InstantChronoAttack(int command);
+	static void DisableGAGAP_Assemble();
+	void DisableGAGAP();
+	void FreeDisableGAGAP();
 
-	bool AntiSpy(int command);
+	static void DisableAll_Assemble();
+	void DisableAll();
+	void FreeDisableAll();
 
-	bool DisableGAGAP(int command);
+	void SpeedSet();
+	void FreeSpeedSet();
 
-	bool DisableAll(int command);
+	static void EnableSoldAll_Cursor_Assemble();
+	void EnableSoldAll_Cursor();
+	void FreeEnableSoldAll_Cursor();
+	void EnableSoldAll_Belong();
+	void FreeEnableSoldAll_Belong();
+	void EnableSoldAll_Builder();
+	void FreeEnableSoldAll_Builder();
 
-	bool SpeedSet(int command);
+	static void SoldierFlashMove_Assemble();
+	void SoldierFlashMove();
+	void FreeSoldierFlashMove();
 
-	bool EnableSoldAll_Cursor(int command);
-	bool EnableSoldAll_Belong(int command);
-	bool EnableSoldAll_Builder(int command);
-
-	bool SoldierFlashMove(int command);
-
-	bool AllElite(int command);
-
+	static void EliteBuild_Aircraft_Assemble();
+	void EliteBuild_Aircraft();
+	void FreeEliteBuild_Aircraft();
+	void EliteBuild_Vehicle();		//车船与飞机的汇编代码相同
+	void FreeEliteBuild_Vehicle();
+	static void EliteBuild_Soldier_Assemble();
+	void EliteBuild_Soldier();
+	void FreeEliteBuild_Soldier();
 };
 
-//用来复制的模板
-//if (command == 1) {
-//
-//}
-//else {
-//
-//}
-//return true;	// 容我粗糙一下...

@@ -58,7 +58,7 @@ void CRATrainerDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	//滑块关联
-	DDX_Control(pDX,IDC_SLIDER1,mSlider);
+	DDX_Control(pDX,IDC_SLIDER1,m_Slider);
 }
 
 BEGIN_MESSAGE_MAP(CRATrainerDlg, CDialogEx)
@@ -150,10 +150,10 @@ BOOL CRATrainerDlg::OnInitDialog()
 	((CComboBox*)GetDlgItem(IDC_COMBO1))->AddString("建造队列上限");
 
 	//调速Slider初始化
-	mSlider.SetRange(0,6);		//滑动范围
-	mSlider.SetPos(5);
-	SliderPos = 5;
-	mSlider.SetTicFreq(1);	//每(n)个单位一个刻度
+	m_Slider.SetRange(0,6);		//滑动范围
+	m_Slider.SetPos(5);
+	Slider_Pos = 5;
+	m_Slider.SetTicFreq(1);	//每(n)个单位一个刻度
 
 	//游戏运行检测
 	SetTimer(3,1000,NULL);
@@ -290,24 +290,27 @@ void CRATrainerDlg::OnCbnSelchangeCombo1()
 //	char i[10];
 	int iPos=((CComboBox*)GetDlgItem(IDC_COMBO1))->GetCurSel();		//当前选中的行
 
-	if(!trainer.IsGameRunning(RUNNING_ALERT))
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning())
 	{
 		((CComboBox*)GetDlgItem(IDC_COMBO1))->SetCurSel(-1);
+		::MessageBox(NULL,"请开启游戏!!","提示:",NULL);
 		return;
 	}
 
+	TrainerFunctions tfs;
 	CString str;
 	DWORD readmem=0;
 
 	switch(iPos)
 	{
 	case 0:		//钱
-		if(!trainer.rMymoney(&readmem))
+		if(!tfs.rMymoney(&readmem))
 			::MessageBox(NULL,"读取失败，请确认游戏已经开始","提示:",NULL);
 		break;
 
 	case 1:		//建造队列上限
-		if(!trainer.rBuildMaxm(&readmem))
+		if(!tfs.rBuildMaxm(&readmem))
 			::MessageBox(NULL,"读取失败，请确认游戏已经开始","提示:",NULL);
 		break;
 
@@ -326,10 +329,12 @@ void CRATrainerDlg::OnCbnSelchangeCombo1()
 void CRATrainerDlg::OnBnClickedButton1()
 {
 	// TODO: 在此添加控件通知处理程序代码
+	TrainerFunctions tfs;
 	CString str;
 	DWORD writemem=0;
 
-	if (!trainer.IsGameRunning(RUNNING_ALERT)) { return; }
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning()){::MessageBox(NULL,"请开启游戏!!","提示:",NULL);return;}
 
 	GetDlgItemText(IDC_EDIT1,str);
 	writemem = _ttoi(str);
@@ -338,11 +343,11 @@ void CRATrainerDlg::OnBnClickedButton1()
 	switch(iPos)
 	{
 	case 0:
-		trainer.wMymoney(writemem);
+		tfs.wMymoney(writemem);
 		break;
 
 	case 1:
-		trainer.wBuildMaxm(writemem);
+		tfs.wBuildMaxm(writemem);
 		break;
 		
 	default:
@@ -355,24 +360,30 @@ void CRATrainerDlg::OnBnClickedButton1()
 void CRATrainerDlg::OnBnClickedButton2()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if (!trainer.IsGameRunning(RUNNING_ALERT)) { return; }
-	trainer.QuickBuild();
+	TrainerFunctions tfs;
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning()){::MessageBox(NULL,"请开启游戏!!","提示:",NULL);return;}
+	tfs.QuickBuild();
 }
 
 //成为幽灵玩家
 void CRATrainerDlg::OnBnClickedButton3()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if (!trainer.IsGameRunning(RUNNING_ALERT)) { return; }
-	trainer.TobeGhost();
+	TrainerFunctions tfs;
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning()){::MessageBox(NULL,"请开启游戏!!","提示:",NULL);return;}
+	tfs.TobeGhost();
 }
 
 //立即胜利
 void CRATrainerDlg::OnBnClickedButton4()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if (!trainer.IsGameRunning(RUNNING_ALERT)) { return; }
-	trainer.WinImme();
+	TrainerFunctions tfs;
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning()){::MessageBox(NULL,"请开启游戏!!","提示:",NULL);return;}
+	tfs.WinImme();
 }
 
 //无限超武
@@ -381,7 +392,8 @@ void CRATrainerDlg::OnBnClickedCheck12()
 	// TODO: 在此添加控件通知处理程序代码
 	int iSwi=((CButton*)GetDlgItem(IDC_CHECK12))->GetCheck();		//当前是否选中
 
-	if(!trainer.IsGameRunning(RUNNING_ALERT))
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning())
 	{
 		((CButton*)GetDlgItem(IDC_CHECK12))->SetCheck(0);
 		::MessageBox(NULL,"请开启游戏!!","提示:",NULL);
@@ -402,14 +414,16 @@ void CRATrainerDlg::OnBnClickedCheck12()
 void CRATrainerDlg::OnBnClickedCheck13()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if(!trainer.IsGameRunning(RUNNING_ALERT))
+	int iSwi=((CButton*)GetDlgItem(IDC_CHECK13))->GetCheck();		//当前是否选中
+
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning())
 	{
 		((CButton*)GetDlgItem(IDC_CHECK13))->SetCheck(0);
 		::MessageBox(NULL,"请开启游戏!!","提示:",NULL);
 		return;
 	}
 
-	int iSwi=((CButton*)GetDlgItem(IDC_CHECK13))->GetCheck();		//当前是否选中
 	if(iSwi == 1)	//选中操作
 	{
 		SetTimer(2,300,NULL);	//ID,时间(ms),回调函数
@@ -424,16 +438,18 @@ void CRATrainerDlg::OnBnClickedCheck13()
 void CRATrainerDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	TrainerFunctions tfs;
+	TrainerBase tb;
 	switch(nIDEvent)
 	{
 	case 1:
-		trainer.SuperOn();
+		tfs.SuperOn();
 		break;
 	case 2:
-		trainer.RadarOn();
+		tfs.RadarOn();
 		break;
 	case 3:
-		Timer_IsGameRunning(trainer.IsGameRunning(RUNNING_SILENT));
+		Timer_IsGameRunning(tb.IsGameRunning());
 	default:
 		break;
 	}
@@ -442,96 +458,81 @@ void CRATrainerDlg::OnTimer(UINT_PTR nIDEvent)
 
 /**************************************************************************************/
 //创建线程类型
-char* allMap = "\
-[ENABLE]\n\
-alloc(newm,128)\n\
-createthread(newm)\n\
-LdrInitializeThunk:\n\
-DB 8B FF 55 8B EC\n\
-newm:\n\
-pushad\n\
-mov edx,[00A83D4C]\n\
-mov ecx,0087F7E8\n\
-push edx\n\
-call 00577D90\n\
-popad\n\
-ret\n\
-[DISABLE]\n\
-dealloc(newm)\n\
-";
-inline const char * const BoolToString(bool b)
-{
-	return b ? "true" : "false";
-}
 //地图全开
 void CRATrainerDlg::OnBnClickedButton5()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	// 
-	if (!trainer.IsGameRunning(RUNNING_ALERT)) { return; }
+	TrainerFunctions tfs;
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning()){::MessageBox(NULL,"请开启游戏!!","提示:",NULL);return;}
 	DWORD Player;
-	trainer.readMemory(0x00A83D4C,&Player);
+	tbe.readMemory(0x00A83D4C,&Player);
 	if(Player==0){::MessageBox(NULL,"必须先开始战斗!!","提示:",NULL);return;}
-	// trainer.AllMap();
-	bool ret = trainer.AutoAssemble(trainer.pid, allMap, 1);
-	Sleep(300);
-	trainer.AutoAssemble(trainer.pid, allMap, 0);
-	// char* ver = trainer.Ver();
-	::MessageBox(NULL, BoolToString(ret), "提示:", NULL);
+	tfs.AllMap();
 }
 
 //获得一个一次性核弹
 void CRATrainerDlg::OnBnClickedButton6()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if (!trainer.IsGameRunning(RUNNING_ALERT)) { return; }
+	TrainerFunctions tfs;
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning()){::MessageBox(NULL,"请开启游戏!!","提示:",NULL);return;}
 	DWORD Player;
-	trainer.readMemory(0x00A83D4C,&Player);
+	tbe.readMemory(0x00A83D4C,&Player);
 	if(Player==0){::MessageBox(NULL,"必须先开始战斗!!","提示:",NULL);return;}
-	trainer.GetaNuclearBomb();
+	tfs.GetaNuclearBomb();
 }
 
 //选中单位升三级
 void CRATrainerDlg::OnBnClickedButton7()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if (!trainer.IsGameRunning(RUNNING_ALERT)) { return; }
+	TrainerFunctions tfs;
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning()){::MessageBox(NULL,"请开启游戏!!","提示:",NULL);return;}
 	DWORD Player;
-	trainer.readMemory(0x00A83D4C,&Player);
+	tbe.readMemory(0x00A83D4C,&Player);
 	if(Player==0){::MessageBox(NULL,"必须先开始战斗!!","提示:",NULL);return;}
-	trainer.UpChose();
+	tfs.UpChose();
 }
 
 //选中单位加速--建筑和飞机不行
 void CRATrainerDlg::OnBnClickedButton8()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if (!trainer.IsGameRunning(RUNNING_ALERT)) { return; }
+	TrainerFunctions tfs;
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning()){::MessageBox(NULL,"请开启游戏!!","提示:",NULL);return;}
 	DWORD Player;
-	trainer.readMemory(0x00A83D4C,&Player);
+	tbe.readMemory(0x00A83D4C,&Player);
 	if(Player==0){::MessageBox(NULL,"必须先开始战斗!!","提示:",NULL);return;}
-	trainer.SpeedUpChose();
+	tfs.SpeedUpChose();
 }
 
 void CRATrainerDlg::OnBnClickedButton9()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if (!trainer.IsGameRunning(RUNNING_ALERT)) { return; }
+	TrainerFunctions tfs;
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning()){::MessageBox(NULL,"请开启游戏!!","提示:",NULL);return;}
 	DWORD Player;
-	trainer.readMemory(0x00A83D4C,&Player);
+	tbe.readMemory(0x00A83D4C,&Player);
 	if(Player==0){::MessageBox(NULL,"必须先开始战斗!!","提示:",NULL);return;}
-	trainer.MineChose();
+	tfs.MineChose();
 }
 
 //删除单位
 void CRATrainerDlg::OnBnClickedButton10()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if (!trainer.IsGameRunning(RUNNING_ALERT)) { return; }
+	TrainerFunctions tfs;
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning()){::MessageBox(NULL,"请开启游戏!!","提示:",NULL);return;}
 	DWORD Player;
-	trainer.readMemory(0x00A83D4C,&Player);
+	tbe.readMemory(0x00A83D4C,&Player);
 	if(Player==0){::MessageBox(NULL,"必须先开始战斗!!","提示:",NULL);return;}
-	trainer.DeleteThis();
+	tfs.DeleteThis();
 }
 
 //数据查看窗口
@@ -551,26 +552,48 @@ void CRATrainerDlg::OnBnClickedButton11()
 void CRATrainerDlg::OnBnClickedCheck1()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if(!trainer.IsGameRunning(RUNNING_ALERT))
+	int iSwi=((CButton*)GetDlgItem(IDC_CHECK1))->GetCheck();		//当前是否选中
+
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning())
 	{
 		((CButton*)GetDlgItem(IDC_CHECK1))->SetCheck(0);
+		::MessageBox(NULL,"请开启游戏!!","提示:",NULL);
 		return;
 	}
-	trainer.NoLoad(((CButton*)GetDlgItem(IDC_CHECK1))->GetCheck());
+
+	TrainerFunctions tfs;
+	if(iSwi == 1)	//选中操作
+	{
+		tfs.NoLoad();
+	}
+	else
+	{
+		tfs.FreeNoLoad();
+	}
 }
-//敌方停电(开发中，暂停使用)
+//敌方停电
 void CRATrainerDlg::OnBnClickedCheck16()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	int iSwi=((CButton*)GetDlgItem(IDC_CHECK16))->GetCheck();		//当前是否选中
-	if(!trainer.IsGameRunning(RUNNING_ALERT))
+
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning())
 	{
 		((CButton*)GetDlgItem(IDC_CHECK16))->SetCheck(0);
+		::MessageBox(NULL,"请开启游戏!!","提示:",NULL);
 		return;
 	}
+
+	TrainerFunctions tfs;
 	if(iSwi == 1)	//选中操作
 	{
-		trainer.NoPower();
+		tfs.NoPower();
+	}
+	else
+	{
+		tfs.FreeNoPower();
 	}
 }
 
@@ -578,99 +601,231 @@ void CRATrainerDlg::OnBnClickedCheck16()
 void CRATrainerDlg::OnBnClickedCheck2()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if(!trainer.IsGameRunning(RUNNING_ALERT))
+	int iSwi=((CButton*)GetDlgItem(IDC_CHECK2))->GetCheck();		//当前是否选中
+
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning())
 	{
 		((CButton*)GetDlgItem(IDC_CHECK2))->SetCheck(0);
+		::MessageBox(NULL,"请开启游戏!!","提示:",NULL);
 		return;
 	}
-	trainer.PutAsWill(((CButton*)GetDlgItem(IDC_CHECK2))->GetCheck());
+
+	TrainerFunctions tfs;
+	if(iSwi == 1)	//选中操作
+	{
+		tfs.PutAsWill();
+		tfs.PutWaterAble();
+	}
+	else
+	{
+		tfs.FreePutAsWill();
+		tfs.FreePutWaterAble();
+	}
 }
 
 //自动修理
 void CRATrainerDlg::OnBnClickedCheck3()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if(!trainer.IsGameRunning(RUNNING_ALERT))
+	int iSwi=((CButton*)GetDlgItem(IDC_CHECK3))->GetCheck();		//当前是否选中
+
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning())
 	{
 		((CButton*)GetDlgItem(IDC_CHECK3))->SetCheck(0);
+		::MessageBox(NULL,"请开启游戏!!","提示:",NULL);
 		return;
 	}
-	trainer.AutoRepair(((CButton*)GetDlgItem(IDC_CHECK3))->GetCheck());	//玩家建筑
+
+	TrainerFunctions tfs;
+	if(iSwi == 1)	//选中操作
+	{
+		tfs.AutoRepair();	//玩家建筑
+		tfs.AutoRepairStruc();	//中立建筑
+	}
+	else
+	{
+		tfs.FreeAutoRepair();
+		tfs.FreeAutoRepairStruc();
+	}
 }
 
 //社会主义万岁
 void CRATrainerDlg::OnBnClickedCheck4()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if(!trainer.IsGameRunning(RUNNING_ALERT))
+	int iSwi=((CButton*)GetDlgItem(IDC_CHECK4))->GetCheck();		//当前是否选中
+
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning())
 	{
 		((CButton*)GetDlgItem(IDC_CHECK4))->SetCheck(0);
+		::MessageBox(NULL,"请开启游戏!!","提示:",NULL);
 		return;
 	}
-	trainer.RevengeYuri(((CButton*)GetDlgItem(IDC_CHECK4))->GetCheck());
+
+	TrainerFunctions tfs;
+	if(iSwi == 1)	//选中操作
+	{
+		tfs.RevengeYuri();
+		tfs.PermanentYuri();
+	}
+	else
+	{
+		tfs.FreeRevengeYuri();
+		tfs.FreePermanentYuri();
+	}
 }
 
 //全是我的-攻击
 void CRATrainerDlg::OnBnClickedCheck5()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if(!trainer.IsGameRunning(RUNNING_ALERT))
+	int iSwi=((CButton*)GetDlgItem(IDC_CHECK5))->GetCheck();		//当前是否选中
+
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning())
 	{
 		((CButton*)GetDlgItem(IDC_CHECK5))->SetCheck(0);
+		::MessageBox(NULL,"请开启游戏!!","提示:",NULL);
 		return;
 	}
-	trainer.MineAttack(((CButton*)GetDlgItem(IDC_CHECK5))->GetCheck());
+
+	TrainerFunctions tfs;
+	if(iSwi == 1)	//选中操作
+	{
+		tfs.MineAttack();
+	}
+	else
+	{
+		tfs.FreeMineAttack();
+	}
 }
 
 //全是我的-驻军EVA_StructureGarrisoned
 void CRATrainerDlg::OnBnClickedCheck6()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if(!trainer.IsGameRunning(RUNNING_ALERT))
+	int iSwi=((CButton*)GetDlgItem(IDC_CHECK6))->GetCheck();		//当前是否选中
+
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning())
 	{
 		((CButton*)GetDlgItem(IDC_CHECK6))->SetCheck(0);
+		::MessageBox(NULL,"请开启游戏!!","提示:",NULL);
 		return;
 	}
-	trainer.MineBuildIn(((CButton*)GetDlgItem(IDC_CHECK6))->GetCheck());
+
+	TrainerFunctions tfs;
+	if(iSwi == 1)	//选中操作
+	{
+		tfs.MineBuildIn();
+	}
+	else
+	{
+		tfs.FreeMineBuildIn();
+	}
 }
 
 //全是我的-占领EVA_BuildingCaptured
 void CRATrainerDlg::OnBnClickedCheck7()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if(!trainer.IsGameRunning(RUNNING_ALERT))
+	int iSwi=((CButton*)GetDlgItem(IDC_CHECK7))->GetCheck();		//当前是否选中
+
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning())
 	{
 		((CButton*)GetDlgItem(IDC_CHECK7))->SetCheck(0);
+		::MessageBox(NULL,"请开启游戏!!","提示:",NULL);
 		return;
 	}
-	trainer.MineUnEngineer(((CButton*)GetDlgItem(IDC_CHECK7))->GetCheck());
+
+	TrainerFunctions tfs;
+	if(iSwi == 1)	//选中操作
+	{
+		tfs.MineUnEngineer();
+	}
+	else
+	{
+		tfs.FreeMineUnEngineer();
+	}
 }
 
 //瞬间建造
 void CRATrainerDlg::OnBnClickedCheck8()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if(!trainer.IsGameRunning(RUNNING_ALERT))
+	int iSwi=((CButton*)GetDlgItem(IDC_CHECK8))->GetCheck();		//当前是否选中
+
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning())
 	{
 		((CButton*)GetDlgItem(IDC_CHECK8))->SetCheck(0);
+		::MessageBox(NULL,"请开启游戏!!","提示:",NULL);
 		return;
 	}
-	trainer.BuildImme(((CButton*)GetDlgItem(IDC_CHECK8))->GetCheck());
-	OnBnClickedButton2();	//步兵战车自动快速建造
+
+	TrainerFunctions tfs;
+	if(iSwi == 1)	//选中操作
+	{
+		tfs.BuildImme();
+		OnBnClickedButton2();	//步兵战车自动快速建造
+	}
+	else
+	{
+		tfs.FreeBuildImme();
+	}
 }
 
 //无敌
 void CRATrainerDlg::OnBnClickedCheck9()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if(!trainer.IsGameRunning(RUNNING_ALERT))
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning())
 	{
 		((CButton*)GetDlgItem(IDC_CHECK9))->SetCheck(0);
+		::MessageBox(NULL,"请开启游戏!!","提示:",NULL);
 		return;
 	}
-	trainer.Unbeatable(((CButton*)GetDlgItem(IDC_CHECK9))->GetCheck());
-	trainer.AntiChrono(((CButton*)GetDlgItem(IDC_CHECK9))->GetCheck());	//无敌时反超时空
-	trainer.AntiChronoDisable(((CButton*)GetDlgItem(IDC_CHECK9))->GetCheck());
+
+	TrainerFunctions tfs;
+
+	int iSwiU=((CButton*)GetDlgItem(IDC_CHECK9))->GetCheck();		//无敌是否选中
+	int iSwiS=((CButton*)GetDlgItem(IDC_CHECK10))->GetCheck();		//秒杀是否选中
+	
+	tfs.UnbeatableSecKill_Pre();	//如果指针不空自动释放 不会泄露
+	if((iSwiU == 1) && (iSwiS == 0))
+	{
+		tfs.Unbeatable();
+	}
+	else if((iSwiU == 0) && (iSwiS == 1))
+	{
+		tfs.SecKill();
+	}
+	else if((iSwiU == 1) && (iSwiS == 1))
+	{
+		tfs.UnbeatableSecKill();
+	}
+	else if((iSwiU == 0) && (iSwiS == 0))		//全取消则还原代码 释放内存
+	{
+		tfs.FreeUnbeatableSecKill();
+	}
+
+	if(iSwiU == 1)	//选中操作
+	{
+		tfs.AntiChrono();	//无敌时反超时空
+		tfs.AntiChronoDisbuild();
+		tfs.AntiChronoDisable();
+	}
+	else
+	{
+		tfs.FreeAntiChrono();
+		tfs.FreeAntiChronoDisbuild();
+		tfs.FreeAntiChronoDisable();
+	}
 
 }
 
@@ -678,44 +833,86 @@ void CRATrainerDlg::OnBnClickedCheck9()
 void CRATrainerDlg::OnBnClickedCheck10()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if(!trainer.IsGameRunning(RUNNING_ALERT))
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning())
 	{
 		((CButton*)GetDlgItem(IDC_CHECK10))->SetCheck(0);
+		::MessageBox(NULL,"请开启游戏!!","提示:",NULL);
 		return;
 	}
-	//暂停使用
+
+	TrainerFunctions tfs;
+
+	int iSwiU=((CButton*)GetDlgItem(IDC_CHECK9))->GetCheck();		//无敌是否选中
+	int iSwiS=((CButton*)GetDlgItem(IDC_CHECK10))->GetCheck();		//秒杀是否选中
+
+	tfs.UnbeatableSecKill_Pre();	//如果指针不空自动释放 不会泄露
+	if((iSwiU == 1) && (iSwiS == 0))
+	{
+		tfs.Unbeatable();
+	}
+	else if((iSwiU == 0) && (iSwiS == 1))
+	{
+		tfs.SecKill();
+	}
+	else if((iSwiU == 1) && (iSwiS == 1))
+	{
+		tfs.UnbeatableSecKill();
+	}
+	else if((iSwiU == 0) && (iSwiS == 0))		//全取消则还原代码 释放内存
+	{
+		tfs.FreeUnbeatableSecKill();
+	}
 }
 
 //敌方血越修越少
 void CRATrainerDlg::OnBnClickedCheck11()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if(!trainer.IsGameRunning(RUNNING_ALERT))
+	int iSwi=((CButton*)GetDlgItem(IDC_CHECK11))->GetCheck();		//当前是否选中
+
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning())
 	{
 		((CButton*)GetDlgItem(IDC_CHECK11))->SetCheck(0);
+		::MessageBox(NULL,"请开启游戏!!","提示:",NULL);
 		return;
 	}
-	trainer.UnRepair(((CButton*)GetDlgItem(IDC_CHECK11))->GetCheck());
+
+	TrainerFunctions tfs;
+	if(iSwi == 1)	//选中操作
+	{
+		tfs.UnRepair();
+	}
+	else
+	{
+		tfs.FreeUnRepair();
+	}
 }
 
 //不删除建造选项
 void CRATrainerDlg::OnBnClickedCheck14()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if(!trainer.IsGameRunning(RUNNING_ALERT))
+	int iSwi=((CButton*)GetDlgItem(IDC_CHECK14))->GetCheck();		//当前是否选中
+
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning())
 	{
 		((CButton*)GetDlgItem(IDC_CHECK14))->SetCheck(0);
+		::MessageBox(NULL,"请开启游戏!!","提示:",NULL);
 		return;
 	}
 
-	int iSwi=((CButton*)GetDlgItem(IDC_CHECK14))->GetCheck();		//当前是否选中
-	trainer.UnRefreshCon(iSwi);
+	TrainerFunctions tfs;
 	if(iSwi == 1)	//选中操作
 	{
+		tfs.UnRefreshCon();
 		((CButton*)GetDlgItem(IDC_CHECK15))->EnableWindow(TRUE);	//启用全科技
 	}
 	else
 	{
+		tfs.FreeUnRefreshCon();
 		if(((CButton*)GetDlgItem(IDC_CHECK15))->GetCheck() == 1)
 		{
 			((CButton*)GetDlgItem(IDC_CHECK15))->SetCheck(0);
@@ -730,80 +927,141 @@ void CRATrainerDlg::OnBnClickedCheck14()
 void CRATrainerDlg::OnBnClickedCheck15()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if(!trainer.IsGameRunning(RUNNING_ALERT))
+	int iSwi=((CButton*)GetDlgItem(IDC_CHECK15))->GetCheck();		//当前是否选中
+
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning())
 	{
 		((CButton*)GetDlgItem(IDC_CHECK15))->SetCheck(0);
+		::MessageBox(NULL,"请开启游戏!!","提示:",NULL);
 		return;
 	}
-	int iSwi=((CButton*)GetDlgItem(IDC_CHECK15))->GetCheck();		//当前是否选中
-	trainer.AllBuild(iSwi);
-	trainer.AllCarBoat(iSwi);
-	trainer.AllSoldier(iSwi);
-	trainer.AllPlane(iSwi);
+
+	TrainerFunctions tfs;
+	if(iSwi == 1)	//选中操作
+	{
+		tfs.AllBuild();
+		tfs.AllCarBoat();
+		tfs.AllSoldier();
+		tfs.AllPlane();
+	}
+	else
+	{
+		tfs.FreeAllBuild();
+		tfs.FreeAllCarBoat();
+		tfs.FreeAllSoldier();
+		tfs.FreeAllPlane();
+	}
 }
 
 //极速攻击
 void CRATrainerDlg::OnBnClickedCheck17()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if(!trainer.IsGameRunning(RUNNING_ALERT))
+	int iSwi=((CButton*)GetDlgItem(IDC_CHECK17))->GetCheck();		//当前是否选中
+
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning())
 	{
 		((CButton*)GetDlgItem(IDC_CHECK17))->SetCheck(0);
+		::MessageBox(NULL,"请开启游戏!!","提示:",NULL);
 		return;
 	}
-	trainer.FastAttack(((CButton*)GetDlgItem(IDC_CHECK17))->GetCheck());
-//	::MessageBox(NULL,"此功能过于强大，可能导致游戏卡顿甚至卡死，请谨慎使用！","警告:",NULL);	//2.3版解决了Bug
-	trainer.FastTurnBattery(((CButton*)GetDlgItem(IDC_CHECK17))->GetCheck());
+
+	TrainerFunctions tfs;
+	if(iSwi == 1)	//选中操作
+	{
+		tfs.FastAttack();
+//		::MessageBox(NULL,"此功能过于强大，可能导致游戏卡顿甚至卡死，请谨慎使用！","警告:",NULL);	//2.3版解决了Bug
+		tfs.FastTurnBattery();
+	}
+	else
+	{
+		tfs.FreeFastAttack();
+		tfs.FreeFastTurnBattery();
+	}
 }
 
 //闪电重装
 void CRATrainerDlg::OnBnClickedCheck18()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if(!trainer.IsGameRunning(RUNNING_ALERT))
+	int iSwi=((CButton*)GetDlgItem(IDC_CHECK18))->GetCheck();		//当前是否选中
+
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning())
 	{
 		((CButton*)GetDlgItem(IDC_CHECK18))->SetCheck(0);
+		::MessageBox(NULL,"请开启游戏!!","提示:",NULL);
 		return;
 	}
-	trainer.FastReload(((CButton*)GetDlgItem(IDC_CHECK18))->GetCheck());
+
+	TrainerFunctions tfs;
+	if(iSwi == 1)	//选中操作
+	{
+		tfs.FastReload();
+	}
+	else
+	{
+		tfs.FreeFastReload();
+	}
 }
 
 //弹药充足
 void CRATrainerDlg::OnBnClickedCheck19()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if(!trainer.IsGameRunning(RUNNING_ALERT))
+	int iSwi=((CButton*)GetDlgItem(IDC_CHECK19))->GetCheck();		//当前是否选中
+
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning())
 	{
 		((CButton*)GetDlgItem(IDC_CHECK19))->SetCheck(0);
+		::MessageBox(NULL,"请开启游戏!!","提示:",NULL);
 		return;
 	}
-	trainer.FullAmmunition(((CButton*)GetDlgItem(IDC_CHECK19))->GetCheck());
+
+	TrainerFunctions tfs;
+	if(iSwi == 1)	//选中操作
+	{
+		tfs.FullAmmunition();
+	}
+	else
+	{
+		tfs.FreeFullAmmunition();
+	}
 }
 
 //远程打击
 void CRATrainerDlg::OnBnClickedCheck20()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if(!trainer.IsGameRunning(RUNNING_ALERT))
+	int iSwi=((CButton*)GetDlgItem(IDC_CHECK20))->GetCheck();		//当前是否选中
+
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning())
 	{
 		((CButton*)GetDlgItem(IDC_CHECK20))->SetCheck(0);
+		::MessageBox(NULL,"请开启游戏!!","提示:",NULL);
 		return;
 	}
 
-	int iSwi=((CButton*)GetDlgItem(IDC_CHECK20))->GetCheck();		//当前是否选中
-	trainer.AllRangeAttack(iSwi);
+	TrainerFunctions tfs;
 	if(iSwi == 1)	//选中操作
 	{
+		tfs.AllRangeAttack();
 		((CButton*)GetDlgItem(IDC_CHECK21))->EnableWindow(TRUE);	//启用自动攻击
 	}
 	else
 	{
+		tfs.FreeAllRangeAttack();
 		if(((CButton*)GetDlgItem(IDC_CHECK21))->GetCheck() == 1)
 		{
 			((CButton*)GetDlgItem(IDC_CHECK21))->SetCheck(0);
 			OnBnClickedCheck21();		//如果自动攻击开启就一起关闭
 		}
 		((CButton*)GetDlgItem(IDC_CHECK21))->EnableWindow(FALSE);	//禁用自动攻击
+
 	}
 }
 
@@ -811,68 +1069,121 @@ void CRATrainerDlg::OnBnClickedCheck20()
 void CRATrainerDlg::OnBnClickedCheck21()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if(!trainer.IsGameRunning(RUNNING_ALERT))
+	int iSwi=((CButton*)GetDlgItem(IDC_CHECK21))->GetCheck();		//当前是否选中
+
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning())
 	{
 		((CButton*)GetDlgItem(IDC_CHECK21))->SetCheck(0);
+		::MessageBox(NULL,"请开启游戏!!","提示:",NULL);
 		return;
 	}
-	trainer.AllRangeAlert(((CButton*)GetDlgItem(IDC_CHECK21))->GetCheck());
+
+	TrainerFunctions tfs;
+	if(iSwi == 1)	//选中操作
+	{
+		tfs.AllRangeAlert();
+	}
+	else
+	{
+		tfs.FreeAllRangeAlert();
+	}
 }
 
 //极速转身
 void CRATrainerDlg::OnBnClickedCheck22()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if(!trainer.IsGameRunning(RUNNING_ALERT))
+	int iSwi=((CButton*)GetDlgItem(IDC_CHECK22))->GetCheck();		//当前是否选中
+
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning())
 	{
 		((CButton*)GetDlgItem(IDC_CHECK22))->SetCheck(0);
+		::MessageBox(NULL,"请开启游戏!!","提示:",NULL);
 		return;
 	}
-	trainer.FastTurnRound(((CButton*)GetDlgItem(IDC_CHECK22))->GetCheck());
+
+	TrainerFunctions tfs;
+	if(iSwi == 1)	//选中操作
+	{
+		tfs.FastTurnRound();
+	}
+	else
+	{
+		tfs.FreeFastTurnRound();
+	}
 }
 
 //瞬间超时空移动和攻击
 void CRATrainerDlg::OnBnClickedCheck23()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if(!trainer.IsGameRunning(RUNNING_ALERT))
+	int iSwi=((CButton*)GetDlgItem(IDC_CHECK23))->GetCheck();		//当前是否选中
+
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning())
 	{
 		((CButton*)GetDlgItem(IDC_CHECK23))->SetCheck(0);
+		::MessageBox(NULL,"请开启游戏!!","提示:",NULL);
 		return;
 	}
-	trainer.InstantChronoMove(((CButton*)GetDlgItem(IDC_CHECK23))->GetCheck());
-	trainer.InstantChronoAttack(((CButton*)GetDlgItem(IDC_CHECK23))->GetCheck());
+
+	TrainerFunctions tfs;
+	if(iSwi == 1)	//选中操作
+	{
+		tfs.InstantChronoMove();
+		tfs.InstantChronoAttack();
+	}
+	else
+	{
+		tfs.FreeInstantChronoMove();
+		tfs.FreeInstantChronoAttack();
+	}
 }
 
 //间间谍
 void CRATrainerDlg::OnBnClickedCheck24()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if(!trainer.IsGameRunning(RUNNING_ALERT))
+	int iSwi=((CButton*)GetDlgItem(IDC_CHECK24))->GetCheck();		//当前是否选中
+
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning())
 	{
 		((CButton*)GetDlgItem(IDC_CHECK24))->SetCheck(0);
+		::MessageBox(NULL,"请开启游戏!!","提示:",NULL);
 		return;
 	}
-	trainer.AntiSpy(((CButton*)GetDlgItem(IDC_CHECK24))->GetCheck());
+
+	TrainerFunctions tfs;
+	if(iSwi == 1)	//选中操作
+	{
+		tfs.AntiSpy();
+	}
+	else
+	{
+		tfs.FreeAntiSpy();
+	}
 }
 
 //速度控制Slider
 void CRATrainerDlg::OnNMCustomdrawSlider1(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	const CString strPos[7] = {"最慢","慢","慢","中等","快","快","最快"};
+	const CString str_Pos[7] = {"最慢","慢","慢","中等","快","快","最快"};
 	LPNMCUSTOMDRAW pNMCD = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
 	// TODO: 在此添加控件通知处理程序代码
-	DWORD nPos = mSlider.GetPos();	//获取滑块位置
-	if(nPos != SliderPos)
+	DWORD nPos = m_Slider.GetPos();	//获取滑块位置
+	if(nPos != Slider_Pos)
 	{
-		SliderPos = nPos;		//记录上一次位置
+		Slider_Pos = nPos;		//记录上一次位置
 		//test
 		//CString str;
 		//str.Format(_T("%d"),nPos);
 		//GetDlgItem(IDC_EDIT1)->SetWindowTextA(str);
-		GetDlgItem(IDC_STATIC)->SetWindowTextA(strPos[nPos]);
-		
-		trainer.wSpeed(6-nPos);		//游戏数据 慢6-0快
+		GetDlgItem(IDC_STATIC)->SetWindowTextA(str_Pos[nPos]);
+		TrainerFunctions tfs;
+		tfs.wSpeed(6-nPos);		//游戏数据 慢6-0快
 	}
 
 	*pResult = 0;
@@ -882,26 +1193,28 @@ void CRATrainerDlg::OnNMCustomdrawSlider1(NMHDR *pNMHDR, LRESULT *pResult)
 void CRATrainerDlg::OnBnClickedCheck25()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	const CString strPos[7] = {"最慢","慢","慢","中等","快","快","最快"};
-	if(!trainer.IsGameRunning(RUNNING_ALERT))
+	int iSwi=((CButton*)GetDlgItem(IDC_CHECK25))->GetCheck();		//当前是否选中
+
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning())
 	{
 		((CButton*)GetDlgItem(IDC_CHECK25))->SetCheck(0);
+		::MessageBox(NULL,"请开启游戏!!","提示:",NULL);
 		return;
 	}
-	
-	int iSwi=((CButton*)GetDlgItem(IDC_CHECK25))->GetCheck();		//当前是否选中
-	trainer.SpeedSet(iSwi);
+
+	TrainerFunctions tfs;
 	if(iSwi == 1)	//选中操作
 	{
-		mSlider.EnableWindow(TRUE);
-		trainer.rSpeed(&SliderPos);		//读取游戏速度 SliderPos是类属性
-		SliderPos = 6 - SliderPos;		//慢6-0快
-		GetDlgItem(IDC_STATIC)->SetWindowTextA(strPos[SliderPos]);
-		mSlider.SetPos(SliderPos);		//更新滑块显示
+		tfs.SpeedSet();
+		m_Slider.EnableWindow(TRUE);
+		tfs.rSpeed(&Slider_Pos);
+		Slider_Pos = 6-Slider_Pos;		//游戏数据 慢6-0快
 	}
 	else
 	{
-		mSlider.EnableWindow(FALSE);
+		tfs.FreeSpeedSet();
+		m_Slider.EnableWindow(FALSE);
 	}
 }
 
@@ -909,61 +1222,131 @@ void CRATrainerDlg::OnBnClickedCheck25()
 void CRATrainerDlg::OnBnClickedCheck26()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if(!trainer.IsGameRunning(RUNNING_ALERT))
+	int iSwi=((CButton*)GetDlgItem(IDC_CHECK26))->GetCheck();		//当前是否选中
+
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning())
 	{
 		((CButton*)GetDlgItem(IDC_CHECK26))->SetCheck(0);
+		::MessageBox(NULL,"请开启游戏!!","提示:",NULL);
 		return;
 	}
-	trainer.DisableGAGAP(((CButton*)GetDlgItem(IDC_CHECK26))->GetCheck());
+
+	TrainerFunctions tfs;
+	if(iSwi == 1)	//选中操作
+	{
+		tfs.DisableGAGAP();
+	}
+	else
+	{
+		tfs.FreeDisableGAGAP();
+	}
 }
 
 //瘫痪敌方所有单位
 void CRATrainerDlg::OnBnClickedCheck27()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if(!trainer.IsGameRunning(RUNNING_ALERT))
+	int iSwi=((CButton*)GetDlgItem(IDC_CHECK27))->GetCheck();		//当前是否选中
+
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning())
 	{
 		((CButton*)GetDlgItem(IDC_CHECK27))->SetCheck(0);
+		::MessageBox(NULL,"请开启游戏!!","提示:",NULL);
 		return;
 	}
-	trainer.DisableAll(((CButton*)GetDlgItem(IDC_CHECK27))->GetCheck());
+
+	TrainerFunctions tfs;
+	if(iSwi == 1)	//选中操作
+	{
+		tfs.DisableAll();
+	}
+	else
+	{
+		tfs.FreeDisableAll();
+	}
 }
 
 //卖卖卖
 void CRATrainerDlg::OnBnClickedCheck28()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if(!trainer.IsGameRunning(RUNNING_ALERT))
+	int iSwi=((CButton*)GetDlgItem(IDC_CHECK28))->GetCheck();		//当前是否选中
+
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning())
 	{
 		((CButton*)GetDlgItem(IDC_CHECK28))->SetCheck(0);
+		::MessageBox(NULL,"请开启游戏!!","提示:",NULL);
 		return;
 	}
-	int iSwi=((CButton*)GetDlgItem(IDC_CHECK28))->GetCheck();		//当前是否选中
-	trainer.EnableSoldAll_Cursor(iSwi);
-	trainer.EnableSoldAll_Belong(iSwi);
-	trainer.EnableSoldAll_Builder(iSwi);
+
+	TrainerFunctions tfs;
+	if(iSwi == 1)	//选中操作
+	{
+		tfs.EnableSoldAll_Cursor();
+		tfs.EnableSoldAll_Belong();
+		tfs.EnableSoldAll_Builder();
+	}
+	else
+	{
+		tfs.FreeEnableSoldAll_Cursor();
+		tfs.FreeEnableSoldAll_Belong();
+		tfs.FreeEnableSoldAll_Builder();
+	}
 }
 
 //滑板鞋
 void CRATrainerDlg::OnBnClickedCheck29()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if(!trainer.IsGameRunning(RUNNING_ALERT))
+	int iSwi=((CButton*)GetDlgItem(IDC_CHECK29))->GetCheck();		//当前是否选中
+
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning())
 	{
 		((CButton*)GetDlgItem(IDC_CHECK29))->SetCheck(0);
+		::MessageBox(NULL,"请开启游戏!!","提示:",NULL);
 		return;
 	}
-	trainer.SoldierFlashMove(((CButton*)GetDlgItem(IDC_CHECK29))->GetCheck());
+
+	TrainerFunctions tfs;
+	if(iSwi == 1)	//选中操作
+	{
+		tfs.SoldierFlashMove();
+	}
+	else
+	{
+		tfs.FreeSoldierFlashMove();
+	}
 }
 
 //造出来就是三级
 void CRATrainerDlg::OnBnClickedCheck30()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if(!trainer.IsGameRunning(RUNNING_ALERT))
+	int iSwi=((CButton*)GetDlgItem(IDC_CHECK30))->GetCheck();		//当前是否选中
+
+	TrainerBase tbe;
+	if(!tbe.IsGameRunning())
 	{
 		((CButton*)GetDlgItem(IDC_CHECK30))->SetCheck(0);
+		::MessageBox(NULL,"请开启游戏!!","提示:",NULL);
 		return;
 	}
-	trainer.AllElite(((CButton*)GetDlgItem(IDC_CHECK30))->GetCheck());
+
+	TrainerFunctions tfs;
+	if(iSwi == 1)	//选中操作
+	{
+		tfs.EliteBuild_Aircraft();
+		tfs.EliteBuild_Vehicle();
+		tfs.EliteBuild_Soldier();
+	}
+	else
+	{
+		tfs.FreeEliteBuild_Aircraft();
+		tfs.FreeEliteBuild_Vehicle();
+		tfs.FreeEliteBuild_Soldier();
+	}
 }

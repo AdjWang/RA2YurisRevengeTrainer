@@ -45,16 +45,9 @@ DWORD TrainerBase::getID()        //得到窗口进程句柄
 	return id;
 }
 
-BOOL TrainerBase::IsGameRunning(DWORD mode)		//游戏运行中
+BOOL TrainerBase::IsGameRunning()		//游戏运行中
 {
-	DWORD hHandle = getID();
-	if (hHandle == 0) {
-		if (mode == RUNNING_ALERT) {
-			::MessageBox(NULL, "请开启游戏!!", "提示:", NULL);
-		}
-		return FALSE;
-	}
-	return TRUE;
+	return getID() != 0;
 }
 
 BOOL TrainerBase::readMemory(DWORD m,DWORD* dat) //读取 内存数据
@@ -153,28 +146,3 @@ void TrainerBase::writProcess(LPVOID callF)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-
-// 调用AutoAssemble
-bool TrainerBase::AutoAssemble(HANDLE hProcess, char * aa_script, int command) {
-	typedef BOOL(FAR WINAPI *PROC1)(HANDLE, char*, int);
-	PROC1 pAutoAssemble = (PROC1)GetProcAddress(hDLL, "AutoAssemble");
-	bool isSuccess = (pAutoAssemble)(hProcess, aa_script, command);
-	return isSuccess;
-}
-
-// 调用GetAddress
-DWORD TrainerBase::GetAddress(HANDLE hProcess, char * address_line) {
-	typedef DWORD(FAR WINAPI *PROC2)(HANDLE, char*);
-	PROC2 pGetAddress = (PROC2)GetProcAddress(hDLL, "GetAddress");
-	DWORD add = (pGetAddress)(hProcess, address_line);
-	return add;
-}
-
-// 调用Ver
-char* TrainerBase::Ver(void) {
-	typedef char *(FAR WINAPI *PROC3)();
-	PROC3 pVer = (PROC3)GetProcAddress(hDLL, "Ver");
-	char *ver = (pVer)();
-	return ver;
-}
-

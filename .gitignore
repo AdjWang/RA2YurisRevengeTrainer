@@ -2,5 +2,4 @@
 RATrainer/Release/*
 !RATrainer/Release/vc141.pdb
 Release/*
-!Release/aa_engine.dll
 !Release/RATrainer.exe
