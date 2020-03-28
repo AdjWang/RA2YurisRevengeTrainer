@@ -75,6 +75,7 @@ Made by: AdjWang
 
 # 目录说明
 
+```
 ./
 │  .gitignore
 │  RATrainer.sln
@@ -133,6 +134,7 @@ Made by: AdjWang
         RATrainer.ipdb
         RATrainer.pdb
         RATrainerV3_1-20181231.zip
+```
 
 独立可运行的程序包需要包含有`RATrainer.exe`和`aa_engine.dll`
 
