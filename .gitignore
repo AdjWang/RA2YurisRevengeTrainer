@@ -1,6 +1,8 @@
 .vs/
+RATrainer/Debug/*
 RATrainer/Release/*
-!RATrainer/Release/vc141.pdb
+Debug/*
 Release/*
-!Release/aa_engine.dll
-!Release/RATrainer.exe
+*.rar
+*.zip
+Archive*

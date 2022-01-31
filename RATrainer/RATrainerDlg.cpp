@@ -477,7 +477,7 @@ void CRATrainerDlg::OnBnClickedButton5()
 	Sleep(300);
 	trainer.AutoAssemble(trainer.pid, allMap, 0);
 	// char* ver = trainer.Ver();
-	::MessageBox(NULL, BoolToString(ret), "提示:", NULL);
+	//::MessageBox(NULL, BoolToString(ret), "提示:", NULL);
 }
 
 //获得一个一次性核弹
