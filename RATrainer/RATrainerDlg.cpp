@@ -262,7 +262,6 @@ void CRATrainerDlg::ResetAllCheckBoxes()
 		}
 		pWnd = pWnd->GetWindow(GW_HWNDNEXT);
 	}
-	((CButton*)GetDlgItem(IDC_CHECK15))->EnableWindow(FALSE);	//禁用全科技
 	((CButton*)GetDlgItem(IDC_CHECK21))->EnableWindow(FALSE);	//禁用自动攻击
 }
 
@@ -698,7 +697,7 @@ void CRATrainerDlg::OnBnClickedCheck11()
 	trainer.UnRepair(((CButton*)GetDlgItem(IDC_CHECK11))->GetCheck());
 }
 
-//不删除建造选项
+//侵略模式
 void CRATrainerDlg::OnBnClickedCheck14()
 {
 	// TODO: 在此添加控件通知处理程序代码
@@ -709,21 +708,7 @@ void CRATrainerDlg::OnBnClickedCheck14()
 	}
 
 	int iSwi=((CButton*)GetDlgItem(IDC_CHECK14))->GetCheck();		//当前是否选中
-	trainer.UnRefreshCon(iSwi);
-	if(iSwi == 1)	//选中操作
-	{
-		((CButton*)GetDlgItem(IDC_CHECK15))->EnableWindow(TRUE);	//启用全科技
-	}
-	else
-	{
-		if(((CButton*)GetDlgItem(IDC_CHECK15))->GetCheck() == 1)
-		{
-			((CButton*)GetDlgItem(IDC_CHECK15))->SetCheck(0);
-			OnBnClickedCheck15();		//如果全科技开启就一起关闭
-		}
-		((CButton*)GetDlgItem(IDC_CHECK15))->EnableWindow(FALSE);	//禁用全科技
-
-	}
+	trainer.InvadeMode(iSwi);
 }
 
 //全科技
@@ -736,10 +721,7 @@ void CRATrainerDlg::OnBnClickedCheck15()
 		return;
 	}
 	int iSwi=((CButton*)GetDlgItem(IDC_CHECK15))->GetCheck();		//当前是否选中
-	trainer.AllBuild(iSwi);
-	trainer.AllCarBoat(iSwi);
-	trainer.AllSoldier(iSwi);
-	trainer.AllPlane(iSwi);
+	trainer.UnlockTech(iSwi);
 }
 
 //极速攻击

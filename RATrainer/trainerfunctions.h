@@ -52,11 +52,9 @@ public:
 
 	bool UnRepair(int command);
 
-	bool UnRefreshCon(int command);
-	bool AllBuild(int command);
-	bool AllCarBoat(int command);
-	bool AllSoldier(int command);
-	bool AllPlane(int command);
+	bool InvadeMode(int command);
+
+	bool UnlockTech(int command);
 
 	bool FastAttack(int command);
 	bool FastTurnBattery(int command);
@@ -87,12 +85,3 @@ public:
 	bool AllElite(int command);
 
 };
-
-//用来复制的模板
-//if (command == 1) {
-//
-//}
-//else {
-//
-//}
-//return true;	// 容我粗糙一下...

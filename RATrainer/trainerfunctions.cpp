@@ -1037,174 +1037,47 @@ bool TrainerFunctions::UnRepair(int command) //反修
 	return AutoAssemble(pid, UnRepair_Assemble, command);
 }
 
-bool TrainerFunctions::UnRefreshCon(int command) //不删除建造选项-不需要注入，直接替换
+bool TrainerFunctions::InvadeMode(int command) //不删除建造选项-不需要注入，直接替换
 {
 	if (command == 1) {
-		jmpWritProc((LPVOID)0x006AA788,(LPVOID)0x006AAA68); //jmp 006AAA68
-		writeMemory((0x006AA788+5),0x90,1);		//0x90->nop
+		jmpWritProc((LPVOID)0x006F85DD,(LPVOID)0x006F8604);
 	}
 	else {
-		DWORD add_l = 0x006AA788;
-		BYTE jmp_l[6] = { 0x0F,0x85,0xDA,0x02,00,00 };
+		DWORD add_l = 0x006F85DD;
+		BYTE jmp_l[5] = { 0x83,0x38,0x00,0x74,0x0E };
 		WriteProcessMemory(pid, (LPVOID)add_l, &jmp_l, sizeof(jmp_l), 0);
 	}
 	return true;	// 容我粗糙一下...
 }
 
-char* AllBuild_Assemble = "\
+char* UnlockTech_Assemble = "\
 [ENABLE]\n\
 //code from here to '[DISABLE]' will be used to enable the cheat\n\
-alloc(newmem,1024)\n\
+alloc(newmem,64)\n\
 label(returnhere)\n\
 label(originalcode)\n\
 label(exit)\n\
 newmem: //this is allocated memory, you have read,write,execute access\n\
 //place your code here\n\
-mov ecx,[eax+esi*4]\n\
-mov eax,[ecx+634]\n\
-cmp eax,-1\n\
-jmp 0044575F\n\
-jmp exit\n\
+jmp 004F7B96\n\
 originalcode:\n\
-push 01\n\
-push 00\n\
-mov ecx,[eax+esi*4]\n\
+mov ecx,[00A8B238]\n\
 exit:\n\
 jmp returnhere\n\
-\"gamemd.exe\"+4574A:\n\
+\"gamemd.exe\"+F7B6C:\n\
 jmp newmem\n\
-nop\n\
 nop\n\
 returnhere:\n\
 [DISABLE]\n\
 //code from here till the end of the code will be used to disable the cheat\n\
 dealloc(newmem)\n\
-\"gamemd.exe\"+4574A:\n\
-push 01\n\
-push 00\n\
-mov ecx,[eax+esi*4]\n\
-//Alt: db 6A 01 6A 00 8B 0C B0\n\
+\"gamemd.exe\"+F7B6C:\n\
+mov ecx,[00A8B238]\n\
+//Alt: db 8B 0D 38 B2 A8 00\n\
 ";
-bool TrainerFunctions::AllBuild(int command) //建筑全科技
+bool TrainerFunctions::UnlockTech(int command) //飞机全科技
 {
-	return AutoAssemble(pid, AllBuild_Assemble, command);
-}
-
-char* AllCarBoat_Assemble = "\
-[ENABLE]\n\
-//code from here to '[DISABLE]' will be used to enable the cheat\n\
-alloc(newmem,1024)\n\
-label(returnhere)\n\
-label(originalcode)\n\
-label(exit)\n\
-newmem: //this is allocated memory, you have read,write,execute access\n\
-//place your code here\n\
-mov eax,[edx+esi*4]\n\
-mov eax,[eax+634]\n\
-cmp eax,-1\n\
-jmp 004457A4\n\
-jmp exit\n\
-originalcode:\n\
-push 01\n\
-push 00\n\
-mov eax,[edx+esi*4]\n\
-exit:\n\
-jmp returnhere\n\
-\"gamemd.exe\"+45795:\n\
-jmp newmem\n\
-nop\n\
-nop\n\
-returnhere:\n\
-[DISABLE]\n\
-//code from here till the end of the code will be used to disable the cheat\n\
-dealloc(newmem)\n\
-\"gamemd.exe\"+45795:\n\
-push 01\n\
-push 00\n\
-mov eax,[edx+esi*4]\n\
-//Alt: db 6A 01 6A 00 8B 04 B2\n\
-";
-bool TrainerFunctions::AllCarBoat(int command) //车船全科技
-{
-	return AutoAssemble(pid, AllCarBoat_Assemble, command);
-}
-
-char* AllSoldier_Assemble = "\
-[ENABLE]\n\
-//code from here to '[DISABLE]' will be used to enable the cheat\n\
-alloc(newmem,2048)\n\
-label(returnhere)\n\
-label(originalcode)\n\
-label(exit)\n\
-newmem: //this is allocated memory, you have read,write,execute access\n\
-//place your code here\n\
-mov ecx,[ecx+esi*4]\n\
-mov eax,[ecx+634]\n\
-cmp eax,-1\n\
-jmp 004457E5\n\
-jmp exit\n\
-originalcode:\n\
-push 01\n\
-push 00\n\
-mov edx,[ecx+esi*4]\n\
-exit:\n\
-jmp returnhere\n\
-\"gamemd.exe\"+457D0:\n\
-jmp newmem\n\
-nop\n\
-nop\n\
-returnhere:\n\
-[DISABLE]\n\
-//code from here till the end of the code will be used to disable the cheat\n\
-dealloc(newmem)\n\
-\"gamemd.exe\"+457D0:\n\
-push 01\n\
-push 00\n\
-mov edx,[ecx+esi*4]\n\
-//Alt: db 6A 01 6A 00 8B 14 B1\n\
-";
-bool TrainerFunctions::AllSoldier(int command) //步兵全科技
-{
-	return AutoAssemble(pid, AllSoldier_Assemble, command);
-}
-
-char* AllPlane_Assemble = "\
-[ENABLE]\n\
-//code from here to '[DISABLE]' will be used to enable the cheat\n\
-alloc(newmem,2048)\n\
-label(returnhere)\n\
-label(originalcode)\n\
-label(exit)\n\
-newmem: //this is allocated memory, you have read,write,execute access\n\
-//place your code here\n\
-mov ecx,[eax+esi*4]\n\
-mov eax,[ecx+634]\n\
-cmp eax,-1\n\
-jmp 00445825\n\
-jmp exit\n\
-originalcode:\n\
-push 01\n\
-push 00\n\
-mov ecx,[eax+esi*4]\n\
-exit:\n\
-jmp returnhere\n\
-\"gamemd.exe\"+45810:\n\
-jmp newmem\n\
-nop\n\
-nop\n\
-returnhere:\n\
-[DISABLE]\n\
-//code from here till the end of the code will be used to disable the cheat\n\
-dealloc(newmem)\n\
-\"gamemd.exe\"+45810:\n\
-push 01\n\
-push 00\n\
-mov ecx,[eax+esi*4]\n\
-//Alt: db 6A 01 6A 00 8B 0C B0\n\
-";
-bool TrainerFunctions::AllPlane(int command) //飞机全科技
-{
-	return AutoAssemble(pid, AllPlane_Assemble, command);
+	return AutoAssemble(pid, UnlockTech_Assemble, command);
 }
 
 char* FastAttack_Assemble = "\
