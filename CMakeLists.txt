@@ -41,7 +41,8 @@ target_include_directories(libimgui
     PUBLIC deps/glfw/include
     PUBLIC ${IMGUI_INCLUDES})
 
-add_executable(${PROJECT_NAME} src/trainer/main.cpp)
+add_executable(${PROJECT_NAME} src/trainer/main.cpp
+                               src/trainer/logging.cpp)
 target_include_directories(${PROJECT_NAME} 
                     PRIVATE deps/glfw
                    PRIVATE deps/glfw/include
