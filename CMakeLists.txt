@@ -41,12 +41,12 @@ target_include_directories(libimgui
     PUBLIC deps/glfw/include
     PUBLIC ${IMGUI_INCLUDES})
 
-add_executable(${PROJECT_NAME} src/trainer/main.cpp
-                               src/trainer/logging.cpp)
-target_include_directories(${PROJECT_NAME} 
-                    PRIVATE deps/glfw
-                   PRIVATE deps/glfw/include
-                   PRIVATE ${IMGUI_INCLUDES}
+add_executable(${PROJECT_NAME} WIN32 src/trainer/main.cpp
+                                     src/trainer/logging.cpp
+                                     src/trainer/gui.cpp)
+target_include_directories(${PROJECT_NAME} PRIVATE deps/glfw
+                                           PRIVATE deps/glfw/include
+                                           PRIVATE ${IMGUI_INCLUDES}
                                            PRIVATE src/trainer)
 target_link_libraries(${PROJECT_NAME} PRIVATE OpenGL::GL
                                       PRIVATE libimgui

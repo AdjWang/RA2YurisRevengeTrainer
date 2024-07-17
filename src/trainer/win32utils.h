@@ -1,3 +1,4 @@
+#pragma once
 #include "logging.h"
 
 #ifdef _WIN32
