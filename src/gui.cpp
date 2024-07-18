@@ -80,27 +80,26 @@ void ImGuiContext::Render() const {
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-#define HANDLE_BUTTON(label)                                      \
-    do {                                                          \
-        if (ImGui::Button(GetFnChar(FnLabel::k##label))) {        \
-            if (btn_cbs_.contains(FnLabel::k##label)) {           \
-                btn_cbs_[FnLabel::k##label]();                    \
-            } else {                                              \
-                LOG(WARN, "Not found handler for label=" #label); \
-            }                                                     \
-        }                                                         \
+#define HANDLE_BUTTON(label)                                   \
+    do {                                                       \
+        if (btn_cbs_.contains(FnLabel::k##label)) {            \
+            if (ImGui::Button(GetFnChar(FnLabel::k##label))) { \
+                btn_cbs_[FnLabel::k##label]();                 \
+            }                                                  \
+        } else {                                               \
+            LOG(WARN, "Not found handler for label=" #label);  \
+        }                                                      \
     } while (0)
 
-#define HANDLE_CHECKBOX(label)                                    \
-    do {                                                          \
-        if (ImGui::Checkbox(GetFnChar(FnLabel::k##label),         \
-                            &ckbox_##label##_)) {                 \
-            if (ckbox_cbs_.contains(FnLabel::k##label)) {         \
-                ckbox_cbs_[FnLabel::k##label](ckbox_##label##_);  \
-            } else {                                              \
-                LOG(WARN, "Not found handler for label="#label); \
-            }                                                     \
-        }                                                         \
+#define HANDLE_CHECKBOX(label)                                          \
+    do {                                                                \
+        if (ckbox_cbs_.contains(FnLabel::k##label)) {                   \
+            CheckboxState& ckbox_state = ckbox_cbs_[FnLabel::k##label]; \
+            if (ImGui::Checkbox(GetFnChar(FnLabel::k##label),           \
+                                &ckbox_state.activate)) {               \
+                ckbox_state.cb(ckbox_state.activate);                   \
+            }                                                           \
+        }                                                               \
     } while (0)
 
 void ImGuiContext::RenderClientArea() {
@@ -163,9 +162,11 @@ void ImGuiContext::RenderClientArea() {
     HANDLE_CHECKBOX(SpySpy);
     HANDLE_CHECKBOX(InfantrySlip);
     HANDLE_CHECKBOX(UnitLeveledUp);
+    HANDLE_CHECKBOX(AdjustGameSpeed);
 
     ImGui::End();
 }
+#undef HANDLE_BUTTON
 #undef HANDLE_CHECKBOX
 
 void ImGuiContext::AddButtonListener(FnLabel label, std::function<void()> cb) {
@@ -174,7 +175,10 @@ void ImGuiContext::AddButtonListener(FnLabel label, std::function<void()> cb) {
 
 void ImGuiContext::AddCheckboxListener(FnLabel label,
                                        std::function<void(bool)> cb) {
-    ckbox_cbs_.emplace(label, std::move(cb));
+    ckbox_cbs_.emplace(label, CheckboxState {
+        .activate = false,
+        .cb = std::move(cb),
+    });
 }
 
 const char* ImGuiContext::GetFnChar(FnLabel label) {

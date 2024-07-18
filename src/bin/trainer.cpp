@@ -1,6 +1,7 @@
 #include "logging.h"
 #include "gui.h"
 #include "vendor.h"
+#include "trainer_func.h"
 
 namespace {
 static void error_callback(int error, const char* description) {
@@ -30,7 +31,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, PSTR, int) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
-    window = glfwCreateWindow(600, 900, "RA2 Trainer", NULL, NULL);
+    window = glfwCreateWindow(556, 900, "RA2 Trainer", NULL, NULL);
     if (!window) {
         glfwTerminate();
         exit(EXIT_FAILURE);
@@ -42,6 +43,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, PSTR, int) {
     glfwSetKeyCallback(window, key_callback);
 
     yrtr::ImGuiContext gui_ctx(window);
+    // Disable imgui.ini
+    ImGuiIO& io = ImGui::GetIO();
+    io.IniFilename = NULL;
+    // Init gui components
+    yrtr::InitGUI(gui_ctx);
 
     int BtnClickCount = 0;
     double ts = glfwGetTime();

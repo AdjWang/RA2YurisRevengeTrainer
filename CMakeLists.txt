@@ -43,7 +43,8 @@ add_subdirectory(src/aa_engine)
 add_executable(${PROJECT_NAME} WIN32 src/bin/trainer.cpp
                                      src/logging.cpp
                                      src/gui.cpp
-                                     src/win32utils.cpp)
+                                     src/win32utils.cpp
+                                     src/trainer_func.cpp)
 target_include_directories(${PROJECT_NAME} PRIVATE deps/glfw
                                            PRIVATE deps/glfw/include
                                            PRIVATE ${IMGUI_INCLUDES}

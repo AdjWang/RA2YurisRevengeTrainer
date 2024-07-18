@@ -6,7 +6,6 @@ namespace yrtr {
 enum class FnLabel {
     kState,
     kMoney,
-    kAdjustGameSpeed,
     // Button
     kApply,
     kFastBuild,
@@ -46,12 +45,12 @@ enum class FnLabel {
     kSpySpy,
     kInfantrySlip,
     kUnitLeveledUp,
+    kAdjustGameSpeed,
 };
 
 inline static const std::unordered_map<FnLabel, const char8_t*> kZhLabels{
     {FnLabel::kState,               u8"状态"},
     {FnLabel::kMoney,               u8"钱"},
-    {FnLabel::kAdjustGameSpeed,     u8"任务调速"},
     {FnLabel::kApply,               u8"修改"},
     {FnLabel::kFastBuild,           u8"快速建造"},
     {FnLabel::kDeleteUnit,          u8"删除单位"},
@@ -89,6 +88,7 @@ inline static const std::unordered_map<FnLabel, const char8_t*> kZhLabels{
     {FnLabel::kSpySpy,              u8"无间道"},
     {FnLabel::kInfantrySlip,        u8"滑板鞋"},
     {FnLabel::kUnitLeveledUp,       u8"部队全部三级"},
+    {FnLabel::kAdjustGameSpeed,     u8"任务调速"},
 };
 
 }  // namespace yrtr
