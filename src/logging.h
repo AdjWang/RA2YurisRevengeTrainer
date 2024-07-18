@@ -1,6 +1,6 @@
 #pragma once
-#include "common/macro.h"
-#include "common/vendor.h"
+#include "macro.h"
+#include "vendor.h"
 
 namespace yrtr {
 
@@ -111,10 +111,10 @@ private:
                  ##__VA_ARGS__)                                        \
         .stream()
 
-#ifdef __DEBUG
-#define DLOG(level) LOG(level)
+#ifdef _DEBUG
+#define DLOG(level, ...) LOG(level, ##__VA_ARGS__)
 #else
-#define DLOG(level) DEVNULL
+#define DLOG(level, ...) DEVNULL
 #endif
 
 #define LOG_IF(lvl, cond) !(cond) ? DEVNULL : LOG(lvl)

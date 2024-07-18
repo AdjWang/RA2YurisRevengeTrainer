@@ -4,7 +4,7 @@ set(CMAKE_SYSTEM_VERSION 10.0)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_compile_options(/MP /Gy /DUNICODE)
+add_compile_options(/MP /Gy /J)
 add_link_options(/OPT:REF)
 
 project(aa_engine)

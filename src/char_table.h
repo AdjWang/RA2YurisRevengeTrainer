@@ -1,5 +1,5 @@
 #pragma once
-#include "common/vendor.h"
+#include "vendor.h"
 
 namespace yrtr {
 
