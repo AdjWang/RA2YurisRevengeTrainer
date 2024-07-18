@@ -1,5 +1,5 @@
 #pragma once
-#include "logging.h"
+#include "common/logging.h"
 
 #ifdef _WIN32
 #include <windows.h>

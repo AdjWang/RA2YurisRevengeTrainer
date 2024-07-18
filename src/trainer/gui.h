@@ -1,6 +1,7 @@
 #pragma once
-#include "vendor.h"
-#include "char_table.h"
+#include "common/vendor.h"
+#include "trainer/vendor.h"
+#include "trainer/char_table.h"
 
 namespace yrtr {
 

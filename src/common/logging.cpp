@@ -1,5 +1,5 @@
-#include "logging.h"
-#include "win32utils.h"
+#include "common/logging.h"
+#include "common/win32utils.h"
 
 namespace yrtr {
 

@@ -41,13 +41,21 @@ target_include_directories(libimgui
     PUBLIC deps/glfw/include
     PUBLIC ${IMGUI_INCLUDES})
 
-add_executable(${PROJECT_NAME} WIN32 src/trainer/main.cpp
-                                     src/trainer/logging.cpp
+add_subdirectory(src/aa_engine)
+
+add_executable(${PROJECT_NAME} WIN32 src/bin/trainer.cpp
+                                     src/common/logging.cpp
                                      src/trainer/gui.cpp)
 target_include_directories(${PROJECT_NAME} PRIVATE deps/glfw
                                            PRIVATE deps/glfw/include
                                            PRIVATE ${IMGUI_INCLUDES}
-                                           PRIVATE src/trainer)
+                                           PRIVATE src)
 target_link_libraries(${PROJECT_NAME} PRIVATE OpenGL::GL
                                       PRIVATE libimgui
-                                      PRIVATE glfw)
+                                      PRIVATE glfw
+                                      PRIVATE aa_engine)
+
+add_executable(disasm src/bin/test_disasm.cpp
+                      src/common/logging.cpp)
+target_include_directories(disasm PRIVATE src)
+target_link_libraries(disasm PRIVATE aa_engine)

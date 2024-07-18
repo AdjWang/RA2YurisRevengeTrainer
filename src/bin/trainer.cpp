@@ -1,6 +1,6 @@
-#include "gui.h"
-#include "logging.h"
-#include "vendor.h"
+#include "common/logging.h"
+#include "trainer/gui.h"
+#include "common/vendor.h"
 
 namespace {
 static void error_callback(int error, const char* description) {

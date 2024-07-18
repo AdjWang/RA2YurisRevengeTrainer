@@ -1,6 +1,6 @@
 #pragma once
-#include "vendor.h"
-#include "macro.h"
+#include "common/macro.h"
+#include "common/vendor.h"
 
 namespace yrtr {
 

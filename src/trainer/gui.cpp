@@ -1,7 +1,7 @@
-#include "logging.h"
-#include "gui.h"
-#include "win32utils.h"
-#include "char_table.h"
+#include "common/logging.h"
+#include "common/win32utils.h"
+#include "trainer/gui.h"
+#include "trainer/char_table.h"
 
 namespace yrtr {
 
