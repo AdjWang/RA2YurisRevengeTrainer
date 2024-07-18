@@ -10,15 +10,19 @@ public:
     ImGuiContext(GLFWwindow* window);
     ~ImGuiContext();
 
+    void set_state(std::string_view state) { state_ = state; }
+
     void Update() {}
     void PreRender();
     void Render() const;
 
     void RenderClientArea();
+    void AddButtonListener(FnLabel label, std::function<void()> cb);
     void AddCheckboxListener(FnLabel label, std::function<void(bool)> cb);
 
 private:
     float hdpi_scale_factor_;
+    std::string state_;
 
     bool ckbox_God_;
     bool ckbox_InstBuild_;

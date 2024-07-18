@@ -3,6 +3,13 @@
 #include "gui.h"
 #include "char_table.h"
 
+namespace ImGui {
+template <class... TArgs>
+void Format(const std::format_string<TArgs...>& fmt_str, TArgs... args) {
+    Text(std::format(fmt_str, std::forward<TArgs>(args)...).c_str());
+}
+}
+
 namespace yrtr {
 
 const ImWchar* GetGlyphRangesChinese() {
@@ -107,6 +114,7 @@ void ImGuiContext::RenderClientArea() {
                  ImGuiWindowFlags_NoTitleBar |
                  ImGuiWindowFlags_AlwaysAutoResize);
 
+    ImGui::Format("{}: {}", GetFnChar(FnLabel::kState), state_);
     ImGui::Text(GetFnChar(FnLabel::kMoney));
     ImGui::SameLine();  // Keep the following item on the same line
     ImGui::SetNextItemWidth(100);
@@ -159,6 +167,10 @@ void ImGuiContext::RenderClientArea() {
     ImGui::End();
 }
 #undef HANDLE_CHECKBOX
+
+void ImGuiContext::AddButtonListener(FnLabel label, std::function<void()> cb) {
+    btn_cbs_.emplace(label, std::move(cb));
+}
 
 void ImGuiContext::AddCheckboxListener(FnLabel label,
                                        std::function<void(bool)> cb) {

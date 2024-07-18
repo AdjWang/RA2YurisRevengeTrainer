@@ -4,7 +4,8 @@
 namespace yrtr {
 
 enum class FnLabel {
-    kMoney = 0,
+    kState,
+    kMoney,
     kAdjustGameSpeed,
     // Button
     kApply,
@@ -48,6 +49,7 @@ enum class FnLabel {
 };
 
 inline static const std::unordered_map<FnLabel, const char8_t*> kZhLabels{
+    {FnLabel::kState,               u8"状态"},
     {FnLabel::kMoney,               u8"钱"},
     {FnLabel::kAdjustGameSpeed,     u8"任务调速"},
     {FnLabel::kApply,               u8"修改"},

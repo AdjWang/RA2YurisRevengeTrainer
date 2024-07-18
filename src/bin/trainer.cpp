@@ -11,6 +11,12 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action,
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GL_TRUE);
 }
+
+static constexpr double kTimerInterval = 1.0;   // second
+static void OnTimer(yrtr::ImGuiContext& ctx) {
+    static int count = 0;
+    ctx.set_state(std::format("nice! {}", count++));
+}
 }  // namespace
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, PSTR, int) {
@@ -38,10 +44,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, PSTR, int) {
     yrtr::ImGuiContext gui_ctx(window);
 
     int BtnClickCount = 0;
+    double ts = glfwGetTime();
+    double last_ts = ts;
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     while (!glfwWindowShouldClose(window)) {
+        ts = glfwGetTime();
+        if (ts - last_ts > kTimerInterval) {
+            last_ts = ts;
+            OnTimer(gui_ctx);
+        }
+
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
