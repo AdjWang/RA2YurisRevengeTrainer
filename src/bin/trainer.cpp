@@ -24,7 +24,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, PSTR, int) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
-    window = glfwCreateWindow(600, 900, "Simple example", NULL, NULL);
+    window = glfwCreateWindow(600, 900, "RA2 Trainer", NULL, NULL);
     if (!window) {
         glfwTerminate();
         exit(EXIT_FAILURE);

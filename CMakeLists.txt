@@ -7,14 +7,11 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS OFF)
 set(BUILD_SHARED_LIBS OFF)
 set(CMAKE_DEBUG_POSTFIX "")
 
-# suppress warning C4740:
-# flow in or out of inline asm code suppresses global optimization
-# add_compile_options(/MP /Gy /wd4740 /fp:fast)
-# add_link_options(/OPT:REF)
 add_compile_options(/MP)
 add_compile_definitions(_SILENCE_ALL_CXX23_DEPRECATION_WARNINGS)
+add_link_options(/level='requireAdministrator' /uiAccess='false')
 
-project(gui)
+project(ra2_trainer)
 
 find_package(OpenGL REQUIRED)
 
