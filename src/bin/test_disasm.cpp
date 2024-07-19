@@ -46,7 +46,7 @@ int main() {
         PLOG(WARN, "OpenProcess pid={} failed", pid);
     }
     yrtr::win32::HandleGuard handle(hProcess);
-    bool retval = _autoassemble(handle.get(), script, 0);
+    bool retval = _autoassemble(handle.handle(), script, 0);
     CHECK(retval);
     return 0;
 }

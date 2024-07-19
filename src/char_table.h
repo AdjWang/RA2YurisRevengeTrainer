@@ -4,7 +4,10 @@
 namespace yrtr {
 
 enum class FnLabel {
+    // Tip
     kState,
+    kStateOk,
+    kStateIdle,
     kMoney,
     // Button
     kApply,
@@ -50,6 +53,8 @@ enum class FnLabel {
 
 inline static const std::unordered_map<FnLabel, const char8_t*> kZhLabels{
     {FnLabel::kState,               u8"状态"},
+    {FnLabel::kStateOk,             u8"游戏运行中"},
+    {FnLabel::kStateIdle,           u8"未检测到游戏"},
     {FnLabel::kMoney,               u8"钱"},
     {FnLabel::kApply,               u8"修改"},
     {FnLabel::kFastBuild,           u8"快速建造"},
@@ -90,5 +95,9 @@ inline static const std::unordered_map<FnLabel, const char8_t*> kZhLabels{
     {FnLabel::kUnitLeveledUp,       u8"部队全部三级"},
     {FnLabel::kAdjustGameSpeed,     u8"任务调速"},
 };
+
+inline const char* GetFnChar(FnLabel label) {
+    return (const char*)kZhLabels.at(label);
+}
 
 }  // namespace yrtr

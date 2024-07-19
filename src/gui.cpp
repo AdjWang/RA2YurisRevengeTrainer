@@ -181,8 +181,4 @@ void ImGuiContext::AddCheckboxListener(FnLabel label,
     });
 }
 
-const char* ImGuiContext::GetFnChar(FnLabel label) {
-    return (const char*)kZhLabels.at(label);
-}
-
 }  // namespace yrtr

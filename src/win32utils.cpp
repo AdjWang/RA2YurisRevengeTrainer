@@ -8,6 +8,87 @@
 namespace yrtr {
 namespace win32 {
 
+MemoryAPI::MemoryAPI(DWORD pid) {
+    HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, false, pid);
+    if (hProcess == NULL) {
+        PLOG(WARN, "OpenProcess pid={} failed", pid);
+        return;
+    }
+    handle_.reset(new HandleGuard(hProcess));
+}
+
+BOOL MemoryAPI::CheckHandle() const {
+    return handle_ != nullptr;
+}
+
+#define CHECK_HANDLE_OR_RETURN_FALSE()   \
+    do {                                 \
+        if (!CheckHandle()) {            \
+            LOG(WARN, "Invalid handle"); \
+            return FALSE;                \
+        }                                \
+    } while (0)
+
+BOOL MemoryAPI::ReadMemory(DWORD address, std::span<uint8_t> data) const {
+    CHECK_HANDLE_OR_RETURN_FALSE();
+    DWORD oldprotect;
+    if (!VirtualProtectEx(handle_->handle(), (void *)address, data.size(),
+                          PAGE_EXECUTE_READWRITE, &oldprotect)) {
+        PLOG(WARN, "VirtualProtectEx failed on addr={}", (void *)address);
+        return FALSE;
+    }
+    if (!ReadProcessMemory(handle_->handle(), (void *)address, data.data(),
+                           data.size(), nullptr)) {
+        PLOG(WARN, "ReadProcessMemory failed on addr={}", (void *)address);
+        return FALSE;
+    }
+    if (!VirtualProtectEx(handle_->handle(), (void *)address, data.size(),
+                          oldprotect, &oldprotect)) {
+        PLOG(WARN, "VirtualProtectEx failed on addr={}", (void *)address);
+        return FALSE;
+    }
+    return TRUE;
+}
+
+BOOL MemoryAPI::ReadAddress(DWORD address, LPDWORD data) const {
+    CHECK_HANDLE_OR_RETURN_FALSE();
+    CHECK(data != nullptr);
+    return ReadMemory(
+        address,
+        std::span<uint8_t>(reinterpret_cast<uint8_t *>(data), sizeof(LPDWORD)));
+}
+
+BOOL MemoryAPI::WriteMemory(DWORD address, std::span<const uint8_t> data) const {
+    CHECK_HANDLE_OR_RETURN_FALSE();
+    DWORD oldprotect;
+    if (!VirtualProtectEx(handle_->handle(), (void *)address, data.size(),
+                          PAGE_EXECUTE_READWRITE, &oldprotect)) {
+        PLOG(WARN, "VirtualProtectEx failed on addr={}", (void *)address);
+        return FALSE;
+    }
+    if (!WriteProcessMemory(handle_->handle(), (void *)address, data.data(),
+                            data.size(), nullptr)) {
+        PLOG(WARN, "WriteProcessMemory failed on addr={}", (void *)address);
+        return FALSE;
+    }
+    if (!VirtualProtectEx(handle_->handle(), (void *)address, data.size(),
+                          oldprotect, &oldprotect)) {
+        PLOG(WARN, "VirtualProtectEx failed on addr={}", (void *)address);
+        return FALSE;
+    }
+    return TRUE;
+}
+
+BOOL MemoryAPI::WriteLongJump(DWORD addr_from, DWORD addr_to) const {
+    CHECK_HANDLE_OR_RETURN_FALSE();
+    static_assert(sizeof(void*) == 4);
+    uint8_t asm_code[5] = {0xE9};   // long jmp
+    memcpy(&asm_code[1], reinterpret_cast<void*>(addr_to), sizeof(void*));
+    return WriteMemory(addr_from, std::span<uint8_t>(asm_code, 5));
+}
+
+#undef CHECK_HANDLE_OR_RETURN_FALSE
+
 namespace {
 // https://stackoverflow.com/questions/5404277/porting-clock-gettime-to-windows
 static inline LARGE_INTEGER getFILETIMEoffset() {
@@ -123,7 +204,7 @@ BOOL GetProcessIDFromName(LPCSTR name, LPDWORD id) {
     PROCESSENTRY32 pInfo;
     pInfo.dwSize = sizeof(pInfo);
     // Iterate through process list
-    if (!Process32First(handle.get(), &pInfo)) {
+    if (!Process32First(handle.handle(), &pInfo)) {
         PLOG(WARN, "Process32First failed");
         return FALSE;
     }
@@ -135,7 +216,7 @@ BOOL GetProcessIDFromName(LPCSTR name, LPDWORD id) {
             *id = pInfo.th32ProcessID;
             return TRUE;
         }
-    } while (Process32Next(handle.get(), &pInfo) != FALSE);
+    } while (Process32Next(handle.handle(), &pInfo) != FALSE);
     PLOG(WARN, "Process32Next failed");
     return FALSE;
 }

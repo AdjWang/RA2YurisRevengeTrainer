@@ -31,8 +31,6 @@ private:
 
     std::unordered_map<FnLabel, std::function<void()>> btn_cbs_;
     std::unordered_map<FnLabel, CheckboxState> ckbox_cbs_;
-
-    const char* GetFnChar(FnLabel label);
 };
 
 }  // namespace yrtr

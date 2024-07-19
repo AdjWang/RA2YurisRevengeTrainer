@@ -1,9 +1,43 @@
 #include "logging.h"
+#include "gui.h"
 #include "trainer_func.h"
+#include "win32utils.h"
 
 namespace yrtr {
 
+std::unique_ptr<TrainerTarget> TrainerTarget::trainer_target_;
+
+void TrainerTarget::Init(std::string_view exe_name) {
+    trainer_target_.reset(new TrainerTarget(exe_name));
+}
+
+TrainerTarget::TrainerTarget(std::string_view exe_name)
+    : exe_name_(exe_name),
+      attached_(false) {}
+
+void TrainerTarget::Update() {
+    if (win32::GetProcessIDFromName(exe_name_.c_str(), &pid_)) {
+        if (mem_api_ == nullptr) {
+            mem_api_.reset(new win32::MemoryAPI(pid_));
+            if (mem_api_->CheckHandle()) {
+                attached_ = true;
+            }
+        }
+    } else {
+        // Not found target process
+        LOG(INFO, "GetProcessIDFromName failed to get pid of exe={}",
+            exe_name_);
+        mem_api_.reset();
+        attached_ = false;
+    }
+}
+
 namespace {
+static void WriteSpeed(uint32_t speed) {
+
+}
+
+
 static void OnBtnApply() {
     DLOG(INFO, "Trigger {}", __FUNCTION__);
 
@@ -238,7 +272,7 @@ static void InitCheckboxes(ImGuiContext& ctx) {
     ctx.AddCheckboxListener(FnLabel::kUnitLeveledUp, OnCkboxUnitLeveledUp);
     ctx.AddCheckboxListener(FnLabel::kAdjustGameSpeed, OnCkboxAdjustGameSpeed);
 }
-}
+}  // namespace
 
 void InitGUI(ImGuiContext& ctx) {
     InitButtons(ctx);

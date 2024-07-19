@@ -2,6 +2,7 @@
 #include "gui.h"
 #include "vendor.h"
 #include "trainer_func.h"
+#include "char_table.h"
 
 namespace {
 static void error_callback(int error, const char* description) {
@@ -15,8 +16,13 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action,
 
 static constexpr double kTimerInterval = 1.0;   // second
 static void OnTimer(yrtr::ImGuiContext& ctx) {
-    static int count = 0;
-    ctx.set_state(std::format("nice! {}", count++));
+    yrtr::TrainerTarget::instance().Update();
+
+    if (yrtr::TrainerTarget::instance().attached()) {
+        ctx.set_state(yrtr::GetFnChar(yrtr::FnLabel::kStateOk));
+    } else {
+        ctx.set_state(yrtr::GetFnChar(yrtr::FnLabel::kStateIdle));
+    }
 }
 }  // namespace
 
@@ -48,6 +54,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, PSTR, int) {
     io.IniFilename = NULL;
     // Init gui components
     yrtr::InitGUI(gui_ctx);
+
+    // yrtr::TrainerTarget::Init("gamemd.exe");
+    // DEBUG
+    yrtr::TrainerTarget::Init("Tutorial-i386.exe");
 
     int BtnClickCount = 0;
     double ts = glfwGetTime();

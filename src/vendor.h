@@ -13,6 +13,8 @@
 #include <format>
 #include <iostream>
 #include <unordered_map>
+#include <ranges>
+#include <span>
 #include <sstream>
 
 #define GLFW_INCLUDE_GLU
