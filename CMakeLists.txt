@@ -49,6 +49,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE deps/glfw
                                            PRIVATE deps/glfw/include
                                            PRIVATE ${IMGUI_INCLUDES}
                                            PRIVATE src)
+target_compile_options(${PROJECT_NAME} PRIVATE /W4
+                                       PRIVATE /WX)
 target_link_libraries(${PROJECT_NAME} PRIVATE OpenGL::GL
                                       PRIVATE libimgui
                                       PRIVATE glfw

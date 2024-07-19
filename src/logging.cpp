@@ -22,7 +22,11 @@ void Logger::InitLogHeader(LogLevel level) {
     // 13 bytes time string and 1 byte '\0'
     strftime(log_header_ + 1, 14, "%m%d %H:%M:%S", &datetime);
     log_header_[14] = '.';
+    // warning C4996: 'sprintf': This function or variable may be unsafe.
+    #pragma warning(push)
+    #pragma warning(disable:4996)   // yeah!
     sprintf(log_header_ + 15, "%06d", static_cast<int>(ts.tv_nsec / 1000));
+    #pragma warning(pop)
     log_header_[21] = '\0';
 }
 

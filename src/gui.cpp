@@ -40,6 +40,7 @@ ImGuiContext::ImGuiContext(GLFWwindow* window) {
     // Enable Gamepad Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
     // Load fonts
+    // TODO: make a config
     std::filesystem::path font_path(win32::GetDefaultFontPath() /
                                     "simhei.ttf");
     if (!std::filesystem::exists(font_path)) {

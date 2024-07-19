@@ -36,11 +36,9 @@ public:
     : log_level_(level) {
         DWORD err_val = GetLastError();
         std::error_code ec(err_val, std::system_category());
-        std::system_error err(ec);
         InitLogHeader(level);
         log_stream_ << std::format("{} {}:{}] ({}:{}) ", log_header_, filename,
-                                   line, err.what(),
-                                   ec.message());
+                                   line, err_val, ec.message());
     }
 
     template <class... Args>
@@ -49,11 +47,9 @@ public:
     : log_level_(level) {
         DWORD err_val = GetLastError();
         std::error_code ec(err_val, std::system_category());
-        std::system_error err(ec);
         InitLogHeader(level);
         log_stream_ << std::format("{} {}:{}] ({}:{}) ", log_header_, filename,
-                                   line, err.what(),
-                                   ec.message())
+                                   line, err_val, ec.message())
                     << std::format(
                            std::forward<std::format_string<Args...>>(fmt_str),
                            std::forward<Args>(args)...);

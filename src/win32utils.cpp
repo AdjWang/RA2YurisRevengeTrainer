@@ -17,69 +17,68 @@ MemoryAPI::MemoryAPI(DWORD pid) {
     handle_.reset(new HandleGuard(hProcess));
 }
 
-BOOL MemoryAPI::CheckHandle() const {
+bool MemoryAPI::CheckHandle() const {
     return handle_ != nullptr;
 }
 
-#define CHECK_HANDLE_OR_RETURN_FALSE()   \
-    do {                                 \
-        if (!CheckHandle()) {            \
-            LOG(WARN, "Invalid handle"); \
-            return FALSE;                \
-        }                                \
-    } while (0)
+#define CHECK_HANDLE_OR_RETURN_FALSE() \
+    if (!CheckHandle()) {              \
+        LOG(WARN, "Invalid handle");   \
+        return false;                  \
+    }
 
-BOOL MemoryAPI::ReadMemory(DWORD address, std::span<uint8_t> data) const {
+bool MemoryAPI::ReadMemory(uint32_t address, std::span<uint8_t> data) const {
     CHECK_HANDLE_OR_RETURN_FALSE();
     DWORD oldprotect;
     if (!VirtualProtectEx(handle_->handle(), (void *)address, data.size(),
                           PAGE_EXECUTE_READWRITE, &oldprotect)) {
         PLOG(WARN, "VirtualProtectEx failed on addr={}", (void *)address);
-        return FALSE;
+        return false;
     }
     if (!ReadProcessMemory(handle_->handle(), (void *)address, data.data(),
                            data.size(), nullptr)) {
         PLOG(WARN, "ReadProcessMemory failed on addr={}", (void *)address);
-        return FALSE;
+        return false;
     }
     if (!VirtualProtectEx(handle_->handle(), (void *)address, data.size(),
                           oldprotect, &oldprotect)) {
         PLOG(WARN, "VirtualProtectEx failed on addr={}", (void *)address);
-        return FALSE;
+        return false;
     }
-    return TRUE;
+    return true;
 }
 
-BOOL MemoryAPI::ReadAddress(DWORD address, LPDWORD data) const {
+bool MemoryAPI::ReadAddress(uint32_t address, uint32_t* data) const {
     CHECK_HANDLE_OR_RETURN_FALSE();
     CHECK(data != nullptr);
-    return ReadMemory(
-        address,
-        std::span<uint8_t>(reinterpret_cast<uint8_t *>(data), sizeof(LPDWORD)));
+    return ReadMemory(address,
+                      std::span<uint8_t>(reinterpret_cast<uint8_t *>(data),
+                                         sizeof(uint32_t *)));
 }
 
-BOOL MemoryAPI::WriteMemory(DWORD address, std::span<const uint8_t> data) const {
+bool MemoryAPI::WriteMemory(uint32_t address,
+                            std::span<const uint8_t> data) const {
     CHECK_HANDLE_OR_RETURN_FALSE();
     DWORD oldprotect;
     if (!VirtualProtectEx(handle_->handle(), (void *)address, data.size(),
                           PAGE_EXECUTE_READWRITE, &oldprotect)) {
         PLOG(WARN, "VirtualProtectEx failed on addr={}", (void *)address);
-        return FALSE;
+        return false;
     }
     if (!WriteProcessMemory(handle_->handle(), (void *)address, data.data(),
                             data.size(), nullptr)) {
         PLOG(WARN, "WriteProcessMemory failed on addr={}", (void *)address);
-        return FALSE;
+        return false;
     }
     if (!VirtualProtectEx(handle_->handle(), (void *)address, data.size(),
                           oldprotect, &oldprotect)) {
         PLOG(WARN, "VirtualProtectEx failed on addr={}", (void *)address);
-        return FALSE;
+        return false;
     }
-    return TRUE;
+    return true;
 }
 
-BOOL MemoryAPI::WriteLongJump(DWORD addr_from, DWORD addr_to) const {
+bool MemoryAPI::WriteLongJump(uint32_t addr_from, uint32_t addr_to) const {
     CHECK_HANDLE_OR_RETURN_FALSE();
     static_assert(sizeof(void*) == 4);
     uint8_t asm_code[5] = {0xE9};   // long jmp
@@ -217,7 +216,9 @@ BOOL GetProcessIDFromName(LPCSTR name, LPDWORD id) {
             return TRUE;
         }
     } while (Process32Next(handle.handle(), &pInfo) != FALSE);
-    PLOG(WARN, "Process32Next failed");
+    if (GetLastError() != ERROR_NO_MORE_FILES) {
+        PLOG(WARN, "Process32Next failed");
+    }
     return FALSE;
 }
 

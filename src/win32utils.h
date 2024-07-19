@@ -29,32 +29,62 @@ public:
     MemoryAPI(MemoryAPI&&) = delete;
     MemoryAPI& operator=(MemoryAPI&&) = delete;
 
-    BOOL CheckHandle() const;
+    bool CheckHandle() const;
 
-    BOOL ReadMemory(DWORD address, std::span<uint8_t> data) const;
-    BOOL ReadAddress(DWORD address, LPDWORD data) const;
+    bool ReadMemory(uint32_t address, std::span<uint8_t> data) const;
+
+    template <class T>
+        requires(!std::is_same_v<T, std::span<uint8_t>>)
+    bool ReadMemory(uint32_t address, T* data) const {
+        return ReadMemory(
+            address,
+            std::span<uint8_t>(reinterpret_cast<uint8_t*>(data), sizeof(T)));
+    }
+
+    bool ReadAddress(uint32_t address, uint32_t* data) const;
 
     template <size_t N>
         requires(N >= 1)
-    BOOL ReadAddress(DWORD address, std::array<DWORD, N> offsets,
-                     LPDWORD data) const {
-        CHECK(data != nullptr);
-        DWORD addr_data;
+    bool ReadAddress(uint32_t address, uint32_t const (&offsets)[N],
+                     uint32_t* addr_output) const {
+        CHECK(addr_output != nullptr);
+        uint32_t addr_data;
         if (!ReadAddress(address, &addr_data)) {
-            return FALSE;
+            return false;
         }
-        for (DWORD offset : offsets | std::views::take(offsets.size() - 1)) {
-            DWORD addr_next = addr_data + offset;
+        for (uint32_t offset : offsets | std::views::take(N - 1)) {
+            uint32_t addr_next = addr_data + offset;
             if (!ReadAddress(addr_next, &addr_data)) {
-                return FALSE;
+                return false;
             }
         }
-        *data = addr_data + offsets[offsets.size() - 1];
-        return TRUE;
+        *addr_output = addr_data + offsets[N - 1];
+        return true;
     }
 
-    BOOL WriteMemory(DWORD address, std::span<const uint8_t> data) const;
-    BOOL WriteLongJump(DWORD addr_from, DWORD addr_to) const;
+    template <size_t N>
+        requires(N >= 1)
+    bool ReadMemory(uint32_t address, uint32_t const (&offsets)[N],
+                    uint32_t* data) const {
+        CHECK(data != nullptr);
+        uint32_t addr_output;
+        if (!ReadAddress(address, offsets, &addr_output)) {
+            return false;
+        }
+        return ReadMemory(addr_output, data);
+    }
+
+    bool WriteMemory(uint32_t address, std::span<const uint8_t> data) const;
+
+    template <class T>
+        requires(!std::is_same_v<T, std::span<const uint8_t>>)
+    bool WriteMemory(uint32_t address, T data) const {
+        return WriteMemory(
+            address, std::span<const uint8_t>(reinterpret_cast<uint8_t*>(&data),
+                                              sizeof(T)));
+    }
+
+    bool WriteLongJump(uint32_t addr_from, uint32_t addr_to) const;
 
 private:
     std::unique_ptr<HandleGuard> handle_;

@@ -10,15 +10,17 @@ static void error_callback(int error, const char* description) {
 }
 static void key_callback(GLFWwindow* window, int key, int scancode, int action,
                          int mods) {
+    UNREFERENCED_PARAMETER(scancode);
+    UNREFERENCED_PARAMETER(mods);
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GL_TRUE);
 }
 
 static constexpr double kTimerInterval = 1.0;   // second
 static void OnTimer(yrtr::ImGuiContext& ctx) {
-    yrtr::TrainerTarget::instance().Update();
+    yrtr::TrainerFunc::instance()->Update();
 
-    if (yrtr::TrainerTarget::instance().attached()) {
+    if (yrtr::TrainerFunc::instance()->attached()) {
         ctx.set_state(yrtr::GetFnChar(yrtr::FnLabel::kStateOk));
     } else {
         ctx.set_state(yrtr::GetFnChar(yrtr::FnLabel::kStateIdle));
@@ -33,7 +35,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, PSTR, int) {
         exit(EXIT_FAILURE);
     }
 
-    const char* glsl_version = "#version 130";
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
@@ -52,14 +53,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, PSTR, int) {
     // Disable imgui.ini
     ImGuiIO& io = ImGui::GetIO();
     io.IniFilename = NULL;
-    // Init gui components
-    yrtr::InitGUI(gui_ctx);
 
-    // yrtr::TrainerTarget::Init("gamemd.exe");
+    // yrtr::TrainerFunc::Init("gamemd.exe", gui_ctx);
     // DEBUG
-    yrtr::TrainerTarget::Init("Tutorial-i386.exe");
+    yrtr::TrainerFunc::Init("Tutorial-i386.exe", gui_ctx);
 
-    int BtnClickCount = 0;
     double ts = glfwGetTime();
     double last_ts = ts;
 
