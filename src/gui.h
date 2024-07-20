@@ -18,6 +18,7 @@ public:
 
     void RenderClientArea();
     void AddButtonListener(FnLabel label, std::function<void()> cb);
+    void AddInputListener(FnLabel label, std::function<void(uint32_t)> cb);
     void AddCheckboxListener(FnLabel label, std::function<void(bool)> cb);
 
 private:
@@ -30,6 +31,7 @@ private:
     };
 
     std::unordered_map<FnLabel, std::function<void()>> btn_cbs_;
+    std::unordered_map<FnLabel, std::function<void(uint32_t)>> input_cbs_;
     std::unordered_map<FnLabel, CheckboxState> ckbox_cbs_;
 };
 

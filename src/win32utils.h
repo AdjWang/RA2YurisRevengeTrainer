@@ -23,6 +23,29 @@ private:
     DISALLOW_COPY_AND_ASSIGN(HandleGuard);
 };
 
+class AllocGuard {
+public:
+    AllocGuard(HANDLE handle, LPVOID mem)
+        : handle_(handle),
+          mem_(mem) {}
+    AllocGuard(AllocGuard&&) = delete;
+    AllocGuard& operator=(AllocGuard&&) = delete;
+
+    LPVOID data() const { return mem_; }
+
+    ~AllocGuard() {
+        if (!VirtualFreeEx(handle_, mem_, 0, MEM_RELEASE)) {
+            PLOG(WARN, "VirtualFreeEx failed");
+        }
+    }
+
+private:
+    HANDLE handle_;
+    LPVOID mem_;
+
+    DISALLOW_COPY_AND_ASSIGN(AllocGuard);
+};
+
 class MemoryAPI {
 public:
     MemoryAPI(DWORD pid);
@@ -85,6 +108,8 @@ public:
     }
 
     bool WriteLongJump(uint32_t addr_from, uint32_t addr_to) const;
+
+    bool CreateRemoteThread(void* fn, size_t code_size = 0x256) const;
 
 private:
     std::unique_ptr<HandleGuard> handle_;

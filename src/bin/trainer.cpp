@@ -54,9 +54,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, PSTR, int) {
     ImGuiIO& io = ImGui::GetIO();
     io.IniFilename = NULL;
 
-    // yrtr::TrainerFunc::Init("gamemd.exe", gui_ctx);
+    yrtr::TrainerFunc::Init("gamemd.exe", gui_ctx);
     // DEBUG
-    yrtr::TrainerFunc::Init("Tutorial-i386.exe", gui_ctx);
+    // yrtr::TrainerFunc::Init("Tutorial-i386.exe", gui_ctx);
 
     double ts = glfwGetTime();
     double last_ts = ts;

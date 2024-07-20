@@ -19,7 +19,7 @@ public:
     win32::MemoryAPI* mem_api() { return mem_api_.get(); }
     void Update();
 
-    void OnBtnApply();
+    void OnBtnApply(uint32_t val);
     void OnBtnFastBuild();
     void OnBtnDeleteUnit();
     void OnBtnClearShroud();
@@ -59,7 +59,7 @@ public:
     void OnCkboxUnitLeveledUp(bool activate);
     void OnCkboxAdjustGameSpeed(bool activate);
 
-   private:
+private:
     static std::unique_ptr<TrainerFunc> trainer_target_;
 
     std::string exe_name_;
@@ -77,12 +77,12 @@ public:
     bool UnlimitRadar() const;
     bool UnlimitSuperWeapon() const;
 
-    void AsmClearShroud() const;
-    void AsmNuclearBomb() const;
-    void AsmUnitLevelUp() const;
-    void AsmUnitSpeedUp() const;
-    void AsmThisIsMine() const;
-    void AsmDeleteUnit() const;
+    static DWORD AsmClearShroud(LPVOID);
+    static DWORD AsmNuclearBomb(LPVOID);
+    static DWORD AsmUnitLevelUp(LPVOID);
+    static DWORD AsmUnitSpeedUp(LPVOID);
+    static DWORD AsmThisIsMine(LPVOID);
+    static DWORD AsmDeleteUnit(LPVOID);
 
     DISALLOW_COPY_AND_ASSIGN(TrainerFunc);
 };

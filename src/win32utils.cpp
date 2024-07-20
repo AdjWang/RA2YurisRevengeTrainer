@@ -86,11 +86,69 @@ bool MemoryAPI::WriteLongJump(uint32_t addr_from, uint32_t addr_to) const {
     return WriteMemory(addr_from, std::span<uint8_t>(asm_code, 5));
 }
 
+bool MemoryAPI::CreateRemoteThread(void* fn, size_t code_size) const {
+    if (fn == nullptr) {
+        return true;
+    }
+    CHECK_HANDLE_OR_RETURN_FALSE();
+    LPVOID mem = VirtualAllocEx(handle_->handle(), NULL, code_size,
+                                MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+    if (mem == NULL) {
+        PLOG(WARN, "VirtualAllocEx failed");
+        return false;
+    }
+    AllocGuard mem_fn(handle_->handle(), mem);
+    std::vector<uint8_t> temp_data(code_size, 0);
+    if (!WriteProcessMemory(handle_->handle(), mem_fn.data(), temp_data.data(), code_size,
+                            nullptr)) {
+        PLOG(WARN, "WriteProcessMemory failed on addr={:p}", mem_fn.data());
+        return false;
+    }
+    if (!WriteProcessMemory(handle_->handle(), mem_fn.data(), fn, code_size,
+                            nullptr)) {
+        PLOG(WARN, "WriteProcessMemory failed on addr={:p}", mem_fn.data());
+        return false;
+    }
+    DWORD tid;
+    HANDLE handle = ::CreateRemoteThread(handle_->handle(), NULL, 0,
+                                         (LPTHREAD_START_ROUTINE)mem_fn.data(),
+                                         NULL, 0, &tid);
+    if (handle == NULL) {
+        PLOG(WARN, "CreateRemoteThread failed");
+        return false;
+    }
+    HandleGuard remote_thread(handle);
+    // 1s should be enough
+    DWORD event = WaitForSingleObject(remote_thread.handle(), 1000);
+    if (event == WAIT_OBJECT_0) {
+        return true;
+    } else if (event == WAIT_TIMEOUT) {
+        if (!TerminateThread(remote_thread.handle(), 1)) {
+            PLOG(WARN, "TerminateThread failed");
+            return false;
+        }
+    } else if (event == WAIT_FAILED) {
+        PLOG(WARN, "WaitForSingleObject failed");
+        return false;
+    } else {
+        UNREACHABLE();
+    }
+    DWORD exit_code;
+    if (!GetExitCodeThread(remote_thread.handle(), &exit_code)) {
+        PLOG(WARN, "GetExitCodeThread failed");
+        return false;
+    }
+    if (exit_code != 0) {
+        LOG(WARN, "Remote thread exit with={}", exit_code);
+    }
+    return true;
+}
+
 #undef CHECK_HANDLE_OR_RETURN_FALSE
 
 namespace {
 // https://stackoverflow.com/questions/5404277/porting-clock-gettime-to-windows
-static inline LARGE_INTEGER getFILETIMEoffset() {
+static LARGE_INTEGER getFILETIMEoffset() {
     SYSTEMTIME s;
     FILETIME f;
     LARGE_INTEGER t;
@@ -140,7 +198,7 @@ static std::string ConvertWideCharToMultiByte(PWSTR wideString) {
 }  // namespace
 
 // WARN: static variables are not thread-safe
-int clock_gettime(int X, struct timespec *tv) {
+int clock_gettime(int, struct timespec *tv) {
     LARGE_INTEGER t;
     FILETIME f;
     double microseconds;
@@ -174,7 +232,7 @@ int clock_gettime(int X, struct timespec *tv) {
 
     t.QuadPart -= offset.QuadPart;
     microseconds = (double)t.QuadPart / frequencyToMicroseconds;
-    t.QuadPart = microseconds;
+    t.QuadPart = (LONGLONG)microseconds;
     tv->tv_sec = t.QuadPart / 1000000;
     // tv->tv_usec = t.QuadPart % 1000000;
     tv->tv_nsec = 0;
@@ -211,7 +269,7 @@ BOOL GetProcessIDFromName(LPCSTR name, LPDWORD id) {
     CHECK(id != nullptr);
     do {
         // DLOG(INFO, "process name={}", pInfo.szExeFile);
-        if (stricmp(pInfo.szExeFile, name) == 0) {
+        if (_stricmp(pInfo.szExeFile, name) == 0) {
             *id = pInfo.th32ProcessID;
             return TRUE;
         }

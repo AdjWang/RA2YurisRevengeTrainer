@@ -11,7 +11,7 @@ std::unique_ptr<TrainerFunc> TrainerFunc::trainer_target_(nullptr);
 namespace {
 #define BIND_FN(fn) std::bind_front(&TrainerFunc::##fn, TrainerFunc::instance())
 static void InitButtons(ImGuiContext& ctx) {
-    ctx.AddButtonListener(FnLabel::kApply, BIND_FN(OnBtnApply));
+    ctx.AddInputListener(FnLabel::kApply, BIND_FN(OnBtnApply));
     ctx.AddButtonListener(FnLabel::kFastBuild, BIND_FN(OnBtnFastBuild));
     ctx.AddButtonListener(FnLabel::kDeleteUnit, BIND_FN(OnBtnDeleteUnit));
     ctx.AddButtonListener(FnLabel::kClearShroud, BIND_FN(OnBtnClearShroud));
@@ -69,15 +69,17 @@ TrainerFunc::TrainerFunc(std::string_view exe_name)
 void TrainerFunc::Update() {
     if (win32::GetProcessIDFromName(exe_name_.c_str(), &pid_)) {
         if (mem_api_ == nullptr) {
+            DLOG(INFO, "GetProcessIDFromName found exe={} pid={:#x}", exe_name_,
+                 pid_);
             mem_api_.reset(new win32::MemoryAPI(pid_));
             if (mem_api_->CheckHandle()) {
                 attached_ = true;
+                DLOG(INFO, "MemoryAPI initialized");
             }
         }
     } else {
         // Not found target process
-        DLOG(INFO, "GetProcessIDFromName failed to get pid of exe={}",
-             exe_name_);
+        DLOG(INFO, "GetProcessIDFromName searching exe={}", exe_name_);
         mem_api_.reset();
         attached_ = false;
     }
@@ -95,9 +97,9 @@ void TrainerFunc::Update() {
         return;                               \
     }
 
-void TrainerFunc::OnBtnApply() {
-    DLOG(INFO, "Trigger {}", __FUNCTION__);
-
+void TrainerFunc::OnBtnApply(uint32_t val) {
+    DLOG(INFO, "Trigger {} val={}", __FUNCTION__, val);
+    CHECK_REPORT(WriteCredit(val));
 }
 
 void TrainerFunc::OnBtnFastBuild() {
@@ -112,27 +114,32 @@ void TrainerFunc::OnBtnFastBuild() {
 
 void TrainerFunc::OnBtnDeleteUnit() {
     DLOG(INFO, "Trigger {}", __FUNCTION__);
-
+    CHECK_MEMAPI_OR_REPORT();
+    CHECK_REPORT(mem_api_->CreateRemoteThread(AsmDeleteUnit));
 }
 
 void TrainerFunc::OnBtnClearShroud() {
     DLOG(INFO, "Trigger {}", __FUNCTION__);
-
+    CHECK_MEMAPI_OR_REPORT();
+    CHECK_REPORT(mem_api_->CreateRemoteThread(AsmClearShroud));
 }
 
 void TrainerFunc::OnBtnGiveMeABomb() {
     DLOG(INFO, "Trigger {}", __FUNCTION__);
-
+    CHECK_MEMAPI_OR_REPORT();
+    CHECK_REPORT(mem_api_->CreateRemoteThread(AsmNuclearBomb));
 }
 
 void TrainerFunc::OnBtnUnitLevelUp() {
     DLOG(INFO, "Trigger {}", __FUNCTION__);
-
+    CHECK_MEMAPI_OR_REPORT();
+    CHECK_REPORT(mem_api_->CreateRemoteThread(AsmUnitLevelUp));
 }
 
 void TrainerFunc::OnBtnUnitSpeedUp() {
     DLOG(INFO, "Trigger {}", __FUNCTION__);
-
+    CHECK_MEMAPI_OR_REPORT();
+    CHECK_REPORT(mem_api_->CreateRemoteThread(AsmUnitSpeedUp));
 }
 
 void TrainerFunc::OnBtnIAMWinner() {
@@ -143,7 +150,8 @@ void TrainerFunc::OnBtnIAMWinner() {
 
 void TrainerFunc::OnBtnThisIsMine() {
     DLOG(INFO, "Trigger {}", __FUNCTION__);
-
+    CHECK_MEMAPI_OR_REPORT();
+    CHECK_REPORT(mem_api_->CreateRemoteThread(AsmThisIsMine));
 }
 
 void TrainerFunc::OnBtnIAMGhost() {
@@ -294,9 +302,10 @@ void TrainerFunc::OnCkboxAdjustGameSpeed(bool activate) {
 #undef CHECK_MEMAPI_OR_REPORT
 #undef CHECK_REPORT
 
-#define CHECK_MEMAPI_OR_RETURN_FALSE() \
-    if (mem_api_ == nullptr) {         \
-        return false;                  \
+#define CHECK_MEMAPI_OR_RETURN_FALSE()          \
+    if (mem_api_ == nullptr) {                  \
+        LOG(WARN, "MemoryAPI not initialized"); \
+        return false;                           \
     }
 
 #define CHECK_RETF(exp) \
@@ -362,7 +371,10 @@ bool TrainerFunc::UnlimitSuperWeapon() const {
 #undef CHECK_MEMAPI_OR_RETURN_FALSE
 #undef CHECK_RETF
 
-void TrainerFunc::AsmClearShroud() const {
+// Disable the compiler attaching runtime check functions which is whithin the
+// trainer. Asmxxx functions are executed in the game process.
+#pragma runtime_checks("", off)
+DWORD TrainerFunc::AsmClearShroud(LPVOID) {
     _asm {
         pushad
         mov eax,0x00A83D4C
@@ -373,10 +385,11 @@ void TrainerFunc::AsmClearShroud() const {
         call eax
         popad                      
     }
+    return 0;
 }
 
-void TrainerFunc::AsmNuclearBomb() const {
-    int eax_temp;       
+DWORD TrainerFunc::AsmNuclearBomb(LPVOID) {
+    int eax_temp;
     __asm {
         pushad
         mov ecx,0x00A83D4C    // check if there's a launch tower
@@ -418,9 +431,10 @@ void TrainerFunc::AsmNuclearBomb() const {
         exit1:
         popad             
     }
+    return 0;
 }
 
-void TrainerFunc::AsmUnitLevelUp() const {
+DWORD TrainerFunc::AsmUnitLevelUp(LPVOID) {
     __asm {
         pushad
         mov eax,0x00A8ECBC
@@ -441,9 +455,10 @@ void TrainerFunc::AsmUnitLevelUp() const {
         brek:
         popad
     }
+    return 0;
 }
 
-void TrainerFunc::AsmUnitSpeedUp() const {
+DWORD TrainerFunc::AsmUnitSpeedUp(LPVOID) {
     __asm {
         pushad
         mov eax,0x00A8ECBC
@@ -483,9 +498,10 @@ void TrainerFunc::AsmUnitSpeedUp() const {
         brek:
         popad
     }
+    return 0;
 }
 
-void TrainerFunc::AsmThisIsMine() const {
+DWORD TrainerFunc::AsmThisIsMine(LPVOID) {
     __asm {
         pushad
         mov eax,0x00A8ECC8
@@ -506,9 +522,10 @@ void TrainerFunc::AsmThisIsMine() const {
         exit1:
         popad
     }
+    return 0;
 }
 
-void TrainerFunc::AsmDeleteUnit() const {
+DWORD TrainerFunc::AsmDeleteUnit(LPVOID) {
     __asm {
         pushad
         mov eax,0x00A8ECC8
@@ -527,6 +544,8 @@ void TrainerFunc::AsmDeleteUnit() const {
         exit1:
         popad
     }
+    return 0;
 }
+#pragma runtime_checks("", restore)
 
 }  // namespace yrtr

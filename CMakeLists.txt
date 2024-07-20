@@ -7,9 +7,9 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS OFF)
 set(BUILD_SHARED_LIBS OFF)
 set(CMAKE_DEBUG_POSTFIX "")
 
-add_compile_options(/MP)
+add_compile_options(/MP /Gy /GS-)
 add_compile_definitions(_SILENCE_ALL_CXX23_DEPRECATION_WARNINGS)
-add_link_options(/level='requireAdministrator' /uiAccess='false')
+add_link_options(/OPT:REF /INCREMENTAL:NO /level='requireAdministrator' /uiAccess='false')
 
 project(ra2_trainer)
 

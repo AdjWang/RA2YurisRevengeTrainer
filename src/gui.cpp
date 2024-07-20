@@ -81,6 +81,26 @@ void ImGuiContext::Render() const {
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
+#define TRIGGER_INPUT(label, val)                             \
+    do {                                                      \
+        if (input_cbs_.contains(FnLabel::k##label)) {         \
+            input_cbs_[FnLabel::k##label](val);               \
+        } else {                                              \
+            LOG(WARN, "Not found handler for label=" #label); \
+        }                                                     \
+    } while (0)
+
+#define HANDLE_INPUT(label, val)                               \
+    do {                                                       \
+        if (input_cbs_.contains(FnLabel::k##label)) {          \
+            if (ImGui::Button(GetFnChar(FnLabel::k##label))) { \
+                input_cbs_[FnLabel::k##label](val);            \
+            }                                                  \
+        } else {                                               \
+            LOG(WARN, "Not found handler for label=" #label);  \
+        }                                                      \
+    } while (0)
+
 #define HANDLE_BUTTON(label)                                   \
     do {                                                       \
         if (btn_cbs_.contains(FnLabel::k##label)) {            \
@@ -119,13 +139,17 @@ void ImGuiContext::RenderClientArea() {
     ImGui::SameLine();  // Keep the following item on the same line
     ImGui::SetNextItemWidth(100);
     static char input[128] = "";
-    if (ImGui::InputText("##input", input, IM_ARRAYSIZE(input),
-                         ImGuiInputTextFlags_CharsDecimal |
-                         ImGuiInputTextFlags_EnterReturnsTrue)) {
-    }
+    bool triggered = ImGui::InputText("##input", input, IM_ARRAYSIZE(input),
+                                      ImGuiInputTextFlags_CharsDecimal |
+                                      ImGuiInputTextFlags_EnterReturnsTrue);
+    char* end = nullptr;
+    uint32_t input_val = std::strtoul(input, &end, 10);
     ImGui::SameLine();
+    HANDLE_INPUT(Apply, input_val);
+    if (triggered) {
+        TRIGGER_INPUT(Apply, input_val);
+    }
 
-    HANDLE_BUTTON(Apply);
     HANDLE_BUTTON(FastBuild);
     HANDLE_BUTTON(DeleteUnit);
     HANDLE_BUTTON(ClearShroud);
@@ -172,6 +196,11 @@ void ImGuiContext::RenderClientArea() {
 
 void ImGuiContext::AddButtonListener(FnLabel label, std::function<void()> cb) {
     btn_cbs_.emplace(label, std::move(cb));
+}
+
+void ImGuiContext::AddInputListener(FnLabel label,
+                                    std::function<void(uint32_t)> cb) {
+    input_cbs_.emplace(label, std::move(cb));
 }
 
 void ImGuiContext::AddCheckboxListener(FnLabel label,

@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_compile_options(/MP /Gy /J)
-add_link_options(/OPT:REF)
+add_link_options(/OPT:REF /INCREMENTAL:NO)
 
 project(aa_engine)
 
