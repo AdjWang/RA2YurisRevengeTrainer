@@ -5,7 +5,7 @@ namespace script {
 
 // Tip: player is the human player, others are AI
 
-inline constexpr static std::string_view UnlimitPower = R"(
+inline constexpr static std::string_view kUnlimitPower = R"(
 [ENABLE]
 //code from here to '[DISABLE]' will be used to enable the cheat
 alloc(newmem,2048)
@@ -38,7 +38,7 @@ mov [esi+000053A8],edx
 )";
 
 
-inline constexpr static std::string_view BuildEveryWhereGround = R"(
+inline constexpr static std::string_view kBuildEveryWhereGround = R"(
 [ENABLE]
 //code from here to '[DISABLE]' will be used to enable the cheat
 alloc(newmem,256)
@@ -65,7 +65,7 @@ mov eax,[00A83D4C]
 //Alt: db A1 4C 3D A8 00
 )";
 
-inline constexpr static std::string_view BuildEveryWhereWater = R"(
+inline constexpr static std::string_view kBuildEveryWhereWater = R"(
 [ENABLE]
 //code from here to '[DISABLE]' will be used to enable the cheat
 alloc(newmem,256)
@@ -96,7 +96,7 @@ jne 0047CA4D
 )";
 
 
-inline constexpr static std::string_view AutoRepair = R"(
+inline constexpr static std::string_view kAutoRepair = R"(
 [ENABLE]
 //code from here to '[DISABLE]' will be used to enable the cheat
 alloc(newmem,2048)
@@ -126,7 +126,7 @@ jl 00450813
 //Alt: db 3B C8 0F 8C BA 01 00 00
 )";
 
-inline constexpr static std::string_view AutoRepairNeutral = R"(
+inline constexpr static std::string_view kAutoRepairNeutral = R"(
 [ENABLE]
 //code from here to '[DISABLE]' will be used to enable the cheat
 alloc(newmem,256)
@@ -161,7 +161,7 @@ xor al,al
 )";
 
 
-inline constexpr static std::string_view RevertYuri = R"(
+inline constexpr static std::string_view kRevertYuri = R"(
 [ENABLE]
 //code from here to '[DISABLE]' will be used to enable the cheat
 alloc(newmem, 2048)
@@ -218,7 +218,7 @@ call dword ptr[ebp+000003D4]
 //Alt: db 50 8B CE FF 95 D4 03 00 00
 )";
 
-inline constexpr static std::string_view PermanentYuri = R"(
+inline constexpr static std::string_view kPermanentYuri = R"(
 [ENABLE]
 //code from here to '[DISABLE]' will be used to enable the cheat
 alloc(newmem,2048)
@@ -252,7 +252,7 @@ call dword ptr [edx+000003D4]
 )";
 
 
-inline constexpr static std::string_view ThisIsMineOnAttack = R"(
+inline constexpr static std::string_view kThisIsMineOnAttack = R"(
 [ENABLE]
 //code from here to '[DISABLE]' will be used to enable the cheat
 alloc(newmem,2048)
@@ -301,7 +301,7 @@ mov edx,[eax]
 )";
 
 
-inline constexpr static std::string_view ThisIsMineOnGarrison = R"(
+inline constexpr static std::string_view kThisIsMineOnGarrison = R"(
 [ENABLE]
 //code from here to '[DISABLE]' will be used to enable the cheat
 alloc(newmem,2048)
@@ -331,7 +331,7 @@ call dword ptr [edx+000003D4]
 )";
 
 
-inline constexpr static std::string_view ThisIsMineOnCapture = R"(
+inline constexpr static std::string_view kThisIsMineOnCapture = R"(
 [ENABLE]
 //code from here to '[DISABLE]' will be used to enable the cheat
 alloc(newmem,2048)
@@ -365,7 +365,7 @@ call dword ptr [edx+000003D4]
 )";
 
 
-inline constexpr static std::string_view InstBuild = R"(
+inline constexpr static std::string_view kInstBuild = R"(
 [ENABLE]
 //code from here to '[DISABLE]' will be used to enable the cheat
 alloc(newmem,2048)
@@ -422,7 +422,7 @@ mov edx,[esp+10]
 )";
 
 
-inline constexpr static std::string_view GodPlayer = R"(
+inline constexpr static std::string_view kGodPlayer = R"(
 [ENABLE]
 //code from here to '[DISABLE]' will be used to enable the cheat
 alloc(newmem,2048)
@@ -462,7 +462,7 @@ mov [esi+6C],eax
 )";
 
 
-inline constexpr static std::string_view AntiChrono = R"(
+inline constexpr static std::string_view kAntiChrono = R"(
 [ENABLE]
 //code from here to '[DISABLE]' will be used to enable the cheat
 alloc(newmem,128)
@@ -494,7 +494,7 @@ cmp eax,ebx
 //Alt: db 89 4E 48 3B C3
 )";
 
-inline constexpr static std::string_view AntiChronoDisbuild = R"(
+inline constexpr static std::string_view kAntiChronoDisbuild = R"(
 [ENABLE]
 //code from here to '[DISABLE]' will be used to enable the cheat
 alloc(newmem,128)
@@ -525,7 +525,7 @@ mov byte ptr [ecx+00000660],00
 )";
 
 
-inline constexpr static std::string_view RevertRepair = R"(
+inline constexpr static std::string_view kRevertRepair = R"(
 [ENABLE]
 //code from here to '[DISABLE]' will be used to enable the cheat
 alloc(newmem,2048)
@@ -566,7 +566,7 @@ mov [esi+6C],ebx
 )";
 
 
-inline constexpr static std::string_view UnlimitTech = R"(
+inline constexpr static std::string_view kUnlimitTech = R"(
 [ENABLE]
 //code from here to '[DISABLE]' will be used to enable the cheat
 alloc(newmem,64)
@@ -593,7 +593,7 @@ mov ecx,[00A8B238]
 )";
 
 
-inline constexpr static std::string_view InstFire = R"(
+inline constexpr static std::string_view kInstFire = R"(
 [ENABLE]
 //code from here to '[DISABLE]' will be used to enable the cheat
 alloc(newmem,256)
@@ -623,7 +623,7 @@ mov eax,[esi+000002F4]
 )";
 
 
-inline constexpr static std::string_view InstTurnBattery = R"(
+inline constexpr static std::string_view kInstTurnBattery = R"(
 [ENABLE]
 //code from here to '[DISABLE]' will be used to enable the cheat
 alloc(newmem,256)
@@ -669,7 +669,7 @@ mov ecx,[ecx+08]
 )";
 
 
-inline constexpr static std::string_view InstTurnRound = R"(
+inline constexpr static std::string_view kInstTurnRound = R"(
 [ENABLE]
 //code from here to '[DISABLE]' will be used to enable the cheat
 alloc(newmem,256)
@@ -701,7 +701,7 @@ mov ax,dx
 )";
 
 
-inline constexpr static std::string_view FastReload = R"(
+inline constexpr static std::string_view kFastReload = R"(
 [ENABLE]
 //code from here to '[DISABLE]' will be used to enable the cheat
 alloc(newmem,256)
@@ -732,7 +732,7 @@ mov eax,[eax+00000D60]
 )";
 
 
-inline constexpr static std::string_view UnlimitFirePower = R"(
+inline constexpr static std::string_view kUnlimitFirePower = R"(
 [ENABLE]
 //code from here to '[DISABLE]' will be used to enable the cheat
 alloc(newmem,2048)
@@ -763,7 +763,7 @@ mov eax,[eax+00000D5C]
 )";
 
 
-inline constexpr static std::string_view RangeToYourBase = R"(
+inline constexpr static std::string_view kRangeToYourBase = R"(
 [ENABLE]
 //code from here to '[DISABLE]' will be used to enable the cheat
 alloc(newmem,256)
@@ -796,7 +796,7 @@ mov edi,[ebx+000000B4]
 )";
 
 
-inline constexpr static std::string_view FireToYourBase = R"(
+inline constexpr static std::string_view kFireToYourBase = R"(
 [ENABLE]
 //code from here to '[DISABLE]' will be used to enable the cheat
 alloc(newmem,256)
@@ -827,7 +827,7 @@ mov ebx,[eax+000000B4]
 )";
 
 
-inline constexpr static std::string_view InstChronoMove = R"(
+inline constexpr static std::string_view kInstChronoMove = R"(
 [ENABLE]
 //code from here to '[DISABLE]' will be used to enable the cheat
 alloc(newmem,128)
@@ -859,7 +859,7 @@ mov byte ptr [ecx+00000271],01
 )";
 
 
-inline constexpr static std::string_view InstChronoAttack = R"(
+inline constexpr static std::string_view kInstChronoAttack = R"(
 [ENABLE]
 //code from here to '[DISABLE]' will be used to enable the cheat
 alloc(newmem,256)
@@ -898,7 +898,7 @@ je 0071B064
 )";
 
 
-inline constexpr static std::string_view SpySpy = R"(
+inline constexpr static std::string_view kSpySpy = R"(
 [ENABLE]
 //code from here to '[DISABLE]' will be used to enable the cheat
 alloc(newmem,256)
@@ -935,7 +935,7 @@ call 004571E0
 )";
 
 
-inline constexpr static std::string_view FreezeGAGAP = R"(
+inline constexpr static std::string_view kFreezeGAGAP = R"(
 [ENABLE]
 //code from here to '[DISABLE]' will be used to enable the cheat
 alloc(newmem,256)
@@ -973,7 +973,7 @@ mov eax,[esi+00000504]
 )";
 
 
-inline constexpr static std::string_view FreezeUnit = R"(
+inline constexpr static std::string_view kFreezeUnit = R"(
 [ENABLE]
 //code from here to '[DISABLE]' will be used to enable the cheat
 alloc(newmem,256)
@@ -1006,7 +1006,7 @@ jng 006FAFFD
 )";
 
 
-inline constexpr static std::string_view SellTheWorldOnCursor = R"(
+inline constexpr static std::string_view kSellTheWorldOnCursor = R"(
 [ENABLE]
 //code from here to '[DISABLE]' will be used to enable the cheat
 alloc(newmem,256)
@@ -1047,7 +1047,7 @@ call dword ptr [eax+3C]
 )";
 
 
-inline constexpr static std::string_view InfantrySlip = R"(
+inline constexpr static std::string_view kInfantrySlip = R"(
 [ENABLE]
 //code from here to '[DISABLE]' will be used to enable the cheat
 alloc(newmem,512)
@@ -1092,7 +1092,7 @@ mov eax,[esi]
 )";
 
 
-inline constexpr static std::string_view UnitLeveledUp = R"(
+inline constexpr static std::string_view kUnitLeveledUp = R"(
 [ENABLE]
 //code from here to '[DISABLE]' will be used to enable the cheat
 alloc(newmem,256)

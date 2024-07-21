@@ -4,7 +4,7 @@
 
 namespace yrtr {
 
-class ImGuiContext;
+class GuiContext;
 
 namespace win32{
 class MemoryAPI;
@@ -13,51 +13,51 @@ class MemoryAPI;
 class TrainerFunc {
 public:
     static TrainerFunc* instance() { return trainer_target_.get(); }
-    static void Init(std::string_view exe_name, ImGuiContext& gui_ctx);
+    static void Init(std::string_view exe_name, GuiContext& gui_ctx);
 
     bool attached() const { return attached_; }
     win32::MemoryAPI* mem_api() { return mem_api_.get(); }
     void Update();
 
-    void OnBtnApply(uint32_t val);
-    void OnBtnFastBuild();
-    void OnBtnDeleteUnit();
-    void OnBtnClearShroud();
-    void OnBtnGiveMeABomb();
-    void OnBtnUnitLevelUp();
-    void OnBtnUnitSpeedUp();
-    void OnBtnIAMWinner();
-    void OnBtnThisIsMine();
-    void OnBtnIAMGhost();
+    bool OnBtnApply(GuiContext* gui_ctx, uint32_t val);
+    bool OnBtnFastBuild(GuiContext* gui_ctx);
+    bool OnBtnDeleteUnit(GuiContext* gui_ctx);
+    bool OnBtnClearShroud(GuiContext* gui_ctx);
+    bool OnBtnGiveMeABomb(GuiContext* gui_ctx);
+    bool OnBtnUnitLevelUp(GuiContext* gui_ctx);
+    bool OnBtnUnitSpeedUp(GuiContext* gui_ctx);
+    bool OnBtnIAMWinner(GuiContext* gui_ctx);
+    bool OnBtnThisIsMine(GuiContext* gui_ctx);
+    bool OnBtnIAMGhost(GuiContext* gui_ctx);
 
-    void OnCkboxGod(bool activate);
-    void OnCkboxInstBuild(bool activate);
-    void OnCkboxUnlimitSuperWeapon(bool activate);
-    void OnCkboxUnlimitRadar(bool activate);
-    void OnCkboxInstFire(bool activate);
-    void OnCkboxInstTurn(bool activate);
-    void OnCkboxRangeToYourBase(bool activate);
-    void OnCkboxFireToYourBase(bool activate);
-    void OnCkboxFreezeGapGenerator(bool activate);
-    void OnCkboxFreezeUnit(bool activate);
-    void OnCkboxSellTheWorld(bool activate);
-    void OnCkboxUnlimitPower(bool activate);
-    void OnCkboxBuildEveryWhere(bool activate);
-    void OnCkboxAutoRepair(bool activate);
-    void OnCkboxEnermyRepairDown(bool activate);
-    void OnCkboxSocialismTheBest(bool activate);
-    void OnCkboxMakeAttackedMine(bool activate);
-    void OnCkboxMakeOccupiedMine(bool activate);
-    void OnCkboxMakeGarrisonedMine(bool activate);
-    void OnCkboxInvadeMode(bool activate);
-    void OnCkboxUnlimitTech(bool activate);
-    void OnCkboxFastReload(bool activate);
-    void OnCkboxUnlimitFirePower(bool activate);
-    void OnCkboxInstChrono(bool activate);
-    void OnCkboxSpySpy(bool activate);
-    void OnCkboxInfantrySlip(bool activate);
-    void OnCkboxUnitLeveledUp(bool activate);
-    void OnCkboxAdjustGameSpeed(bool activate);
+    bool OnCkboxGod(GuiContext* gui_ctx, bool activate);
+    bool OnCkboxInstBuild(GuiContext* gui_ctx, bool activate);
+    bool OnCkboxUnlimitSuperWeapon(GuiContext* gui_ctx, bool activate);
+    bool OnCkboxUnlimitRadar(GuiContext* gui_ctx, bool activate);
+    bool OnCkboxInstFire(GuiContext* gui_ctx, bool activate);
+    bool OnCkboxInstTurn(GuiContext* gui_ctx, bool activate);
+    bool OnCkboxRangeToYourBase(GuiContext* gui_ctx, bool activate);
+    bool OnCkboxFireToYourBase(GuiContext* gui_ctx, bool activate);
+    bool OnCkboxFreezeGapGenerator(GuiContext* gui_ctx, bool activate);
+    bool OnCkboxFreezeUnit(GuiContext* gui_ctx, bool activate);
+    bool OnCkboxSellTheWorld(GuiContext* gui_ctx, bool activate);
+    bool OnCkboxUnlimitPower(GuiContext* gui_ctx, bool activate);
+    bool OnCkboxBuildEveryWhere(GuiContext* gui_ctx, bool activate);
+    bool OnCkboxAutoRepair(GuiContext* gui_ctx, bool activate);
+    bool OnCkboxEnermyRevertRepair(GuiContext* gui_ctx, bool activate);
+    bool OnCkboxSocialismTheBest(GuiContext* gui_ctx, bool activate);
+    bool OnCkboxMakeAttackedMine(GuiContext* gui_ctx, bool activate);
+    bool OnCkboxMakeCapturedMine(GuiContext* gui_ctx, bool activate);
+    bool OnCkboxMakeGarrisonedMine(GuiContext* gui_ctx, bool activate);
+    bool OnCkboxInvadeMode(GuiContext* gui_ctx, bool activate);
+    bool OnCkboxUnlimitTech(GuiContext* gui_ctx, bool activate);
+    bool OnCkboxFastReload(GuiContext* gui_ctx, bool activate);
+    bool OnCkboxUnlimitFirePower(GuiContext* gui_ctx, bool activate);
+    bool OnCkboxInstChrono(GuiContext* gui_ctx, bool activate);
+    bool OnCkboxSpySpy(GuiContext* gui_ctx, bool activate);
+    bool OnCkboxInfantrySlip(GuiContext* gui_ctx, bool activate);
+    bool OnCkboxUnitLeveledUp(GuiContext* gui_ctx, bool activate);
+    bool OnCkboxAdjustGameSpeed(GuiContext* gui_ctx, bool activate);
 
 private:
     static std::unique_ptr<TrainerFunc> trainer_target_;
@@ -76,6 +76,7 @@ private:
     bool WriteMaxBuildingCount(uint32_t val) const;
     bool UnlimitRadar() const;
     bool UnlimitSuperWeapon() const;
+    bool TobeGhost() const;
     bool AntiChronoDisable(bool activate) const;
     bool InvadeMode(bool activate) const;
     bool EnableSellAllBelong(bool activate) const;

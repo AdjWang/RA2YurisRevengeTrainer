@@ -31,6 +31,29 @@
 #include "disasm.h"
 
 ////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////// GLOBAL VARIABLES ///////////////////////////////
+// AdjWang: I don't konw why these global vars are placed in disasm.h and using
+// a MAINPROG macro to control linking. I would put them here.
+int       ideal;                // Force IDEAL decoding mode
+int       lowercase;            // Force lowercase display
+int       tabarguments;         // Tab between mnemonic and arguments
+int       extraspace;           // Extra space between arguments
+int       putdefseg;            // Display default segments in listing
+int       showmemsize;          // Always show memory size
+int       shownear;             // Show NEAR modifiers
+int       shortstringcmds;      // Use short form of string commands
+int       sizesens;             // How to decode size-sensitive mnemonics
+int       symbolic;             // Show symbolic addresses in disasm
+int       farcalls;             // Accept far calls, returns & addresses
+int       decodevxd;            // Decode VxD calls (Win95/98)
+int       privileged;           // Accept privileged commands
+int       iocommand;            // Accept I/O commands
+int       badshift;             // Accept shift out of range 1..31
+int       extraprefix;          // Accept superfluous prefixes
+int       lockedbus;            // Accept LOCK prefixes
+int       stackalign;           // Accept unaligned stack operations
+int       iswindowsnt;          // When checking for dangers, assume NT
+
 //////////////////////////// DISASSEMBLER FUNCTIONS ////////////////////////////
 
 // Work variables of disassembler

@@ -1,7 +1,16 @@
 #include "logging.h"
 #include "win32utils.h"
+#pragma warning(push)
+#pragma warning(disable:4018)
+#pragma warning(disable:4101)
+#pragma warning(disable:4146)
+#pragma warning(disable:4189)
+#pragma warning(disable:4456)
+#pragma warning(disable:4701)
+#pragma warning(disable:4996)
+#include "aa_engine/autoassembler.h"
+#pragma warning(pop)
 
-#include <windows.h>
 #include <shlobj_core.h>
 #include <TlHelp32.h>
 
@@ -142,6 +151,12 @@ bool MemoryAPI::CreateRemoteThread(void* fn, size_t code_size) const {
         LOG(WARN, "Remote thread exit with={}", exit_code);
     }
     return true;
+}
+
+bool MemoryAPI::AutoAssemble(std::string_view script, bool activate) const {
+    CHECK_HANDLE_OR_RETURN_FALSE();
+    return _autoassemble(handle_->handle(), std::string(script),
+                         static_cast<int>(activate));
 }
 
 #undef CHECK_HANDLE_OR_RETURN_FALSE

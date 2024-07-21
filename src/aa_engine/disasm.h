@@ -17,11 +17,12 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
-#ifndef MAINPROG
-#define unique extern
-#else
-#define unique
-#endif
+// Adjwang: Deprecated
+// #ifndef MAINPROG
+// #define unique extern
+// #else
+// #define unique
+// #endif
 
 // If you prefere Borland, this will force necessary setting (but, as a side
 // effect, may cause plenty of warnings if other include files will be compiled
@@ -304,46 +305,25 @@ typedef struct t_asmmodel {            // Model to search for assembler command
   int            jmppos;               // Position of jump offset in command
 } t_asmmodel;
 
-//unique int       ideal;                // Force IDEAL decoding mode
-//unique int       lowercase;            // Force lowercase display
-//unique int       tabarguments;         // Tab between mnemonic and arguments
-//unique int       extraspace;           // Extra space between arguments
-//unique int       putdefseg;            // Display default segments in listing
-//unique int       showmemsize;          // Always show memory size
-//unique int       shownear;             // Show NEAR modifiers
-//unique int       shortstringcmds;      // Use short form of string commands
-//unique int       sizesens;             // How to decode size-sensitive mnemonics
-//unique int       symbolic;             // Show symbolic addresses in disasm
-//unique int       farcalls;             // Accept far calls, returns & addresses
-//unique int       decodevxd;            // Decode VxD calls (Win95/98)
-//unique int       privileged;           // Accept privileged commands
-//unique int       iocommand;            // Accept I/O commands
-//unique int       badshift;             // Accept shift out of range 1..31
-//unique int       extraprefix;          // Accept superfluous prefixes
-//unique int       lockedbus;            // Accept LOCK prefixes
-//unique int       stackalign;           // Accept unaligned stack operations
-//unique int       iswindowsnt;          // When checking for dangers, assume NT
-
- int       ideal;                // Force IDEAL decoding mode
- int       lowercase;            // Force lowercase display
- int       tabarguments;         // Tab between mnemonic and arguments
- int       extraspace;           // Extra space between arguments
- int       putdefseg;            // Display default segments in listing
- int       showmemsize;          // Always show memory size
- int       shownear;             // Show NEAR modifiers
- int       shortstringcmds;      // Use short form of string commands
- int       sizesens;             // How to decode size-sensitive mnemonics
- int       symbolic;             // Show symbolic addresses in disasm
- int       farcalls;             // Accept far calls, returns & addresses
- int       decodevxd;            // Decode VxD calls (Win95/98)
- int       privileged;           // Accept privileged commands
- int       iocommand;            // Accept I/O commands
- int       badshift;             // Accept shift out of range 1..31
- int       extraprefix;          // Accept superfluous prefixes
- int       lockedbus;            // Accept LOCK prefixes
- int       stackalign;           // Accept unaligned stack operations
- int       iswindowsnt;          // When checking for dangers, assume NT
-
+extern int       ideal;                // Force IDEAL decoding mode
+extern int       lowercase;            // Force lowercase display
+extern int       tabarguments;         // Tab between mnemonic and arguments
+extern int       extraspace;           // Extra space between arguments
+extern int       putdefseg;            // Display default segments in listing
+extern int       showmemsize;          // Always show memory size
+extern int       shownear;             // Show NEAR modifiers
+extern int       shortstringcmds;      // Use short form of string commands
+extern int       sizesens;             // How to decode size-sensitive mnemonics
+extern int       symbolic;             // Show symbolic addresses in disasm
+extern int       farcalls;             // Accept far calls, returns & addresses
+extern int       decodevxd;            // Decode VxD calls (Win95/98)
+extern int       privileged;           // Accept privileged commands
+extern int       iocommand;            // Accept I/O commands
+extern int       badshift;             // Accept shift out of range 1..31
+extern int       extraprefix;          // Accept superfluous prefixes
+extern int       lockedbus;            // Accept LOCK prefixes
+extern int       stackalign;           // Accept unaligned stack operations
+extern int       iswindowsnt;          // When checking for dangers, assume NT
 
 
 int    Assemble(char *cmd,ulong ip,t_asmmodel *model,int attempt,

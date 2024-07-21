@@ -11,4 +11,7 @@ project(aa_engine)
 
 add_library(${PROJECT_NAME} STATIC disasm.c
                                    asmserv.c
-                                   assembl.c)
+                                   assembl.c
+                                   tools.cpp
+                                   aobscan.cpp
+                                   autoassembler.cpp)

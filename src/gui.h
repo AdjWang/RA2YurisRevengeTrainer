@@ -5,33 +5,41 @@
 
 namespace yrtr {
 
-class ImGuiContext {
+class GuiContext {
 public:
-    ImGuiContext(GLFWwindow* window);
-    ~ImGuiContext();
+    using ButtonHandler = std::function<bool(GuiContext*)>;
+    using InputHandler = std::function<bool(GuiContext*, uint32_t)>;
+    using CheckboxHandler = std::function<bool(GuiContext*, bool)>;
+
+    GuiContext(GLFWwindow* window);
+    ~GuiContext();
 
     void set_state(std::string_view state) { state_ = state; }
+    void EnableCheckbox(FnLabel label);
+    void DisableCheckbox(FnLabel label);
+    void DeactivateCheckbox(FnLabel label);
 
     void Update() {}
     void PreRender();
     void Render() const;
 
     void RenderClientArea();
-    void AddButtonListener(FnLabel label, std::function<void()> cb);
-    void AddInputListener(FnLabel label, std::function<void(uint32_t)> cb);
-    void AddCheckboxListener(FnLabel label, std::function<void(bool)> cb);
+    void AddButtonListener(FnLabel label, ButtonHandler cb);
+    void AddInputListener(FnLabel label, InputHandler cb);
+    void AddCheckboxListener(FnLabel label, CheckboxHandler cb);
 
 private:
     float hdpi_scale_factor_;
     std::string state_;
 
     struct CheckboxState {
+        bool enable = true;
         bool activate = false;
-        std::function<void(bool)> cb = nullptr;
+        CheckboxHandler cb = nullptr;
     };
 
-    std::unordered_map<FnLabel, std::function<void()>> btn_cbs_;
-    std::unordered_map<FnLabel, std::function<void(uint32_t)>> input_cbs_;
+    std::unordered_map<FnLabel, ButtonHandler> btn_cbs_;
+    std::unordered_map<FnLabel, InputHandler> input_cbs_;
     std::unordered_map<FnLabel, CheckboxState> ckbox_cbs_;
 };
 

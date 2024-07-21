@@ -110,6 +110,7 @@ public:
     bool WriteLongJump(uint32_t addr_from, uint32_t addr_to) const;
 
     bool CreateRemoteThread(void* fn, size_t code_size = 0x256) const;
+    bool AutoAssemble(std::string_view script, bool activate) const;
 
 private:
     std::unique_ptr<HandleGuard> handle_;

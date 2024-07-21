@@ -17,7 +17,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action,
 }
 
 static constexpr double kTimerInterval = 1.0;   // second
-static void OnTimer(yrtr::ImGuiContext& ctx) {
+static void OnTimer(yrtr::GuiContext& ctx) {
     yrtr::TrainerFunc::instance()->Update();
 
     if (yrtr::TrainerFunc::instance()->attached()) {
@@ -49,7 +49,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, PSTR, int) {
 
     glfwSetKeyCallback(window, key_callback);
 
-    yrtr::ImGuiContext gui_ctx(window);
+    yrtr::GuiContext gui_ctx(window);
     // Disable imgui.ini
     ImGuiIO& io = ImGui::GetIO();
     io.IniFilename = NULL;
