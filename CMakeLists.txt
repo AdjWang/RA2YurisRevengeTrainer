@@ -15,6 +15,11 @@ project(ra2_trainer)
 
 find_package(OpenGL REQUIRED)
 
+set(FMT_DOC OFF CACHE BOOL "disable fmt doc")
+set(FMT_TEST OFF CACHE BOOL "disable fmt test")
+set(FMT_INSTALL OFF CACHE BOOL "disable fmt install target")
+add_subdirectory(deps/fmt)
+
 # https://www.glfw.org/docs/latest/build_guide.html
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "disable glfw examples")
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "disable glfw tests")
@@ -45,22 +50,27 @@ add_executable(${PROJECT_NAME} WIN32 src/bin/trainer.cpp
                                      src/gui.cpp
                                      src/win32utils.cpp
                                      src/trainer_func.cpp)
-target_include_directories(${PROJECT_NAME} PRIVATE deps/glfw
+target_include_directories(${PROJECT_NAME} PRIVATE deps/fmt/include
+                                           PRIVATE deps/glfw
                                            PRIVATE deps/glfw/include
                                            PRIVATE ${IMGUI_INCLUDES}
                                            PRIVATE src)
 target_compile_options(${PROJECT_NAME} PRIVATE /W4
-                                       PRIVATE /WX)
+                                       PRIVATE /WX
+                                       PRIVATE /utf-8)
 target_link_libraries(${PROJECT_NAME} PRIVATE OpenGL::GL
                                       PRIVATE libimgui
                                       PRIVATE glfw
+                                      PRIVATE fmt::fmt
                                       PRIVATE aa_engine)
 
 add_executable(disasm src/bin/test_disasm.cpp
                       src/logging.cpp
                       src/win32utils.cpp)
-target_include_directories(disasm PRIVATE deps/glfw
+target_include_directories(disasm PRIVATE deps/fmt/include
+                                  PRIVATE deps/glfw
                                   PRIVATE deps/glfw/include
                                   PRIVATE ${IMGUI_INCLUDES}
                                   PRIVATE src)
-target_link_libraries(disasm PRIVATE aa_engine)
+target_link_libraries(disasm PRIVATE fmt::fmt
+                             PRIVATE aa_engine)

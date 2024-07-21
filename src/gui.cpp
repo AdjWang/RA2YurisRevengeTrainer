@@ -5,8 +5,8 @@
 
 namespace ImGui {
 template <class... TArgs>
-void Format(const std::format_string<TArgs...>& fmt_str, TArgs... args) {
-    Text(std::format(fmt_str, std::forward<TArgs>(args)...).c_str());
+void Format(const fmt::format_string<TArgs...>& fmt_str, TArgs... args) {
+    Text(fmt::format(fmt_str, std::forward<TArgs>(args)...).c_str());
 }
 }
 
@@ -164,7 +164,7 @@ void ImGuiContext::RenderClientArea() {
     HANDLE_CHECKBOX(InstBuild);
     HANDLE_CHECKBOX(UnlimitSuperWeapon);
     HANDLE_CHECKBOX(UnlimitRadar);
-    HANDLE_CHECKBOX(InstShot);
+    HANDLE_CHECKBOX(InstFire);
     HANDLE_CHECKBOX(InstTurn);
     HANDLE_CHECKBOX(RangeToYourBase);
     HANDLE_CHECKBOX(FireToYourBase);
@@ -173,15 +173,15 @@ void ImGuiContext::RenderClientArea() {
     HANDLE_CHECKBOX(SellTheWorld);
     HANDLE_CHECKBOX(UnlimitPower);
     HANDLE_CHECKBOX(BuildEveryWhere);
-    HANDLE_CHECKBOX(AutoRepaire);
-    HANDLE_CHECKBOX(EnermyRepaireDown);
+    HANDLE_CHECKBOX(AutoRepair);
+    HANDLE_CHECKBOX(EnermyRepairDown);
     HANDLE_CHECKBOX(SocialismTheBest);
     HANDLE_CHECKBOX(MakeAttackedMine);
     HANDLE_CHECKBOX(MakeOccupiedMine);
     HANDLE_CHECKBOX(MakeGarrisonedMine);
     HANDLE_CHECKBOX(InvadeMode);
     HANDLE_CHECKBOX(UnlimitTech);
-    HANDLE_CHECKBOX(InstLoad);
+    HANDLE_CHECKBOX(FastReload);
     HANDLE_CHECKBOX(UnlimitFirePower);
     HANDLE_CHECKBOX(InstChrono);
     HANDLE_CHECKBOX(SpySpy);

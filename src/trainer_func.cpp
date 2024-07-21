@@ -28,7 +28,7 @@ static void InitCheckboxes(ImGuiContext& ctx) {
     ctx.AddCheckboxListener(FnLabel::kInstBuild, BIND_FN(OnCkboxInstBuild));
     ctx.AddCheckboxListener(FnLabel::kUnlimitSuperWeapon, BIND_FN(OnCkboxUnlimitSuperWeapon));
     ctx.AddCheckboxListener(FnLabel::kUnlimitRadar, BIND_FN(OnCkboxUnlimitRadar));
-    ctx.AddCheckboxListener(FnLabel::kInstShot, BIND_FN(OnCkboxInstShot));
+    ctx.AddCheckboxListener(FnLabel::kInstFire, BIND_FN(OnCkboxInstFire));
     ctx.AddCheckboxListener(FnLabel::kInstTurn, BIND_FN(OnCkboxInstTurn));
     ctx.AddCheckboxListener(FnLabel::kRangeToYourBase, BIND_FN(OnCkboxRangeToYourBase));
     ctx.AddCheckboxListener(FnLabel::kFireToYourBase, BIND_FN(OnCkboxFireToYourBase));
@@ -37,15 +37,15 @@ static void InitCheckboxes(ImGuiContext& ctx) {
     ctx.AddCheckboxListener(FnLabel::kSellTheWorld, BIND_FN(OnCkboxSellTheWorld));
     ctx.AddCheckboxListener(FnLabel::kUnlimitPower, BIND_FN(OnCkboxUnlimitPower));
     ctx.AddCheckboxListener(FnLabel::kBuildEveryWhere, BIND_FN(OnCkboxBuildEveryWhere));
-    ctx.AddCheckboxListener(FnLabel::kAutoRepaire, BIND_FN(OnCkboxAutoRepaire));
-    ctx.AddCheckboxListener(FnLabel::kEnermyRepaireDown, BIND_FN(OnCkboxEnermyRepaireDown));
+    ctx.AddCheckboxListener(FnLabel::kAutoRepair, BIND_FN(OnCkboxAutoRepair));
+    ctx.AddCheckboxListener(FnLabel::kEnermyRepairDown, BIND_FN(OnCkboxEnermyRepairDown));
     ctx.AddCheckboxListener(FnLabel::kSocialismTheBest, BIND_FN(OnCkboxSocialismTheBest));
     ctx.AddCheckboxListener(FnLabel::kMakeAttackedMine, BIND_FN(OnCkboxMakeAttackedMine));
     ctx.AddCheckboxListener(FnLabel::kMakeOccupiedMine, BIND_FN(OnCkboxMakeOccupiedMine));
     ctx.AddCheckboxListener(FnLabel::kMakeGarrisonedMine, BIND_FN(OnCkboxMakeGarrisonedMine));
     ctx.AddCheckboxListener(FnLabel::kInvadeMode, BIND_FN(OnCkboxInvadeMode));
     ctx.AddCheckboxListener(FnLabel::kUnlimitTech, BIND_FN(OnCkboxUnlimitTech));
-    ctx.AddCheckboxListener(FnLabel::kInstLoad, BIND_FN(OnCkboxInstLoad));
+    ctx.AddCheckboxListener(FnLabel::kFastReload, BIND_FN(OnCkboxFastReload));
     ctx.AddCheckboxListener(FnLabel::kUnlimitFirePower, BIND_FN(OnCkboxUnlimitFirePower));
     ctx.AddCheckboxListener(FnLabel::kInstChrono, BIND_FN(OnCkboxInstChrono));
     ctx.AddCheckboxListener(FnLabel::kSpySpy, BIND_FN(OnCkboxSpySpy));
@@ -179,7 +179,7 @@ void TrainerFunc::OnCkboxUnlimitRadar(bool activate) {
 
 }
 
-void TrainerFunc::OnCkboxInstShot(bool activate) {
+void TrainerFunc::OnCkboxInstFire(bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
 
 }
@@ -224,12 +224,12 @@ void TrainerFunc::OnCkboxBuildEveryWhere(bool activate) {
 
 }
 
-void TrainerFunc::OnCkboxAutoRepaire(bool activate) {
+void TrainerFunc::OnCkboxAutoRepair(bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
 
 }
 
-void TrainerFunc::OnCkboxEnermyRepaireDown(bool activate) {
+void TrainerFunc::OnCkboxEnermyRepairDown(bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
 
 }
@@ -264,7 +264,7 @@ void TrainerFunc::OnCkboxUnlimitTech(bool activate) {
 
 }
 
-void TrainerFunc::OnCkboxInstLoad(bool activate) {
+void TrainerFunc::OnCkboxFastReload(bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
 
 }
@@ -364,6 +364,60 @@ bool TrainerFunc::UnlimitSuperWeapon() const {
             CHECK_RETF(mem_api_->WriteMemory(addr2 + 0x6F,
                                              static_cast<uint8_t>(1)));
         }
+    }
+    return true;
+}
+
+// Prevent building list going to grey
+bool TrainerFunc::AntiChronoDisable(bool activate) const {
+    CHECK_MEMAPI_OR_RETURN_FALSE();
+    if (activate) {
+        CHECK_RETF(mem_api_->WriteMemory(
+            0x006A97B2, std::span<const uint8_t>({0x90, 0x90})));
+    } else {
+        CHECK_RETF(mem_api_->WriteMemory(
+            0x006A97B2, std::span<const uint8_t>({0x74, 0x47})));
+    }
+    return true;
+}
+
+bool TrainerFunc::InvadeMode(bool activate) const {
+    if (activate) {
+        CHECK_RETF(mem_api_->WriteLongJump(0x006F85DD, 0x006F8604));
+    } else {
+        CHECK_RETF(mem_api_->WriteMemory(
+            0x006F85DD,
+            std::span<const uint8_t>({0x83, 0x38, 0x00, 0x74, 0x0E})));
+    }
+    return true;
+}
+
+// Allow sell things not belong to player
+bool TrainerFunc::EnableSellAllBelong(bool activate) const {
+    if (activate) {
+        CHECK_RETF(mem_api_->WriteLongJump(0x004C6F48, 0x004C6F9C));
+        CHECK_RETF(mem_api_->WriteMemory(0x004C6F48 + 5,
+                                         std::span<const uint8_t>({0x90})));
+    }
+    else {
+        CHECK_RETF(mem_api_->WriteMemory(
+            0x004C6F48,
+            std::span<const uint8_t>({0x0F, 0x85, 0xBB, 0x11, 0x00, 0x00})));
+    }
+    return true;
+}
+
+// Allow sell things not built by player
+bool TrainerFunc::EnableSellAllBuilder(bool activate) const {
+    if (activate) {
+        CHECK_RETF(mem_api_->WriteMemory(
+            0x0044711B,
+            std::span<const uint8_t>({0x90, 0x90, 0x90, 0x90, 0x90, 0x90})));
+    }
+    else {
+        CHECK_RETF(mem_api_->WriteMemory(
+            0x0044711B,
+            std::span<const uint8_t>({0x0F, 0x84, 0xA4, 0x00, 0x00, 0x00})));
     }
     return true;
 }
@@ -489,7 +543,7 @@ DWORD TrainerFunc::AsmUnitSpeedUp(LPVOID) {
         mov [ecx],edx    // 5.0
         je loopcontinue
         next2:
-        // not working for planes
+        // not working for aircraftss
         // mov [ecx+584],3FF00000 //1.875
         loopcontinue:
         add eax,1

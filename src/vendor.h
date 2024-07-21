@@ -17,6 +17,8 @@
 #include <span>
 #include <sstream>
 
+#include <fmt/core.h>
+
 #define GLFW_INCLUDE_GLU
 #include <GLFW/glfw3.h>
 #define GLFW_EXPOSE_NATIVE_WIN32

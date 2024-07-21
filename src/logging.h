@@ -29,7 +29,7 @@ public:
     Logger(LogLevel level, const char* filename, int line)
     : log_level_(level) {
         InitLogHeader(level);
-        log_stream_ << std::format("{} {}:{}] ", log_header_, filename, line);
+        log_stream_ << fmt::format("{} {}:{}] ", log_header_, filename, line);
     }
 
     Logger(bool, LogLevel level, const char* filename, int line)
@@ -37,32 +37,32 @@ public:
         DWORD err_val = GetLastError();
         std::error_code ec(err_val, std::system_category());
         InitLogHeader(level);
-        log_stream_ << std::format("{} {}:{}] ({}:{}) ", log_header_, filename,
+        log_stream_ << fmt::format("{} {}:{}] ({}:{}) ", log_header_, filename,
                                    line, err_val, ec.message());
     }
 
     template <class... Args>
     Logger(bool, LogLevel level, const char* filename, int line,
-           std::format_string<Args...>&& fmt_str, Args&&... args)
+           fmt::format_string<Args...>&& fmt_str, Args&&... args)
     : log_level_(level) {
         DWORD err_val = GetLastError();
         std::error_code ec(err_val, std::system_category());
         InitLogHeader(level);
-        log_stream_ << std::format("{} {}:{}] ({}:{}) ", log_header_, filename,
+        log_stream_ << fmt::format("{} {}:{}] ({}:{}) ", log_header_, filename,
                                    line, err_val, ec.message())
-                    << std::format(
-                           std::forward<std::format_string<Args...>>(fmt_str),
+                    << fmt::format(
+                           std::forward<fmt::format_string<Args...>>(fmt_str),
                            std::forward<Args>(args)...);
     }
 
     template <class... Args>
     Logger(LogLevel level, const char* filename, int line,
-           std::format_string<Args...>&& fmt_str, Args&&... args)
+           fmt::format_string<Args...>&& fmt_str, Args&&... args)
     : log_level_(level) {
         InitLogHeader(level);
-        log_stream_ << std::format("{} {}:{}] ", log_header_, filename, line)
-                    << std::format(
-                           std::forward<std::format_string<Args...>>(fmt_str),
+        log_stream_ << fmt::format("{} {}:{}] ", log_header_, filename, line)
+                    << fmt::format(
+                           std::forward<fmt::format_string<Args...>>(fmt_str),
                            std::forward<Args>(args)...);
     }
 
@@ -116,8 +116,8 @@ private:
 #define LOG_IF(lvl, cond) !(cond) ? DEVNULL : LOG(lvl)
 
 #define CHECK(cond) LOG_IF(FATAL, !(cond)) << "Check failed: " #cond " "
-#define CHECK_EQ(a, b) LOG_IF(FATAL,  ((a)!=(b))) << std::format("Check failed: " #a "={} EQ " #b "={}", (a), (b))
-#define CHECK_GE(a, b) LOG_IF(FATAL, !((a)>=(b))) << std::format("Check failed: " #a "={} GE " #b "={}", (a), (b))
-#define CHECK_GT(a, b) LOG_IF(FATAL, !((a)> (b))) << std::format("Check failed: " #a "={} GT " #b "={}", (a), (b))
-#define CHECK_LE(a, b) LOG_IF(FATAL, !((a)<=(b))) << std::format("Check failed: " #a "={} LE " #b "={}", (a), (b))
-#define CHECK_LT(a, b) LOG_IF(FATAL, !((a)< (b))) << std::format("Check failed: " #a "={} LT " #b "={}", (a), (b))
+#define CHECK_EQ(a, b) LOG_IF(FATAL,  ((a)!=(b))) << fmt::format("Check failed: " #a "={} EQ " #b "={}", (a), (b))
+#define CHECK_GE(a, b) LOG_IF(FATAL, !((a)>=(b))) << fmt::format("Check failed: " #a "={} GE " #b "={}", (a), (b))
+#define CHECK_GT(a, b) LOG_IF(FATAL, !((a)> (b))) << fmt::format("Check failed: " #a "={} GT " #b "={}", (a), (b))
+#define CHECK_LE(a, b) LOG_IF(FATAL, !((a)<=(b))) << fmt::format("Check failed: " #a "={} LE " #b "={}", (a), (b))
+#define CHECK_LT(a, b) LOG_IF(FATAL, !((a)< (b))) << fmt::format("Check failed: " #a "={} LT " #b "={}", (a), (b))

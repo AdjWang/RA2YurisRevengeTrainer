@@ -1,6 +1,7 @@
 #include "logging.h"
 #include "win32utils.h"
 #include "aa_engine/autoassembler.h"
+#include "ce_scripts.h"
 
 std::string script = R"(
 [ENABLE]
@@ -48,5 +49,6 @@ int main() {
     yrtr::win32::HandleGuard handle(hProcess);
     bool retval = _autoassemble(handle.handle(), script, 0);
     CHECK(retval);
+
     return 0;
 }

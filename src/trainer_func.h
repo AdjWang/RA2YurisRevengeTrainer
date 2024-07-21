@@ -34,7 +34,7 @@ public:
     void OnCkboxInstBuild(bool activate);
     void OnCkboxUnlimitSuperWeapon(bool activate);
     void OnCkboxUnlimitRadar(bool activate);
-    void OnCkboxInstShot(bool activate);
+    void OnCkboxInstFire(bool activate);
     void OnCkboxInstTurn(bool activate);
     void OnCkboxRangeToYourBase(bool activate);
     void OnCkboxFireToYourBase(bool activate);
@@ -43,15 +43,15 @@ public:
     void OnCkboxSellTheWorld(bool activate);
     void OnCkboxUnlimitPower(bool activate);
     void OnCkboxBuildEveryWhere(bool activate);
-    void OnCkboxAutoRepaire(bool activate);
-    void OnCkboxEnermyRepaireDown(bool activate);
+    void OnCkboxAutoRepair(bool activate);
+    void OnCkboxEnermyRepairDown(bool activate);
     void OnCkboxSocialismTheBest(bool activate);
     void OnCkboxMakeAttackedMine(bool activate);
     void OnCkboxMakeOccupiedMine(bool activate);
     void OnCkboxMakeGarrisonedMine(bool activate);
     void OnCkboxInvadeMode(bool activate);
     void OnCkboxUnlimitTech(bool activate);
-    void OnCkboxInstLoad(bool activate);
+    void OnCkboxFastReload(bool activate);
     void OnCkboxUnlimitFirePower(bool activate);
     void OnCkboxInstChrono(bool activate);
     void OnCkboxSpySpy(bool activate);
@@ -76,6 +76,10 @@ private:
     bool WriteMaxBuildingCount(uint32_t val) const;
     bool UnlimitRadar() const;
     bool UnlimitSuperWeapon() const;
+    bool AntiChronoDisable(bool activate) const;
+    bool InvadeMode(bool activate) const;
+    bool EnableSellAllBelong(bool activate) const;
+    bool EnableSellAllBuilder(bool activate) const;
 
     static DWORD AsmClearShroud(LPVOID);
     static DWORD AsmNuclearBomb(LPVOID);
@@ -87,4 +91,4 @@ private:
     DISALLOW_COPY_AND_ASSIGN(TrainerFunc);
 };
 
-}
+}  // namespace yrtr
