@@ -8,12 +8,21 @@ namespace {
 static void error_callback(int error, const char* description) {
     LOG(FATAL, "error=[{}] {}", error, description);
 }
+
 static void key_callback(GLFWwindow* window, int key, int scancode, int action,
                          int mods) {
     UNREFERENCED_PARAMETER(scancode);
     UNREFERENCED_PARAMETER(mods);
+    // TODO
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GL_TRUE);
+}
+
+static void FramebufferSizeCallback(GLFWwindow* window, int width, int height) {
+    auto gui_ctx =
+        reinterpret_cast<yrtr::GuiContext*>(glfwGetWindowUserPointer(window));
+    glViewport(0, 0, width, height);
+    gui_ctx->UpdateViewport(window, width, height);
 }
 
 static constexpr double kTimerInterval = 1.0;   // second
@@ -46,17 +55,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, PSTR, int) {
 
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);  // Enable vsync
+    yrtr::GuiContext gui_ctx(window);
+    glfwSetWindowUserPointer(window, &gui_ctx);
 
     glfwSetKeyCallback(window, key_callback);
+    glfwSetFramebufferSizeCallback(window, FramebufferSizeCallback);
 
-    yrtr::GuiContext gui_ctx(window);
     // Disable imgui.ini
     ImGuiIO& io = ImGui::GetIO();
     io.IniFilename = NULL;
 
     yrtr::TrainerFunc::Init("gamemd.exe", gui_ctx);
-    // DEBUG
-    // yrtr::TrainerFunc::Init("Tutorial-i386.exe", gui_ctx);
 
     double ts = glfwGetTime();
     double last_ts = ts;
