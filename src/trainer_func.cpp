@@ -175,12 +175,18 @@ bool TrainerFunc::OnBtnIAMGhost(GuiContext* gui_ctx) {
     return true;
 }
 
+// Use a macro instead of a function because fmt::format_string has to be a
+// constexpr
+#define FMT_AUTOASSEMBLE(script, activate)                                   \
+    mem_api_->AutoAssemble(fmt::format(script, fmt::arg("proc", exe_name_)), \
+                           activate)
+
 bool TrainerFunc::OnCkboxGod(GuiContext* gui_ctx, bool activate) {
     DLOG(INFO, "Trigger {}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
-    CHECK_REPORT(mem_api_->AutoAssemble(script::kGodPlayer, activate));
-    CHECK_REPORT(mem_api_->AutoAssemble(script::kAntiChrono, activate));
-    CHECK_REPORT(mem_api_->AutoAssemble(script::kAntiChronoDisbuild, activate));
+    CHECK_REPORT(FMT_AUTOASSEMBLE(script::kGodPlayer, activate));
+    CHECK_REPORT(FMT_AUTOASSEMBLE(script::kAntiChrono, activate));
+    CHECK_REPORT(FMT_AUTOASSEMBLE(script::kAntiChronoDisbuild, activate));
     CHECK_REPORT(AntiChronoDisable(activate));
     return true;
 }
@@ -188,7 +194,7 @@ bool TrainerFunc::OnCkboxGod(GuiContext* gui_ctx, bool activate) {
 bool TrainerFunc::OnCkboxInstBuild(GuiContext* gui_ctx, bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
-    CHECK_REPORT(mem_api_->AutoAssemble(script::kInstBuild, activate));
+    CHECK_REPORT(FMT_AUTOASSEMBLE(script::kInstBuild, activate));
     return true;
 }
 
@@ -208,22 +214,22 @@ bool TrainerFunc::OnCkboxUnlimitRadar(GuiContext* gui_ctx, bool activate) {
 bool TrainerFunc::OnCkboxInstFire(GuiContext* gui_ctx, bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
-    CHECK_REPORT(mem_api_->AutoAssemble(script::kInstFire, activate));
-    CHECK_REPORT(mem_api_->AutoAssemble(script::kInstTurnBattery, activate));
+    CHECK_REPORT(FMT_AUTOASSEMBLE(script::kInstFire, activate));
+    CHECK_REPORT(FMT_AUTOASSEMBLE(script::kInstTurnBattery, activate));
     return true;
 }
 
 bool TrainerFunc::OnCkboxInstTurn(GuiContext* gui_ctx, bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
-    CHECK_REPORT(mem_api_->AutoAssemble(script::kInstTurnRound, activate));
+    CHECK_REPORT(FMT_AUTOASSEMBLE(script::kInstTurnRound, activate));
     return true;
 }
 
 bool TrainerFunc::OnCkboxRangeToYourBase(GuiContext* gui_ctx, bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
-    CHECK_REPORT(mem_api_->AutoAssemble(script::kRangeToYourBase, activate));
+    CHECK_REPORT(FMT_AUTOASSEMBLE(script::kRangeToYourBase, activate));
     if (activate) {
         gui_ctx->EnableCheckbox(FnLabel::kFireToYourBase);
     } else {
@@ -235,7 +241,7 @@ bool TrainerFunc::OnCkboxRangeToYourBase(GuiContext* gui_ctx, bool activate) {
 bool TrainerFunc::OnCkboxFireToYourBase(GuiContext* gui_ctx, bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
-    CHECK_REPORT(mem_api_->AutoAssemble(script::kFireToYourBase, activate));
+    CHECK_REPORT(FMT_AUTOASSEMBLE(script::kFireToYourBase, activate));
     return true;
 }
 
@@ -243,21 +249,21 @@ bool TrainerFunc::OnCkboxFreezeGapGenerator(GuiContext* gui_ctx,
                                             bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
-    CHECK_REPORT(mem_api_->AutoAssemble(script::kFreezeGAGAP, activate));
+    CHECK_REPORT(FMT_AUTOASSEMBLE(script::kFreezeGAGAP, activate));
     return true;
 }
 
 bool TrainerFunc::OnCkboxFreezeUnit(GuiContext* gui_ctx, bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
-    CHECK_REPORT(mem_api_->AutoAssemble(script::kFreezeUnit, activate));
+    CHECK_REPORT(FMT_AUTOASSEMBLE(script::kFreezeUnit, activate));
     return true;
 }
 
 bool TrainerFunc::OnCkboxSellTheWorld(GuiContext* gui_ctx, bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
-    CHECK_REPORT(mem_api_->AutoAssemble(script::kSellTheWorldOnCursor, activate));
+    CHECK_REPORT(FMT_AUTOASSEMBLE(script::kSellTheWorldOnCursor, activate));
     CHECK_REPORT(EnableSellAllBelong(activate));
     CHECK_REPORT(EnableSellAllBuilder(activate));
     return true;
@@ -266,25 +272,23 @@ bool TrainerFunc::OnCkboxSellTheWorld(GuiContext* gui_ctx, bool activate) {
 bool TrainerFunc::OnCkboxUnlimitPower(GuiContext* gui_ctx, bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
-    CHECK_REPORT(mem_api_->AutoAssemble(script::kUnlimitPower, activate));
+    CHECK_REPORT(FMT_AUTOASSEMBLE(script::kUnlimitPower, activate));
     return true;
 }
 
 bool TrainerFunc::OnCkboxBuildEveryWhere(GuiContext* gui_ctx, bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
-    CHECK_REPORT(
-        mem_api_->AutoAssemble(script::kBuildEveryWhereGround, activate));
-    CHECK_REPORT(
-        mem_api_->AutoAssemble(script::kBuildEveryWhereWater, activate));
+    CHECK_REPORT(FMT_AUTOASSEMBLE(script::kBuildEveryWhereGround, activate));
+    CHECK_REPORT(FMT_AUTOASSEMBLE(script::kBuildEveryWhereWater, activate));
     return true;
 }
 
 bool TrainerFunc::OnCkboxAutoRepair(GuiContext* gui_ctx, bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
-    CHECK_REPORT(mem_api_->AutoAssemble(script::kAutoRepair, activate));
-    CHECK_REPORT(mem_api_->AutoAssemble(script::kAutoRepairNeutral, activate));
+    CHECK_REPORT(FMT_AUTOASSEMBLE(script::kAutoRepair, activate));
+    CHECK_REPORT(FMT_AUTOASSEMBLE(script::kAutoRepairNeutral, activate));
     return true;
 }
 
@@ -292,30 +296,29 @@ bool TrainerFunc::OnCkboxEnermyRevertRepair(GuiContext* gui_ctx,
                                             bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
-    CHECK_REPORT(mem_api_->AutoAssemble(script::kRevertRepair, activate));
+    CHECK_REPORT(FMT_AUTOASSEMBLE(script::kRevertRepair, activate));
     return true;
 }
 
 bool TrainerFunc::OnCkboxSocialismTheBest(GuiContext* gui_ctx, bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
-    CHECK_REPORT(mem_api_->AutoAssemble(script::kRevertYuri, activate));
-    CHECK_REPORT(mem_api_->AutoAssemble(script::kPermanentYuri, activate));
+    CHECK_REPORT(FMT_AUTOASSEMBLE(script::kRevertYuri, activate));
+    CHECK_REPORT(FMT_AUTOASSEMBLE(script::kPermanentYuri, activate));
     return true;
 }
 
 bool TrainerFunc::OnCkboxMakeAttackedMine(GuiContext* gui_ctx, bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
-    CHECK_REPORT(mem_api_->AutoAssemble(script::kThisIsMineOnAttack, activate));
+    CHECK_REPORT(FMT_AUTOASSEMBLE(script::kThisIsMineOnAttack, activate));
     return true;
 }
 
 bool TrainerFunc::OnCkboxMakeCapturedMine(GuiContext* gui_ctx, bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
-    CHECK_REPORT(
-        mem_api_->AutoAssemble(script::kThisIsMineOnCapture, activate));
+    CHECK_REPORT(FMT_AUTOASSEMBLE(script::kThisIsMineOnCapture, activate));
     return true;
 }
 
@@ -323,8 +326,7 @@ bool TrainerFunc::OnCkboxMakeGarrisonedMine(GuiContext* gui_ctx,
                                             bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
-    CHECK_REPORT(
-        mem_api_->AutoAssemble(script::kThisIsMineOnGarrison, activate));
+    CHECK_REPORT(FMT_AUTOASSEMBLE(script::kThisIsMineOnGarrison, activate));
     return true;
 }
 
@@ -338,50 +340,50 @@ bool TrainerFunc::OnCkboxInvadeMode(GuiContext* gui_ctx, bool activate) {
 bool TrainerFunc::OnCkboxUnlimitTech(GuiContext* gui_ctx, bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
-    CHECK_REPORT(mem_api_->AutoAssemble(script::kUnlimitTech, activate));
+    CHECK_REPORT(FMT_AUTOASSEMBLE(script::kUnlimitTech, activate));
     return true;
 }
 
 bool TrainerFunc::OnCkboxFastReload(GuiContext* gui_ctx, bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
-    CHECK_REPORT(mem_api_->AutoAssemble(script::kFastReload, activate));
+    CHECK_REPORT(FMT_AUTOASSEMBLE(script::kFastReload, activate));
     return true;
 }
 
 bool TrainerFunc::OnCkboxUnlimitFirePower(GuiContext* gui_ctx, bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
-    CHECK_REPORT(mem_api_->AutoAssemble(script::kUnlimitFirePower, activate));
+    CHECK_REPORT(FMT_AUTOASSEMBLE(script::kUnlimitFirePower, activate));
     return true;
 }
 
 bool TrainerFunc::OnCkboxInstChrono(GuiContext* gui_ctx, bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
-    CHECK_REPORT(mem_api_->AutoAssemble(script::kInstChronoMove, activate));
-    CHECK_REPORT(mem_api_->AutoAssemble(script::kInstChronoAttack, activate));
+    CHECK_REPORT(FMT_AUTOASSEMBLE(script::kInstChronoMove, activate));
+    CHECK_REPORT(FMT_AUTOASSEMBLE(script::kInstChronoAttack, activate));
     return true;
 }
 
 bool TrainerFunc::OnCkboxSpySpy(GuiContext* gui_ctx, bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
-    CHECK_REPORT(mem_api_->AutoAssemble(script::kSpySpy, activate));
+    CHECK_REPORT(FMT_AUTOASSEMBLE(script::kSpySpy, activate));
     return true;
 }
 
 bool TrainerFunc::OnCkboxInfantrySlip(GuiContext* gui_ctx, bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
-    CHECK_REPORT(mem_api_->AutoAssemble(script::kInfantrySlip, activate));
+    CHECK_REPORT(FMT_AUTOASSEMBLE(script::kInfantrySlip, activate));
     return true;
 }
 
 bool TrainerFunc::OnCkboxUnitLeveledUp(GuiContext* gui_ctx, bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
-    CHECK_REPORT(mem_api_->AutoAssemble(script::kUnitLeveledUp, activate));
+    CHECK_REPORT(FMT_AUTOASSEMBLE(script::kUnitLeveledUp, activate));
     return true;
 }
 
@@ -392,6 +394,7 @@ bool TrainerFunc::OnCkboxAdjustGameSpeed(GuiContext* gui_ctx, bool activate) {
 }
 #pragma warning(pop)
 
+#undef FMT_AUTOASSEMBLE
 #undef CHECK_MEMAPI_OR_REPORT
 #undef CHECK_REPORT
 

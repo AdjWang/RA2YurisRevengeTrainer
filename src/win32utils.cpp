@@ -89,9 +89,10 @@ bool MemoryAPI::WriteMemory(uint32_t address,
 
 bool MemoryAPI::WriteLongJump(uint32_t addr_from, uint32_t addr_to) const {
     CHECK_HANDLE_OR_RETURN_FALSE();
-    static_assert(sizeof(void*) == 4);
     uint8_t asm_code[5] = {0xE9};   // long jmp
-    memcpy(&asm_code[1], reinterpret_cast<void*>(addr_to), sizeof(void*));
+    uint32_t rel_addr_to = addr_to - addr_from - 5;
+    static_assert(sizeof(void*) == 4);
+    memcpy(&asm_code[1], reinterpret_cast<void*>(&rel_addr_to), sizeof(void*));
     return WriteMemory(addr_from, std::span<uint8_t>(asm_code, 5));
 }
 

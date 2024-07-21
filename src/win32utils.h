@@ -100,7 +100,7 @@ public:
     bool WriteMemory(uint32_t address, std::span<const uint8_t> data) const;
 
     template <class T>
-        requires(!std::is_same_v<T, std::span<const uint8_t>>)
+        requires(!std::is_convertible_v<T, std::span<const uint8_t>>)
     bool WriteMemory(uint32_t address, T data) const {
         return WriteMemory(
             address, std::span<const uint8_t>(reinterpret_cast<uint8_t*>(&data),
@@ -112,7 +112,7 @@ public:
     bool CreateRemoteThread(void* fn, size_t code_size = 0x256) const;
     bool AutoAssemble(std::string_view script, bool activate) const;
 
-private:
+   private:
     std::unique_ptr<HandleGuard> handle_;
 
     DISALLOW_COPY_AND_ASSIGN(MemoryAPI);
