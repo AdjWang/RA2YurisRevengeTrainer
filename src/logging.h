@@ -91,8 +91,21 @@ private:
 
 }  // namespace yrtr
 
+namespace {
+constexpr const char* GetFileName(const char* file_path) {
+    size_t p = 0;
+    while (file_path[p++] != '\0');
+    for (; p > 0; p--) {
+        if (file_path[p] == '\\' || file_path[p] == '/') {
+            return &file_path[p + 1];
+        }
+    }
+    return file_path;
+}
+}
+
 // #define __LOG_FILE  __FILE_NAME__
-#define __LOG_FILE  __FILE__
+#define __LOG_FILE  GetFileName(__FILE__)
 
 #define DEVNULL \
     yrtr::DummyLogger(yrtr::LogLevel::kINFO, __LOG_FILE, __LINE__).stream()
