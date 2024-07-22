@@ -9,9 +9,10 @@ set(CMAKE_DEBUG_POSTFIX "")
 
 add_compile_options(/MP /Gy /GS-)
 add_compile_definitions(_SILENCE_ALL_CXX23_DEPRECATION_WARNINGS)
-# DEBUG
-# add_link_options(/OPT:REF /INCREMENTAL:NO /level='requireAdministrator' /uiAccess='false')
-add_link_options(/OPT:REF /INCREMENTAL:NO)
+add_link_options(/OPT:REF /INCREMENTAL:NO /level='requireAdministrator' /uiAccess='false')
+
+# add_compile_definitions(YRTR_LOG_STD)
+add_compile_definitions(YRTR_LOG_DBGVIEW)
 
 project(ra2_trainer)
 

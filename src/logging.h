@@ -67,8 +67,13 @@ public:
     }
 
     ~Logger() {
+#ifdef YRTR_LOG_STD
         ::printf("%s\n", log_stream_.str().c_str());
         ::fflush(stdout);
+#elif YRTR_LOG_DBGVIEW
+        log_stream_ << "\n";
+        ::OutputDebugString(log_stream_.str().c_str());
+#endif
         if (UNLIKELY(log_level_ == LogLevel::kFATAL)) {
             ::abort();
         }
