@@ -9,7 +9,9 @@ set(CMAKE_DEBUG_POSTFIX "")
 
 add_compile_options(/MP /Gy /GS-)
 add_compile_definitions(_SILENCE_ALL_CXX23_DEPRECATION_WARNINGS)
-add_link_options(/OPT:REF /INCREMENTAL:NO /level='requireAdministrator' /uiAccess='false')
+# DEBUG
+# add_link_options(/OPT:REF /INCREMENTAL:NO /level='requireAdministrator' /uiAccess='false')
+add_link_options(/OPT:REF /INCREMENTAL:NO)
 
 project(ra2_trainer)
 
@@ -47,6 +49,7 @@ add_subdirectory(src/aa_engine)
 
 add_executable(${PROJECT_NAME} WIN32 src/bin/trainer.cpp
                                      src/logging.cpp
+                                     src/timer.cpp
                                      src/gui.cpp
                                      src/win32utils.cpp
                                      src/trainer_func.cpp)

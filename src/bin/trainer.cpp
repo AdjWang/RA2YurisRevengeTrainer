@@ -3,6 +3,7 @@
 #include "vendor.h"
 #include "trainer_func.h"
 #include "char_table.h"
+#include "timer.h"
 
 namespace {
 static void error_callback(int error, const char* description) {
@@ -25,16 +26,27 @@ static void FramebufferSizeCallback(GLFWwindow* window, int width, int height) {
     gui_ctx->UpdateViewport(window, width, height);
 }
 
-static constexpr double kTimerInterval = 1.0;   // second
-static void OnTimer(yrtr::GuiContext& ctx) {
-    yrtr::TrainerFunc::instance()->Update();
+static constexpr int kTimerIdProcWatch = 0;
+static constexpr int kTimerIdTrainerFunc = 1;
+
+static void OnProcWatchTimer(yrtr::GuiContext* ctx) {
+    yrtr::TrainerFunc::instance()->UpdateProcState();
 
     if (yrtr::TrainerFunc::instance()->attached()) {
-        ctx.set_state(yrtr::GetFnChar(yrtr::FnLabel::kStateOk));
+        ctx->set_state(yrtr::GetFnChar(yrtr::FnLabel::kStateOk));
     } else {
-        ctx.set_state(yrtr::GetFnChar(yrtr::FnLabel::kStateIdle));
+        ctx->set_state(yrtr::GetFnChar(yrtr::FnLabel::kStateIdle));
+        ctx->DeactivateAll();
     }
 }
+
+static void OnUpdateTrainerFunc() {
+    if (yrtr::TrainerFunc::instance()->attached()) {
+        yrtr::TrainerFunc::instance()->UnlimitRadar();
+        yrtr::TrainerFunc::instance()->UnlimitSuperWeapon();
+    }
+}
+
 }  // namespace
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, PSTR, int) {
@@ -66,18 +78,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, PSTR, int) {
     io.IniFilename = NULL;
 
     yrtr::TrainerFunc::Init("gamemd.exe", gui_ctx);
-
-    double ts = glfwGetTime();
-    double last_ts = ts;
+    yrtr::Timer::SetTimer(kTimerIdProcWatch, 1.0 /*second*/,
+                          std::bind_front(&OnProcWatchTimer, &gui_ctx));
+    yrtr::Timer::SetTimer(kTimerIdTrainerFunc, 0.3 /*second*/,
+                          OnUpdateTrainerFunc);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     while (!glfwWindowShouldClose(window)) {
-        ts = glfwGetTime();
-        if (ts - last_ts > kTimerInterval) {
-            last_ts = ts;
-            OnTimer(gui_ctx);
-        }
+        yrtr::Timer::Update();
 
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -88,7 +97,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, PSTR, int) {
         gui_ctx.Render();
 
         glfwSwapBuffers(window);
-        glfwWaitEventsTimeout(1.0);
+        glfwWaitEventsTimeout(0.2);
     }
 
     glfwDestroyWindow(window);

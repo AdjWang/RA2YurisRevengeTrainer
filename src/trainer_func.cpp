@@ -65,9 +65,11 @@ void TrainerFunc::Init(std::string_view exe_name, GuiContext& gui_ctx) {
 
 TrainerFunc::TrainerFunc(std::string_view exe_name)
     : exe_name_(exe_name),
-      attached_(false) {}
+      attached_(false),
+      enable_unlimit_radar_(false),
+      enable_unlimit_super_weapon_(false) {}
 
-void TrainerFunc::Update() {
+void TrainerFunc::UpdateProcState() {
     if (win32::GetProcessIDFromName(exe_name_.c_str(), &pid_)) {
         if (mem_api_ == nullptr) {
             DLOG(INFO, "GetProcessIDFromName found exe={} pid={:#x}", exe_name_,
@@ -104,6 +106,8 @@ void TrainerFunc::Update() {
 #pragma warning(disable:4100)
 bool TrainerFunc::OnBtnApply(GuiContext* gui_ctx, uint32_t val) {
     DLOG(INFO, "Trigger {} val={}", __FUNCTION__, val);
+    CHECK_MEMAPI_OR_REPORT();
+    CHECK_REPORT(IsGaming());
     CHECK_REPORT(WriteCredit(val));
     return true;
 }
@@ -111,6 +115,7 @@ bool TrainerFunc::OnBtnApply(GuiContext* gui_ctx, uint32_t val) {
 bool TrainerFunc::OnBtnFastBuild(GuiContext* gui_ctx) {
     DLOG(INFO, "Trigger {}", __FUNCTION__);
     CHECK_MEMAPI_OR_REPORT();
+    CHECK_REPORT(IsGaming());
     uint32_t data;
     CHECK_REPORT(mem_api_->ReadMemory(0x00A83D4C, &data));
     for (uint32_t i = 1, j = 0; i <= 5; j += 4, i++) {
@@ -122,6 +127,7 @@ bool TrainerFunc::OnBtnFastBuild(GuiContext* gui_ctx) {
 bool TrainerFunc::OnBtnDeleteUnit(GuiContext* gui_ctx) {
     DLOG(INFO, "Trigger {}", __FUNCTION__);
     CHECK_MEMAPI_OR_REPORT();
+    CHECK_REPORT(IsGaming());
     CHECK_REPORT(mem_api_->CreateRemoteThread(AsmDeleteUnit));
     return true;
 }
@@ -129,6 +135,7 @@ bool TrainerFunc::OnBtnDeleteUnit(GuiContext* gui_ctx) {
 bool TrainerFunc::OnBtnClearShroud(GuiContext* gui_ctx) {
     DLOG(INFO, "Trigger {}", __FUNCTION__);
     CHECK_MEMAPI_OR_REPORT();
+    CHECK_REPORT(IsGaming());
     CHECK_REPORT(mem_api_->CreateRemoteThread(AsmClearShroud));
     return true;
 }
@@ -136,6 +143,7 @@ bool TrainerFunc::OnBtnClearShroud(GuiContext* gui_ctx) {
 bool TrainerFunc::OnBtnGiveMeABomb(GuiContext* gui_ctx) {
     DLOG(INFO, "Trigger {}", __FUNCTION__);
     CHECK_MEMAPI_OR_REPORT();
+    CHECK_REPORT(IsGaming());
     CHECK_REPORT(mem_api_->CreateRemoteThread(AsmNuclearBomb));
     return true;
 }
@@ -143,6 +151,7 @@ bool TrainerFunc::OnBtnGiveMeABomb(GuiContext* gui_ctx) {
 bool TrainerFunc::OnBtnUnitLevelUp(GuiContext* gui_ctx) {
     DLOG(INFO, "Trigger {}", __FUNCTION__);
     CHECK_MEMAPI_OR_REPORT();
+    CHECK_REPORT(IsGaming());
     CHECK_REPORT(mem_api_->CreateRemoteThread(AsmUnitLevelUp));
     return true;
 }
@@ -150,6 +159,7 @@ bool TrainerFunc::OnBtnUnitLevelUp(GuiContext* gui_ctx) {
 bool TrainerFunc::OnBtnUnitSpeedUp(GuiContext* gui_ctx) {
     DLOG(INFO, "Trigger {}", __FUNCTION__);
     CHECK_MEMAPI_OR_REPORT();
+    CHECK_REPORT(IsGaming());
     CHECK_REPORT(mem_api_->CreateRemoteThread(AsmUnitSpeedUp));
     return true;
 }
@@ -157,6 +167,7 @@ bool TrainerFunc::OnBtnUnitSpeedUp(GuiContext* gui_ctx) {
 bool TrainerFunc::OnBtnIAMWinner(GuiContext* gui_ctx) {
     DLOG(INFO, "Trigger {}", __FUNCTION__);
     CHECK_MEMAPI_OR_REPORT();
+    CHECK_REPORT(IsGaming());
     CHECK_REPORT(mem_api_->WriteMemory(0x00A83D49, static_cast<uint8_t>(1)));
     return true;
 }
@@ -164,6 +175,7 @@ bool TrainerFunc::OnBtnIAMWinner(GuiContext* gui_ctx) {
 bool TrainerFunc::OnBtnThisIsMine(GuiContext* gui_ctx) {
     DLOG(INFO, "Trigger {}", __FUNCTION__);
     CHECK_MEMAPI_OR_REPORT();
+    CHECK_REPORT(IsGaming());
     CHECK_REPORT(mem_api_->CreateRemoteThread(AsmThisIsMine));
     return true;
 }
@@ -171,6 +183,7 @@ bool TrainerFunc::OnBtnThisIsMine(GuiContext* gui_ctx) {
 bool TrainerFunc::OnBtnIAMGhost(GuiContext* gui_ctx) {
     DLOG(INFO, "Trigger {}", __FUNCTION__);
     CHECK_MEMAPI_OR_REPORT();
+    CHECK_REPORT(IsGaming());
     CHECK_REPORT(TobeGhost());
     return true;
 }
@@ -201,13 +214,15 @@ bool TrainerFunc::OnCkboxInstBuild(GuiContext* gui_ctx, bool activate) {
 bool TrainerFunc::OnCkboxUnlimitSuperWeapon(GuiContext* gui_ctx,
                                             bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
-    // TODO
+    CHECK_MEMAPI_OR_REPORT();
+    enable_unlimit_super_weapon_ = activate;
     return true;
 }
 
 bool TrainerFunc::OnCkboxUnlimitRadar(GuiContext* gui_ctx, bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
-    // TODO
+    CHECK_MEMAPI_OR_REPORT();
+    enable_unlimit_radar_ = activate;
     return true;
 }
 
@@ -389,7 +404,9 @@ bool TrainerFunc::OnCkboxUnitLeveledUp(GuiContext* gui_ctx, bool activate) {
 
 bool TrainerFunc::OnCkboxAdjustGameSpeed(GuiContext* gui_ctx, bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
-    // TODO
+    CHECK_MEMAPI_OR_REPORT();
+    CHECK_REPORT(
+        mem_api_->WriteMemory(0x00A8EDDC, static_cast<uint8_t>(activate)));
     return true;
 }
 #pragma warning(pop)
@@ -409,34 +426,23 @@ bool TrainerFunc::OnCkboxAdjustGameSpeed(GuiContext* gui_ctx, bool activate) {
         return false;   \
     }
 
-bool TrainerFunc::WriteSpeed(uint32_t speed) const {
-    CHECK_MEMAPI_OR_RETURN_FALSE();
-    return mem_api_->WriteMemory(0x00A8EB60, speed);
-}
-
-bool TrainerFunc::WriteCredit(uint32_t credit) const {
-    CHECK_MEMAPI_OR_RETURN_FALSE();
-    uint32_t addr;
-    CHECK_RETF(mem_api_->ReadAddress(0x00A83D4C, {0x30C}, &addr));
-    return mem_api_->WriteMemory(addr, credit);
-}
-
-bool TrainerFunc::WriteMaxBuildingCount(uint32_t val) const {
-    CHECK_MEMAPI_OR_RETURN_FALSE();
-    uint32_t addr;
-    CHECK_RETF(mem_api_->ReadAddress(0x008871E0, {0xF0}, &addr));
-    return mem_api_->WriteMemory(addr, val - 1);
-}
-
 bool TrainerFunc::UnlimitRadar() const {
+    if (!enable_unlimit_radar_) {
+        return true;
+    }
     CHECK_MEMAPI_OR_RETURN_FALSE();
+    CHECK_RETF(IsGaming());
     uint32_t addr;
     CHECK_RETF(mem_api_->ReadAddress(0x00A8B230, {0x34A4}, &addr));
     return mem_api_->WriteMemory(addr, static_cast<uint8_t>(1));
 }
 
 bool TrainerFunc::UnlimitSuperWeapon() const {
+    if (!enable_unlimit_super_weapon_) {
+        return true;
+    }
     CHECK_MEMAPI_OR_RETURN_FALSE();
+    CHECK_RETF(IsGaming());
     // 00 NuclearMissile
     // 01 IronCurtain
     // 02 ForceShield
@@ -464,6 +470,32 @@ bool TrainerFunc::UnlimitSuperWeapon() const {
     return true;
 }
 
+bool TrainerFunc::IsGaming() const {
+    CHECK_MEMAPI_OR_RETURN_FALSE();
+    uint32_t p_player;
+    CHECK_RETF(mem_api_->ReadMemory(0x00A83D4C, &p_player));
+    return p_player != 0;
+}
+
+bool TrainerFunc::WriteSpeed(uint32_t speed) const {
+    CHECK_MEMAPI_OR_RETURN_FALSE();
+    return mem_api_->WriteMemory(0x00A8EB60, speed);
+}
+
+bool TrainerFunc::WriteCredit(uint32_t credit) const {
+    CHECK_MEMAPI_OR_RETURN_FALSE();
+    uint32_t addr;
+    CHECK_RETF(mem_api_->ReadAddress(0x00A83D4C, {0x30C}, &addr));
+    return mem_api_->WriteMemory(addr, credit);
+}
+
+bool TrainerFunc::WriteMaxBuildingCount(uint32_t val) const {
+    CHECK_MEMAPI_OR_RETURN_FALSE();
+    uint32_t addr;
+    CHECK_RETF(mem_api_->ReadAddress(0x008871E0, {0xF0}, &addr));
+    return mem_api_->WriteMemory(addr, val - 1);
+}
+
 bool TrainerFunc::TobeGhost() const {
     CHECK_MEMAPI_OR_RETURN_FALSE();
     uint32_t select_num;
@@ -480,9 +512,6 @@ bool TrainerFunc::TobeGhost() const {
     // Check if the building belongs to the player
     uint32_t select_owner;
     CHECK_RETF(mem_api_->ReadMemory(0x00A8ECBC, {0, 0x21C}, &select_owner));
-    if (select_owner != 0x007E3EBC) {
-        return true;
-    }
     uint32_t p_player;
     CHECK_RETF(mem_api_->ReadMemory(0x00A83D4C, &p_player));
     if (select_owner != p_player) {

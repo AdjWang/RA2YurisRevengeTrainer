@@ -18,7 +18,7 @@ public:
     void UpdateViewport(GLFWwindow* window, int width, int height);
     void EnableCheckbox(FnLabel label);
     void DisableCheckbox(FnLabel label);
-    void DeactivateCheckbox(FnLabel label);
+    void DeactivateAll();
 
     void Update() {}
     void PreRender();

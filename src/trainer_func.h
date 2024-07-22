@@ -17,7 +17,7 @@ public:
 
     bool attached() const { return attached_; }
     win32::MemoryAPI* mem_api() { return mem_api_.get(); }
-    void Update();
+    void UpdateProcState();
 
     bool OnBtnApply(GuiContext* gui_ctx, uint32_t val);
     bool OnBtnFastBuild(GuiContext* gui_ctx);
@@ -59,6 +59,9 @@ public:
     bool OnCkboxUnitLeveledUp(GuiContext* gui_ctx, bool activate);
     bool OnCkboxAdjustGameSpeed(GuiContext* gui_ctx, bool activate);
 
+    bool UnlimitRadar() const;
+    bool UnlimitSuperWeapon() const;
+
 private:
     static std::unique_ptr<TrainerFunc> trainer_target_;
 
@@ -67,15 +70,17 @@ private:
     DWORD pid_;
     std::unique_ptr<win32::MemoryAPI> mem_api_;
 
+    bool enable_unlimit_radar_;
+    bool enable_unlimit_super_weapon_;
+
     TrainerFunc(std::string_view exe_name);
     TrainerFunc(TrainerFunc&&) = delete;
     TrainerFunc& operator=(TrainerFunc&&) = delete;
 
+    bool IsGaming() const;
     bool WriteSpeed(uint32_t speed) const;
     bool WriteCredit(uint32_t credit) const;
     bool WriteMaxBuildingCount(uint32_t val) const;
-    bool UnlimitRadar() const;
-    bool UnlimitSuperWeapon() const;
     bool TobeGhost() const;
     bool AntiChronoDisable(bool activate) const;
     bool InvadeMode(bool activate) const;

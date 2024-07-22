@@ -265,10 +265,15 @@ void GuiContext::DisableCheckbox(FnLabel label) {
     }
 }
 
-void GuiContext::DeactivateCheckbox(FnLabel label) {
-    if (ckbox_cbs_.contains(label)) {
-        ckbox_cbs_[label].activate = false;
+void GuiContext::DeactivateAll() {
+    // Only check boxes need to be deactivated
+    for (auto& [label, ckbox_state] : ckbox_cbs_) {
+        if(ckbox_state.activate) {
+            ckbox_state.activate = false;
+            ckbox_state.cb(this, false);
+        }
     }
+    DisableCheckbox(FnLabel::kFireToYourBase);
 }
 
 #define TRIGGER_INPUT(label, val)                             \
