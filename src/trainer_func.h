@@ -1,6 +1,7 @@
 #pragma once
 #include "macro.h"
 #include "vendor.h"
+#include "state.h"
 
 namespace yrtr {
 
@@ -10,73 +11,73 @@ namespace win32{
 class MemoryAPI;
 }
 
-class TrainerFunc {
+class Trainer {
 public:
-    static TrainerFunc* instance() { return trainer_target_.get(); }
-    static void Init(std::string_view exe_name, GuiContext& gui_ctx);
+    static constexpr int kTimerIdProcWatch = 0;
+    static constexpr int kTimerIdTrainerFunc = 1;
 
-    bool attached() const { return attached_; }
-    win32::MemoryAPI* mem_api() { return mem_api_.get(); }
-    void UpdateProcState();
+    static Trainer* instance() { return trainer_target_.get(); }
+    static void Init(std::string_view exe_name, GuiContext& gui_ctx,
+                     State& state);
 
-    bool OnBtnApply(GuiContext* gui_ctx, uint32_t val);
-    bool OnBtnFastBuild(GuiContext* gui_ctx);
-    bool OnBtnDeleteUnit(GuiContext* gui_ctx);
-    bool OnBtnClearShroud(GuiContext* gui_ctx);
-    bool OnBtnGiveMeABomb(GuiContext* gui_ctx);
-    bool OnBtnUnitLevelUp(GuiContext* gui_ctx);
-    bool OnBtnUnitSpeedUp(GuiContext* gui_ctx);
-    bool OnBtnIAMWinner(GuiContext* gui_ctx);
-    bool OnBtnThisIsMine(GuiContext* gui_ctx);
-    bool OnBtnIAMGhost(GuiContext* gui_ctx);
+    void OnBtnApply(uint32_t val);
+    void OnBtnFastBuild();
+    void OnBtnDeleteUnit();
+    void OnBtnClearShroud();
+    void OnBtnGiveMeABomb();
+    void OnBtnUnitLevelUp();
+    void OnBtnUnitSpeedUp();
+    void OnBtnIAMWinner();
+    void OnBtnThisIsMine();
+    void OnBtnIAMGhost();
 
-    bool OnCkboxGod(GuiContext* gui_ctx, bool activate);
-    bool OnCkboxInstBuild(GuiContext* gui_ctx, bool activate);
-    bool OnCkboxUnlimitSuperWeapon(GuiContext* gui_ctx, bool activate);
-    bool OnCkboxUnlimitRadar(GuiContext* gui_ctx, bool activate);
-    bool OnCkboxInstFire(GuiContext* gui_ctx, bool activate);
-    bool OnCkboxInstTurn(GuiContext* gui_ctx, bool activate);
-    bool OnCkboxRangeToYourBase(GuiContext* gui_ctx, bool activate);
-    bool OnCkboxFireToYourBase(GuiContext* gui_ctx, bool activate);
-    bool OnCkboxFreezeGapGenerator(GuiContext* gui_ctx, bool activate);
-    bool OnCkboxFreezeUnit(GuiContext* gui_ctx, bool activate);
-    bool OnCkboxSellTheWorld(GuiContext* gui_ctx, bool activate);
-    bool OnCkboxUnlimitPower(GuiContext* gui_ctx, bool activate);
-    bool OnCkboxBuildEveryWhere(GuiContext* gui_ctx, bool activate);
-    bool OnCkboxAutoRepair(GuiContext* gui_ctx, bool activate);
-    bool OnCkboxEnermyRevertRepair(GuiContext* gui_ctx, bool activate);
-    bool OnCkboxSocialismTheBest(GuiContext* gui_ctx, bool activate);
-    bool OnCkboxMakeAttackedMine(GuiContext* gui_ctx, bool activate);
-    bool OnCkboxMakeCapturedMine(GuiContext* gui_ctx, bool activate);
-    bool OnCkboxMakeGarrisonedMine(GuiContext* gui_ctx, bool activate);
-    bool OnCkboxInvadeMode(GuiContext* gui_ctx, bool activate);
-    bool OnCkboxUnlimitTech(GuiContext* gui_ctx, bool activate);
-    bool OnCkboxFastReload(GuiContext* gui_ctx, bool activate);
-    bool OnCkboxUnlimitFirePower(GuiContext* gui_ctx, bool activate);
-    bool OnCkboxInstChrono(GuiContext* gui_ctx, bool activate);
-    bool OnCkboxSpySpy(GuiContext* gui_ctx, bool activate);
-    bool OnCkboxInfantrySlip(GuiContext* gui_ctx, bool activate);
-    bool OnCkboxUnitLeveledUp(GuiContext* gui_ctx, bool activate);
-    bool OnCkboxAdjustGameSpeed(GuiContext* gui_ctx, bool activate);
+    void OnCkboxGod(bool activate);
+    void OnCkboxInstBuild(bool activate);
+    void OnCkboxUnlimitSuperWeapon(bool activate);
+    void OnCkboxUnlimitRadar(bool activate);
+    void OnCkboxInstFire(bool activate);
+    void OnCkboxInstTurn(bool activate);
+    void OnCkboxRangeToYourBase(bool activate);
+    void OnCkboxFireToYourBase(bool activate);
+    void OnCkboxFreezeGapGenerator(bool activate);
+    void OnCkboxFreezeUnit(bool activate);
+    void OnCkboxSellTheWorld(bool activate);
+    void OnCkboxUnlimitPower(bool activate);
+    void OnCkboxBuildEveryWhere(bool activate);
+    void OnCkboxAutoRepair(bool activate);
+    void OnCkboxEnermyRevertRepair(bool activate);
+    void OnCkboxSocialismTheBest(bool activate);
+    void OnCkboxMakeAttackedMine(bool activate);
+    void OnCkboxMakeCapturedMine(bool activate);
+    void OnCkboxMakeGarrisonedMine(bool activate);
+    void OnCkboxInvadeMode(bool activate);
+    void OnCkboxUnlimitTech(bool activate);
+    void OnCkboxFastReload(bool activate);
+    void OnCkboxUnlimitFirePower(bool activate);
+    void OnCkboxInstChrono(bool activate);
+    void OnCkboxSpySpy(bool activate);
+    void OnCkboxInfantrySlip(bool activate);
+    void OnCkboxUnitLeveledUp(bool activate);
+    void OnCkboxAdjustGameSpeed(bool activate);
 
-    bool UnlimitRadar() const;
-    bool UnlimitSuperWeapon() const;
+    void OnProcWatchTimer();
+    void OnFuncScanTimer();
 
 private:
-    static std::unique_ptr<TrainerFunc> trainer_target_;
+    static std::unique_ptr<Trainer> trainer_target_;
 
+    State& state_;
     std::string exe_name_;
     bool attached_;
     DWORD pid_;
     std::unique_ptr<win32::MemoryAPI> mem_api_;
 
-    bool enable_unlimit_radar_;
-    bool enable_unlimit_super_weapon_;
+    Trainer(std::string_view exe_name, State& state);
+    Trainer(Trainer&&) = delete;
+    Trainer& operator=(Trainer&&) = delete;
 
-    TrainerFunc(std::string_view exe_name);
-    TrainerFunc(TrainerFunc&&) = delete;
-    TrainerFunc& operator=(TrainerFunc&&) = delete;
-
+    void DeactivateAll();
+    void UpdateProcState();
     bool IsGaming() const;
     bool WriteSpeed(uint32_t speed) const;
     bool WriteCredit(uint32_t credit) const;
@@ -86,6 +87,8 @@ private:
     bool InvadeMode(bool activate) const;
     bool EnableSellAllBelong(bool activate) const;
     bool EnableSellAllBuilder(bool activate) const;
+    bool UnlimitRadar() const;
+    bool UnlimitSuperWeapon() const;
 
     static DWORD AsmClearShroud(LPVOID);
     static DWORD AsmNuclearBomb(LPVOID);
@@ -94,7 +97,7 @@ private:
     static DWORD AsmThisIsMine(LPVOID);
     static DWORD AsmDeleteUnit(LPVOID);
 
-    DISALLOW_COPY_AND_ASSIGN(TrainerFunc);
+    DISALLOW_COPY_AND_ASSIGN(Trainer);
 };
 
 }  // namespace yrtr

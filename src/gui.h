@@ -2,23 +2,20 @@
 #include "vendor.h"
 #include "vendor.h"
 #include "char_table.h"
+#include "state.h"
 
 namespace yrtr {
 
 class GuiContext {
 public:
-    using ButtonHandler = std::function<bool(GuiContext*)>;
-    using InputHandler = std::function<bool(GuiContext*, uint32_t)>;
-    using CheckboxHandler = std::function<bool(GuiContext*, bool)>;
+    using ButtonHandler = std::function<void()>;
+    using InputHandler = std::function<void(uint32_t)>;
+    using CheckboxHandler = std::function<void(bool)>;
 
-    GuiContext(GLFWwindow* window);
+    GuiContext(GLFWwindow* window, const State& state);
     ~GuiContext();
 
-    void set_state(std::string_view state) { state_ = state; }
     void UpdateViewport(GLFWwindow* window, int width, int height);
-    void EnableCheckbox(FnLabel label);
-    void DisableCheckbox(FnLabel label);
-    void DeactivateAll();
 
     void Update() {}
     void PreRender();
@@ -30,18 +27,12 @@ public:
     void AddCheckboxListener(FnLabel label, CheckboxHandler cb);
 
 private:
+    const State& state_;
     float hdpi_scale_factor_;
-    std::string state_;
-
-    struct CheckboxState {
-        bool enable = true;
-        bool activate = false;
-        CheckboxHandler cb = nullptr;
-    };
 
     std::unordered_map<FnLabel, ButtonHandler> btn_cbs_;
     std::unordered_map<FnLabel, InputHandler> input_cbs_;
-    std::unordered_map<FnLabel, CheckboxState> ckbox_cbs_;
+    std::unordered_map<FnLabel, CheckboxHandler> ckbox_cbs_;
 };
 
 }  // namespace yrtr

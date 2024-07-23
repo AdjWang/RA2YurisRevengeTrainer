@@ -51,53 +51,52 @@ enum class FnLabel {
     kAdjustGameSpeed,
 };
 
-inline static const std::unordered_map<FnLabel, const char8_t*> kZhLabels{
-    {FnLabel::kState,               u8"状态"},
-    {FnLabel::kStateOk,             u8"游戏运行中"},
-    {FnLabel::kStateIdle,           u8"未检测到游戏"},
-    {FnLabel::kMoney,               u8"钱"},
-    {FnLabel::kApply,               u8"修改"},
-    {FnLabel::kFastBuild,           u8"快速建造"},
-    {FnLabel::kDeleteUnit,          u8"删除单位"},
-    {FnLabel::kClearShroud,         u8"地图全开"},
-    {FnLabel::kGiveMeABomb,         u8"核弹攻击"},
-    {FnLabel::kUnitLevelUp,         u8"单位升级"},
-    {FnLabel::kUnitSpeedUp,         u8"单位加速"},
-    {FnLabel::kIAMWinner,           u8"立即胜利"},
-    {FnLabel::kThisIsMine,          u8"这是我的"},
-    {FnLabel::kIAMGhost,            u8"成为幽灵玩家"},
-    {FnLabel::kGod,                 u8"无敌"},
-    {FnLabel::kInstBuild,           u8"瞬间建造"},
-    {FnLabel::kUnlimitSuperWeapon,  u8"无限超武"},
-    {FnLabel::kUnlimitRadar,        u8"永久雷达"},
-    {FnLabel::kInstFire,            u8"极速攻击"},
-    {FnLabel::kInstTurn,            u8"极速转身"},
-    {FnLabel::kRangeToYourBase,     u8"远程攻击"},
-    {FnLabel::kFireToYourBase,      u8"远程警戒"},
-    {FnLabel::kFreezeGapGenerator,  u8"瘫痪裂缝产生器"},
-    {FnLabel::kFreezeUnit,          u8"瘫痪敌方单位"},
-    {FnLabel::kSellTheWorld,        u8"卖卖卖"},
-    {FnLabel::kUnlimitPower,        u8"无限电力"},
-    {FnLabel::kBuildEveryWhere,     u8"随意建筑"},
-    {FnLabel::kAutoRepair,          u8"自动修理"},
-    {FnLabel::kEnermyRevertRepair,  u8"敌方血越修越少"},
-    {FnLabel::kSocialismTheBest,    u8"社会主义万岁"},
-    {FnLabel::kMakeAttackedMine,    u8"全是我的-攻击"},
-    {FnLabel::kMakeCapturedMine,    u8"全是我的-占领"},
-    {FnLabel::kMakeGarrisonedMine,  u8"全是我的-房屋驻军"},
-    {FnLabel::kInvadeMode,          u8"侵略模式"},
-    {FnLabel::kUnlimitTech,         u8"全科技"},
-    {FnLabel::kFastReload,          u8"极速重装-重新建造生效"},
-    {FnLabel::kUnlimitFirePower,    u8"大量弹药-重新建造生效"},
-    {FnLabel::kInstChrono,          u8"瞬间超时空"},
-    {FnLabel::kSpySpy,              u8"无间道"},
-    {FnLabel::kInfantrySlip,        u8"滑板鞋"},
-    {FnLabel::kUnitLeveledUp,       u8"部队全部三级"},
-    {FnLabel::kAdjustGameSpeed,     u8"任务调速"},
-};
-
-inline const char* GetFnChar(FnLabel label) {
-    return (const char*)kZhLabels.at(label);
+constexpr const char8_t* GetFnStr(FnLabel label) {
+    switch(label){
+        case FnLabel::kState:               return u8"状态";
+        case FnLabel::kStateOk:             return u8"游戏运行中";
+        case FnLabel::kStateIdle:           return u8"未检测到游戏";
+        case FnLabel::kMoney:               return u8"钱";
+        case FnLabel::kApply:               return u8"修改";
+        case FnLabel::kFastBuild:           return u8"快速建造";
+        case FnLabel::kDeleteUnit:          return u8"删除单位";
+        case FnLabel::kClearShroud:         return u8"地图全开";
+        case FnLabel::kGiveMeABomb:         return u8"核弹攻击";
+        case FnLabel::kUnitLevelUp:         return u8"单位升级";
+        case FnLabel::kUnitSpeedUp:         return u8"单位加速";
+        case FnLabel::kIAMWinner:           return u8"立即胜利";
+        case FnLabel::kThisIsMine:          return u8"这是我的";
+        case FnLabel::kIAMGhost:            return u8"成为幽灵玩家";
+        case FnLabel::kGod:                 return u8"无敌";
+        case FnLabel::kInstBuild:           return u8"瞬间建造";
+        case FnLabel::kUnlimitSuperWeapon:  return u8"无限超武";
+        case FnLabel::kUnlimitRadar:        return u8"永久雷达";
+        case FnLabel::kInstFire:            return u8"极速攻击";
+        case FnLabel::kInstTurn:            return u8"极速转身";
+        case FnLabel::kRangeToYourBase:     return u8"远程攻击";
+        case FnLabel::kFireToYourBase:      return u8"远程警戒";
+        case FnLabel::kFreezeGapGenerator:  return u8"瘫痪裂缝产生器";
+        case FnLabel::kFreezeUnit:          return u8"瘫痪敌方单位";
+        case FnLabel::kSellTheWorld:        return u8"卖卖卖";
+        case FnLabel::kUnlimitPower:        return u8"无限电力";
+        case FnLabel::kBuildEveryWhere:     return u8"随意建筑";
+        case FnLabel::kAutoRepair:          return u8"自动修理";
+        case FnLabel::kEnermyRevertRepair:  return u8"敌方血越修越少";
+        case FnLabel::kSocialismTheBest:    return u8"社会主义万岁";
+        case FnLabel::kMakeAttackedMine:    return u8"全是我的-攻击";
+        case FnLabel::kMakeCapturedMine:    return u8"全是我的-占领";
+        case FnLabel::kMakeGarrisonedMine:  return u8"全是我的-房屋驻军";
+        case FnLabel::kInvadeMode:          return u8"侵略模式";
+        case FnLabel::kUnlimitTech:         return u8"全科技";
+        case FnLabel::kFastReload:          return u8"极速重装-重新建造生效";
+        case FnLabel::kUnlimitFirePower:    return u8"大量弹药-重新建造生效";
+        case FnLabel::kInstChrono:          return u8"瞬间超时空";
+        case FnLabel::kSpySpy:              return u8"无间道";
+        case FnLabel::kInfantrySlip:        return u8"滑板鞋";
+        case FnLabel::kUnitLeveledUp:       return u8"部队全部三级";
+        case FnLabel::kAdjustGameSpeed:     return u8"任务调速";
+        default: return u8"unknown";
+    }
 }
 
 }  // namespace yrtr

@@ -1,3 +1,4 @@
+#include "config.h"
 #include "logging.h"
 #include "gui.h"
 #include "trainer_func.h"
@@ -6,113 +7,128 @@
 
 namespace yrtr {
 
-std::unique_ptr<TrainerFunc> TrainerFunc::trainer_target_(nullptr);
+std::unique_ptr<Trainer> Trainer::trainer_target_(nullptr);
 
 namespace {
-#define BIND_FN(fn) std::bind_front(&TrainerFunc::##fn, TrainerFunc::instance())
+#define BIND_FN(fn) std::bind_front(&Trainer::##fn, Trainer::instance())
 static void InitButtons(GuiContext& ctx) {
-    ctx.AddInputListener(FnLabel::kApply, BIND_FN(OnBtnApply));
-    ctx.AddButtonListener(FnLabel::kFastBuild, BIND_FN(OnBtnFastBuild));
-    ctx.AddButtonListener(FnLabel::kDeleteUnit, BIND_FN(OnBtnDeleteUnit));
+    ctx.AddInputListener(FnLabel::kApply,        BIND_FN(OnBtnApply));
+    ctx.AddButtonListener(FnLabel::kFastBuild,   BIND_FN(OnBtnFastBuild));
+    ctx.AddButtonListener(FnLabel::kDeleteUnit,  BIND_FN(OnBtnDeleteUnit));
     ctx.AddButtonListener(FnLabel::kClearShroud, BIND_FN(OnBtnClearShroud));
     ctx.AddButtonListener(FnLabel::kGiveMeABomb, BIND_FN(OnBtnGiveMeABomb));
     ctx.AddButtonListener(FnLabel::kUnitLevelUp, BIND_FN(OnBtnUnitLevelUp));
     ctx.AddButtonListener(FnLabel::kUnitSpeedUp, BIND_FN(OnBtnUnitSpeedUp));
-    ctx.AddButtonListener(FnLabel::kIAMWinner, BIND_FN(OnBtnIAMWinner));
-    ctx.AddButtonListener(FnLabel::kThisIsMine, BIND_FN(OnBtnThisIsMine));
-    ctx.AddButtonListener(FnLabel::kIAMGhost, BIND_FN(OnBtnIAMGhost));
+    ctx.AddButtonListener(FnLabel::kIAMWinner,   BIND_FN(OnBtnIAMWinner));
+    ctx.AddButtonListener(FnLabel::kThisIsMine,  BIND_FN(OnBtnThisIsMine));
+    ctx.AddButtonListener(FnLabel::kIAMGhost,    BIND_FN(OnBtnIAMGhost));
 }
 
 static void InitCheckboxes(GuiContext& ctx) {
-    ctx.AddCheckboxListener(FnLabel::kGod, BIND_FN(OnCkboxGod));
-    ctx.AddCheckboxListener(FnLabel::kInstBuild, BIND_FN(OnCkboxInstBuild));
+    ctx.AddCheckboxListener(FnLabel::kGod,                BIND_FN(OnCkboxGod));
+    ctx.AddCheckboxListener(FnLabel::kInstBuild,          BIND_FN(OnCkboxInstBuild));
     ctx.AddCheckboxListener(FnLabel::kUnlimitSuperWeapon, BIND_FN(OnCkboxUnlimitSuperWeapon));
-    ctx.AddCheckboxListener(FnLabel::kUnlimitRadar, BIND_FN(OnCkboxUnlimitRadar));
-    ctx.AddCheckboxListener(FnLabel::kInstFire, BIND_FN(OnCkboxInstFire));
-    ctx.AddCheckboxListener(FnLabel::kInstTurn, BIND_FN(OnCkboxInstTurn));
-    ctx.AddCheckboxListener(FnLabel::kRangeToYourBase, BIND_FN(OnCkboxRangeToYourBase));
-    ctx.AddCheckboxListener(FnLabel::kFireToYourBase, BIND_FN(OnCkboxFireToYourBase));
-    ctx.DisableCheckbox(FnLabel::kFireToYourBase);
+    ctx.AddCheckboxListener(FnLabel::kUnlimitRadar,       BIND_FN(OnCkboxUnlimitRadar));
+    ctx.AddCheckboxListener(FnLabel::kInstFire,           BIND_FN(OnCkboxInstFire));
+    ctx.AddCheckboxListener(FnLabel::kInstTurn,           BIND_FN(OnCkboxInstTurn));
+    ctx.AddCheckboxListener(FnLabel::kRangeToYourBase,    BIND_FN(OnCkboxRangeToYourBase));
+    ctx.AddCheckboxListener(FnLabel::kFireToYourBase,     BIND_FN(OnCkboxFireToYourBase));
     ctx.AddCheckboxListener(FnLabel::kFreezeGapGenerator, BIND_FN(OnCkboxFreezeGapGenerator));
-    ctx.AddCheckboxListener(FnLabel::kFreezeUnit, BIND_FN(OnCkboxFreezeUnit));
-    ctx.AddCheckboxListener(FnLabel::kSellTheWorld, BIND_FN(OnCkboxSellTheWorld));
-    ctx.AddCheckboxListener(FnLabel::kUnlimitPower, BIND_FN(OnCkboxUnlimitPower));
-    ctx.AddCheckboxListener(FnLabel::kBuildEveryWhere, BIND_FN(OnCkboxBuildEveryWhere));
-    ctx.AddCheckboxListener(FnLabel::kAutoRepair, BIND_FN(OnCkboxAutoRepair));
+    ctx.AddCheckboxListener(FnLabel::kFreezeUnit,         BIND_FN(OnCkboxFreezeUnit));
+    ctx.AddCheckboxListener(FnLabel::kSellTheWorld,       BIND_FN(OnCkboxSellTheWorld));
+    ctx.AddCheckboxListener(FnLabel::kUnlimitPower,       BIND_FN(OnCkboxUnlimitPower));
+    ctx.AddCheckboxListener(FnLabel::kBuildEveryWhere,    BIND_FN(OnCkboxBuildEveryWhere));
+    ctx.AddCheckboxListener(FnLabel::kAutoRepair,         BIND_FN(OnCkboxAutoRepair));
     ctx.AddCheckboxListener(FnLabel::kEnermyRevertRepair, BIND_FN(OnCkboxEnermyRevertRepair));
-    ctx.AddCheckboxListener(FnLabel::kSocialismTheBest, BIND_FN(OnCkboxSocialismTheBest));
-    ctx.AddCheckboxListener(FnLabel::kMakeAttackedMine, BIND_FN(OnCkboxMakeAttackedMine));
-    ctx.AddCheckboxListener(FnLabel::kMakeCapturedMine, BIND_FN(OnCkboxMakeCapturedMine));
+    ctx.AddCheckboxListener(FnLabel::kSocialismTheBest,   BIND_FN(OnCkboxSocialismTheBest));
+    ctx.AddCheckboxListener(FnLabel::kMakeAttackedMine,   BIND_FN(OnCkboxMakeAttackedMine));
+    ctx.AddCheckboxListener(FnLabel::kMakeCapturedMine,   BIND_FN(OnCkboxMakeCapturedMine));
     ctx.AddCheckboxListener(FnLabel::kMakeGarrisonedMine, BIND_FN(OnCkboxMakeGarrisonedMine));
-    ctx.AddCheckboxListener(FnLabel::kInvadeMode, BIND_FN(OnCkboxInvadeMode));
-    ctx.AddCheckboxListener(FnLabel::kUnlimitTech, BIND_FN(OnCkboxUnlimitTech));
-    ctx.AddCheckboxListener(FnLabel::kFastReload, BIND_FN(OnCkboxFastReload));
-    ctx.AddCheckboxListener(FnLabel::kUnlimitFirePower, BIND_FN(OnCkboxUnlimitFirePower));
-    ctx.AddCheckboxListener(FnLabel::kInstChrono, BIND_FN(OnCkboxInstChrono));
-    ctx.AddCheckboxListener(FnLabel::kSpySpy, BIND_FN(OnCkboxSpySpy));
-    ctx.AddCheckboxListener(FnLabel::kInfantrySlip, BIND_FN(OnCkboxInfantrySlip));
-    ctx.AddCheckboxListener(FnLabel::kUnitLeveledUp, BIND_FN(OnCkboxUnitLeveledUp));
-    ctx.AddCheckboxListener(FnLabel::kAdjustGameSpeed, BIND_FN(OnCkboxAdjustGameSpeed));
+    ctx.AddCheckboxListener(FnLabel::kInvadeMode,         BIND_FN(OnCkboxInvadeMode));
+    ctx.AddCheckboxListener(FnLabel::kUnlimitTech,        BIND_FN(OnCkboxUnlimitTech));
+    ctx.AddCheckboxListener(FnLabel::kFastReload,         BIND_FN(OnCkboxFastReload));
+    ctx.AddCheckboxListener(FnLabel::kUnlimitFirePower,   BIND_FN(OnCkboxUnlimitFirePower));
+    ctx.AddCheckboxListener(FnLabel::kInstChrono,         BIND_FN(OnCkboxInstChrono));
+    ctx.AddCheckboxListener(FnLabel::kSpySpy,             BIND_FN(OnCkboxSpySpy));
+    ctx.AddCheckboxListener(FnLabel::kInfantrySlip,       BIND_FN(OnCkboxInfantrySlip));
+    ctx.AddCheckboxListener(FnLabel::kUnitLeveledUp,      BIND_FN(OnCkboxUnitLeveledUp));
+    ctx.AddCheckboxListener(FnLabel::kAdjustGameSpeed,    BIND_FN(OnCkboxAdjustGameSpeed));
+}
+
+static void InitStates(State& state) {
+    state.game_state = std::string((const char*)GetFnStr(FnLabel::kStateIdle));
+    state.ckbox_states.emplace(FnLabel::kGod,                CheckboxState{.enable=true, .activate=false});
+    state.ckbox_states.emplace(FnLabel::kInstBuild,          CheckboxState{.enable=true, .activate=false});
+    state.ckbox_states.emplace(FnLabel::kUnlimitSuperWeapon, CheckboxState{.enable=true, .activate=false});
+    state.ckbox_states.emplace(FnLabel::kUnlimitRadar,       CheckboxState{.enable=true, .activate=false});
+    state.ckbox_states.emplace(FnLabel::kInstFire,           CheckboxState{.enable=true, .activate=false});
+    state.ckbox_states.emplace(FnLabel::kInstTurn,           CheckboxState{.enable=true, .activate=false});
+    state.ckbox_states.emplace(FnLabel::kRangeToYourBase,    CheckboxState{.enable=true, .activate=false});
+    state.ckbox_states.emplace(FnLabel::kFireToYourBase,     CheckboxState{.enable=false, .activate=false});
+    state.ckbox_states.emplace(FnLabel::kFreezeGapGenerator, CheckboxState{.enable=true, .activate=false});
+    state.ckbox_states.emplace(FnLabel::kFreezeUnit,         CheckboxState{.enable=true, .activate=false});
+    state.ckbox_states.emplace(FnLabel::kSellTheWorld,       CheckboxState{.enable=true, .activate=false});
+    state.ckbox_states.emplace(FnLabel::kUnlimitPower,       CheckboxState{.enable=true, .activate=false});
+    state.ckbox_states.emplace(FnLabel::kBuildEveryWhere,    CheckboxState{.enable=true, .activate=false});
+    state.ckbox_states.emplace(FnLabel::kAutoRepair,         CheckboxState{.enable=true, .activate=false});
+    state.ckbox_states.emplace(FnLabel::kEnermyRevertRepair, CheckboxState{.enable=true, .activate=false});
+    state.ckbox_states.emplace(FnLabel::kSocialismTheBest,   CheckboxState{.enable=true, .activate=false});
+    state.ckbox_states.emplace(FnLabel::kMakeAttackedMine,   CheckboxState{.enable=true, .activate=false});
+    state.ckbox_states.emplace(FnLabel::kMakeCapturedMine,   CheckboxState{.enable=true, .activate=false});
+    state.ckbox_states.emplace(FnLabel::kMakeGarrisonedMine, CheckboxState{.enable=true, .activate=false});
+    state.ckbox_states.emplace(FnLabel::kInvadeMode,         CheckboxState{.enable=true, .activate=false});
+    state.ckbox_states.emplace(FnLabel::kUnlimitTech,        CheckboxState{.enable=true, .activate=false});
+    state.ckbox_states.emplace(FnLabel::kFastReload,         CheckboxState{.enable=true, .activate=false});
+    state.ckbox_states.emplace(FnLabel::kUnlimitFirePower,   CheckboxState{.enable=true, .activate=false});
+    state.ckbox_states.emplace(FnLabel::kInstChrono,         CheckboxState{.enable=true, .activate=false});
+    state.ckbox_states.emplace(FnLabel::kSpySpy,             CheckboxState{.enable=true, .activate=false});
+    state.ckbox_states.emplace(FnLabel::kInfantrySlip,       CheckboxState{.enable=true, .activate=false});
+    state.ckbox_states.emplace(FnLabel::kUnitLeveledUp,      CheckboxState{.enable=true, .activate=false});
+    state.ckbox_states.emplace(FnLabel::kAdjustGameSpeed,    CheckboxState{.enable=true, .activate=false});
+}
+
+static void ResetStates(State& state) {
+    for (CheckboxState& ckbox_state : std::views::values(state.ckbox_states)) {
+        ckbox_state.activate = false;
+        ckbox_state.enable = true;
+    }
+    state.ckbox_states[FnLabel::kFireToYourBase].enable = false;
 }
 #undef BIND_FN
 }  // namespace
 
-void TrainerFunc::Init(std::string_view exe_name, GuiContext& gui_ctx) {
-    trainer_target_.reset(new TrainerFunc(exe_name));
+void Trainer::Init(std::string_view exe_name, GuiContext& gui_ctx, State& state) {
+    trainer_target_.reset(new Trainer(exe_name, state));
+    InitStates(state);
     InitButtons(gui_ctx);
     InitCheckboxes(gui_ctx);
 }
 
-TrainerFunc::TrainerFunc(std::string_view exe_name)
-    : exe_name_(exe_name),
-      attached_(false),
-      enable_unlimit_radar_(false),
-      enable_unlimit_super_weapon_(false) {}
-
-void TrainerFunc::UpdateProcState() {
-    if (win32::GetProcessIDFromName(exe_name_.c_str(), &pid_)) {
-        if (mem_api_ == nullptr) {
-            DLOG(INFO, "GetProcessIDFromName found exe={} pid={:#x}", exe_name_,
-                 pid_);
-            mem_api_.reset(new win32::MemoryAPI(pid_));
-            if (mem_api_->CheckHandle()) {
-                attached_ = true;
-                DLOG(INFO, "MemoryAPI initialized");
-            }
-        }
-    } else {
-        // Not found target process
-        DLOG(INFO, "GetProcessIDFromName searching exe={}", exe_name_);
-        mem_api_.reset();
-        attached_ = false;
-    }
-}
+Trainer::Trainer(std::string_view exe_name, State& state)
+    : state_(state),
+      exe_name_(exe_name),
+      attached_(false) {}
 
 #define CHECK_MEMAPI_OR_REPORT()                \
     if (mem_api_ == nullptr) {                  \
         LOG(WARN, "MemoryAPI not initialized"); \
-        return false;                           \
+        return;                                 \
     }
 
 #define CHECK_REPORT(exp)                                   \
     if (!(exp)) {                                           \
         LOG(WARN, __FUNCTION__ " Failed to execute " #exp); \
-        return false;                                       \
+        return;                                             \
     }
 
-#pragma warning(push)
-// Too simple to make mistakes, just ignore
-// warning C4100: 'gui_ctx': unreferenced formal parameter
-#pragma warning(disable:4100)
-bool TrainerFunc::OnBtnApply(GuiContext* gui_ctx, uint32_t val) {
+void Trainer::OnBtnApply(uint32_t val) {
     DLOG(INFO, "Trigger {} val={}", __FUNCTION__, val);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(IsGaming());
     CHECK_REPORT(WriteCredit(val));
-    return true;
 }
 
-bool TrainerFunc::OnBtnFastBuild(GuiContext* gui_ctx) {
+void Trainer::OnBtnFastBuild() {
     DLOG(INFO, "Trigger {}", __FUNCTION__);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(IsGaming());
@@ -121,71 +137,62 @@ bool TrainerFunc::OnBtnFastBuild(GuiContext* gui_ctx) {
     for (uint32_t i = 1, j = 0; i <= 5; j += 4, i++) {
         CHECK_REPORT(mem_api_->WriteMemory(data + j + 0x5378, 15));
     }
-    return true;
 }
 
-bool TrainerFunc::OnBtnDeleteUnit(GuiContext* gui_ctx) {
+void Trainer::OnBtnDeleteUnit() {
     DLOG(INFO, "Trigger {}", __FUNCTION__);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(IsGaming());
     CHECK_REPORT(mem_api_->CreateRemoteThread(AsmDeleteUnit));
-    return true;
 }
 
-bool TrainerFunc::OnBtnClearShroud(GuiContext* gui_ctx) {
+void Trainer::OnBtnClearShroud() {
     DLOG(INFO, "Trigger {}", __FUNCTION__);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(IsGaming());
     CHECK_REPORT(mem_api_->CreateRemoteThread(AsmClearShroud));
-    return true;
 }
 
-bool TrainerFunc::OnBtnGiveMeABomb(GuiContext* gui_ctx) {
+void Trainer::OnBtnGiveMeABomb() {
     DLOG(INFO, "Trigger {}", __FUNCTION__);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(IsGaming());
     CHECK_REPORT(mem_api_->CreateRemoteThread(AsmNuclearBomb));
-    return true;
 }
 
-bool TrainerFunc::OnBtnUnitLevelUp(GuiContext* gui_ctx) {
+void Trainer::OnBtnUnitLevelUp() {
     DLOG(INFO, "Trigger {}", __FUNCTION__);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(IsGaming());
     CHECK_REPORT(mem_api_->CreateRemoteThread(AsmUnitLevelUp));
-    return true;
 }
 
-bool TrainerFunc::OnBtnUnitSpeedUp(GuiContext* gui_ctx) {
+void Trainer::OnBtnUnitSpeedUp() {
     DLOG(INFO, "Trigger {}", __FUNCTION__);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(IsGaming());
     CHECK_REPORT(mem_api_->CreateRemoteThread(AsmUnitSpeedUp));
-    return true;
 }
 
-bool TrainerFunc::OnBtnIAMWinner(GuiContext* gui_ctx) {
+void Trainer::OnBtnIAMWinner() {
     DLOG(INFO, "Trigger {}", __FUNCTION__);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(IsGaming());
     CHECK_REPORT(mem_api_->WriteMemory(0x00A83D49, static_cast<uint8_t>(1)));
-    return true;
 }
 
-bool TrainerFunc::OnBtnThisIsMine(GuiContext* gui_ctx) {
+void Trainer::OnBtnThisIsMine() {
     DLOG(INFO, "Trigger {}", __FUNCTION__);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(IsGaming());
     CHECK_REPORT(mem_api_->CreateRemoteThread(AsmThisIsMine));
-    return true;
 }
 
-bool TrainerFunc::OnBtnIAMGhost(GuiContext* gui_ctx) {
+void Trainer::OnBtnIAMGhost() {
     DLOG(INFO, "Trigger {}", __FUNCTION__);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(IsGaming());
     CHECK_REPORT(TobeGhost());
-    return true;
 }
 
 // Use a macro instead of a function because fmt::format_string has to be a
@@ -194,226 +201,309 @@ bool TrainerFunc::OnBtnIAMGhost(GuiContext* gui_ctx) {
     mem_api_->AutoAssemble(fmt::format(script, fmt::arg("proc", exe_name_)), \
                            activate)
 
-bool TrainerFunc::OnCkboxGod(GuiContext* gui_ctx, bool activate) {
-    DLOG(INFO, "Trigger {}", __FUNCTION__, activate);
+void Trainer::OnCkboxGod(bool activate) {
+    DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(FMT_AUTOASSEMBLE(script::kGodPlayer, activate));
     CHECK_REPORT(FMT_AUTOASSEMBLE(script::kAntiChrono, activate));
     CHECK_REPORT(FMT_AUTOASSEMBLE(script::kAntiChronoDisbuild, activate));
     CHECK_REPORT(AntiChronoDisable(activate));
-    return true;
+    state_.ckbox_states[FnLabel::kGod].activate = activate;
 }
 
-bool TrainerFunc::OnCkboxInstBuild(GuiContext* gui_ctx, bool activate) {
+void Trainer::OnCkboxInstBuild(bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(FMT_AUTOASSEMBLE(script::kInstBuild, activate));
-    return true;
+    state_.ckbox_states[FnLabel::kInstBuild].activate = activate;
 }
 
-bool TrainerFunc::OnCkboxUnlimitSuperWeapon(GuiContext* gui_ctx,
-                                            bool activate) {
+void Trainer::OnCkboxUnlimitSuperWeapon(bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
-    enable_unlimit_super_weapon_ = activate;
-    return true;
+    state_.ckbox_states[FnLabel::kUnlimitSuperWeapon].activate = activate;
 }
 
-bool TrainerFunc::OnCkboxUnlimitRadar(GuiContext* gui_ctx, bool activate) {
+void Trainer::OnCkboxUnlimitRadar(bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
-    enable_unlimit_radar_ = activate;
-    return true;
+    state_.ckbox_states[FnLabel::kUnlimitRadar].activate = activate;
 }
 
-bool TrainerFunc::OnCkboxInstFire(GuiContext* gui_ctx, bool activate) {
+void Trainer::OnCkboxInstFire(bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(FMT_AUTOASSEMBLE(script::kInstFire, activate));
     CHECK_REPORT(FMT_AUTOASSEMBLE(script::kInstTurnBattery, activate));
-    return true;
+    state_.ckbox_states[FnLabel::kInstFire].activate = activate;
 }
 
-bool TrainerFunc::OnCkboxInstTurn(GuiContext* gui_ctx, bool activate) {
+void Trainer::OnCkboxInstTurn(bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(FMT_AUTOASSEMBLE(script::kInstTurnRound, activate));
-    return true;
+    state_.ckbox_states[FnLabel::kInstTurn].activate = activate;
 }
 
-bool TrainerFunc::OnCkboxRangeToYourBase(GuiContext* gui_ctx, bool activate) {
+void Trainer::OnCkboxRangeToYourBase(bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(FMT_AUTOASSEMBLE(script::kRangeToYourBase, activate));
+    state_.ckbox_states[FnLabel::kRangeToYourBase].activate = activate;
     if (activate) {
-        gui_ctx->EnableCheckbox(FnLabel::kFireToYourBase);
+        state_.ckbox_states[FnLabel::kFireToYourBase].enable = true;
     } else {
-        gui_ctx->DisableCheckbox(FnLabel::kFireToYourBase);
+        state_.ckbox_states[FnLabel::kFireToYourBase].enable = false;
+        if(state_.ckbox_states[FnLabel::kFireToYourBase].activate) {
+            OnCkboxFireToYourBase(false);
+        }
     }
-    return true;
 }
 
-bool TrainerFunc::OnCkboxFireToYourBase(GuiContext* gui_ctx, bool activate) {
+void Trainer::OnCkboxFireToYourBase(bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(FMT_AUTOASSEMBLE(script::kFireToYourBase, activate));
-    return true;
+    state_.ckbox_states[FnLabel::kFireToYourBase].activate = activate;
 }
 
-bool TrainerFunc::OnCkboxFreezeGapGenerator(GuiContext* gui_ctx,
-                                            bool activate) {
+void Trainer::OnCkboxFreezeGapGenerator(bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(FMT_AUTOASSEMBLE(script::kFreezeGAGAP, activate));
-    return true;
+    state_.ckbox_states[FnLabel::kFreezeGapGenerator].activate = activate;
 }
 
-bool TrainerFunc::OnCkboxFreezeUnit(GuiContext* gui_ctx, bool activate) {
+void Trainer::OnCkboxFreezeUnit(bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(FMT_AUTOASSEMBLE(script::kFreezeUnit, activate));
-    return true;
+    state_.ckbox_states[FnLabel::kFreezeUnit].activate = activate;
 }
 
-bool TrainerFunc::OnCkboxSellTheWorld(GuiContext* gui_ctx, bool activate) {
+void Trainer::OnCkboxSellTheWorld(bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(FMT_AUTOASSEMBLE(script::kSellTheWorldOnCursor, activate));
     CHECK_REPORT(EnableSellAllBelong(activate));
     CHECK_REPORT(EnableSellAllBuilder(activate));
-    return true;
+    state_.ckbox_states[FnLabel::kSellTheWorld].activate = activate;
 }
 
-bool TrainerFunc::OnCkboxUnlimitPower(GuiContext* gui_ctx, bool activate) {
+void Trainer::OnCkboxUnlimitPower(bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(FMT_AUTOASSEMBLE(script::kUnlimitPower, activate));
-    return true;
+    state_.ckbox_states[FnLabel::kUnlimitPower].activate = activate;
 }
 
-bool TrainerFunc::OnCkboxBuildEveryWhere(GuiContext* gui_ctx, bool activate) {
+void Trainer::OnCkboxBuildEveryWhere(bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(FMT_AUTOASSEMBLE(script::kBuildEveryWhereGround, activate));
     CHECK_REPORT(FMT_AUTOASSEMBLE(script::kBuildEveryWhereWater, activate));
-    return true;
+    state_.ckbox_states[FnLabel::kBuildEveryWhere].activate = activate;
 }
 
-bool TrainerFunc::OnCkboxAutoRepair(GuiContext* gui_ctx, bool activate) {
+void Trainer::OnCkboxAutoRepair(bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(FMT_AUTOASSEMBLE(script::kAutoRepair, activate));
     CHECK_REPORT(FMT_AUTOASSEMBLE(script::kAutoRepairNeutral, activate));
-    return true;
+    state_.ckbox_states[FnLabel::kAutoRepair].activate = activate;
 }
 
-bool TrainerFunc::OnCkboxEnermyRevertRepair(GuiContext* gui_ctx,
-                                            bool activate) {
+void Trainer::OnCkboxEnermyRevertRepair(bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(FMT_AUTOASSEMBLE(script::kRevertRepair, activate));
-    return true;
+    state_.ckbox_states[FnLabel::kEnermyRevertRepair].activate = activate;
 }
 
-bool TrainerFunc::OnCkboxSocialismTheBest(GuiContext* gui_ctx, bool activate) {
+void Trainer::OnCkboxSocialismTheBest(bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(FMT_AUTOASSEMBLE(script::kRevertYuri, activate));
     CHECK_REPORT(FMT_AUTOASSEMBLE(script::kPermanentYuri, activate));
-    return true;
+    state_.ckbox_states[FnLabel::kSocialismTheBest].activate = activate;
 }
 
-bool TrainerFunc::OnCkboxMakeAttackedMine(GuiContext* gui_ctx, bool activate) {
+void Trainer::OnCkboxMakeAttackedMine(bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(FMT_AUTOASSEMBLE(script::kThisIsMineOnAttack, activate));
-    return true;
+    state_.ckbox_states[FnLabel::kMakeAttackedMine].activate = activate;
 }
 
-bool TrainerFunc::OnCkboxMakeCapturedMine(GuiContext* gui_ctx, bool activate) {
+void Trainer::OnCkboxMakeCapturedMine(bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(FMT_AUTOASSEMBLE(script::kThisIsMineOnCapture, activate));
-    return true;
+    state_.ckbox_states[FnLabel::kMakeCapturedMine].activate = activate;
 }
 
-bool TrainerFunc::OnCkboxMakeGarrisonedMine(GuiContext* gui_ctx,
-                                            bool activate) {
+void Trainer::OnCkboxMakeGarrisonedMine(bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(FMT_AUTOASSEMBLE(script::kThisIsMineOnGarrison, activate));
-    return true;
+    state_.ckbox_states[FnLabel::kMakeGarrisonedMine].activate = activate;
 }
 
-bool TrainerFunc::OnCkboxInvadeMode(GuiContext* gui_ctx, bool activate) {
+void Trainer::OnCkboxInvadeMode(bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(InvadeMode(activate));
-    return true;
+    state_.ckbox_states[FnLabel::kInvadeMode].activate = activate;
 }
 
-bool TrainerFunc::OnCkboxUnlimitTech(GuiContext* gui_ctx, bool activate) {
+void Trainer::OnCkboxUnlimitTech(bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(FMT_AUTOASSEMBLE(script::kUnlimitTech, activate));
-    return true;
+    state_.ckbox_states[FnLabel::kUnlimitTech].activate = activate;
 }
 
-bool TrainerFunc::OnCkboxFastReload(GuiContext* gui_ctx, bool activate) {
+void Trainer::OnCkboxFastReload(bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(FMT_AUTOASSEMBLE(script::kFastReload, activate));
-    return true;
+    state_.ckbox_states[FnLabel::kFastReload].activate = activate;
 }
 
-bool TrainerFunc::OnCkboxUnlimitFirePower(GuiContext* gui_ctx, bool activate) {
+void Trainer::OnCkboxUnlimitFirePower(bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(FMT_AUTOASSEMBLE(script::kUnlimitFirePower, activate));
-    return true;
+    state_.ckbox_states[FnLabel::kUnlimitFirePower].activate = activate;
 }
 
-bool TrainerFunc::OnCkboxInstChrono(GuiContext* gui_ctx, bool activate) {
+void Trainer::OnCkboxInstChrono(bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(FMT_AUTOASSEMBLE(script::kInstChronoMove, activate));
     CHECK_REPORT(FMT_AUTOASSEMBLE(script::kInstChronoAttack, activate));
-    return true;
+    state_.ckbox_states[FnLabel::kInstChrono].activate = activate;
 }
 
-bool TrainerFunc::OnCkboxSpySpy(GuiContext* gui_ctx, bool activate) {
+void Trainer::OnCkboxSpySpy(bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(FMT_AUTOASSEMBLE(script::kSpySpy, activate));
-    return true;
+    state_.ckbox_states[FnLabel::kSpySpy].activate = activate;
 }
 
-bool TrainerFunc::OnCkboxInfantrySlip(GuiContext* gui_ctx, bool activate) {
+void Trainer::OnCkboxInfantrySlip(bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(FMT_AUTOASSEMBLE(script::kInfantrySlip, activate));
-    return true;
+    state_.ckbox_states[FnLabel::kInfantrySlip].activate = activate;
 }
 
-bool TrainerFunc::OnCkboxUnitLeveledUp(GuiContext* gui_ctx, bool activate) {
+void Trainer::OnCkboxUnitLeveledUp(bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(FMT_AUTOASSEMBLE(script::kUnitLeveledUp, activate));
-    return true;
+    state_.ckbox_states[FnLabel::kUnitLeveledUp].activate = activate;
 }
 
-bool TrainerFunc::OnCkboxAdjustGameSpeed(GuiContext* gui_ctx, bool activate) {
+void Trainer::OnCkboxAdjustGameSpeed(bool activate) {
     DLOG(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
     CHECK_MEMAPI_OR_REPORT();
     CHECK_REPORT(
         mem_api_->WriteMemory(0x00A8EDDC, static_cast<uint8_t>(activate)));
-    return true;
+    state_.ckbox_states[FnLabel::kAdjustGameSpeed].activate = activate;
 }
-#pragma warning(pop)
+
+void Trainer::OnProcWatchTimer() {
+    UpdateProcState();
+    if (!attached_) {
+        DeactivateAll();
+    }
+}
+
+void Trainer::OnFuncScanTimer() {
+    if (!attached_ || !IsGaming()) {
+        return;
+    }
+    if (state_.ckbox_states[FnLabel::kUnlimitRadar].activate) {
+        CHECK_REPORT(UnlimitRadar());
+    }
+    if (state_.ckbox_states[FnLabel::kUnlimitSuperWeapon].activate) {
+        CHECK_REPORT(UnlimitSuperWeapon());
+    }
+}
 
 #undef FMT_AUTOASSEMBLE
 #undef CHECK_MEMAPI_OR_REPORT
 #undef CHECK_REPORT
+
+void Trainer::UpdateProcState() {
+    if (win32::GetProcessIDFromName(exe_name_.c_str(), &pid_)) {
+        if (mem_api_ == nullptr) {
+            DLOG(INFO, "GetProcessIDFromName found exe={} pid={:#x}", exe_name_,
+                 pid_);
+            mem_api_.reset(new win32::MemoryAPI(pid_));
+            if (mem_api_->CheckHandle()) {
+                attached_ = true;
+                auto state =
+                    (const char*)yrtr::GetFnStr(yrtr::FnLabel::kStateOk);
+                state_.game_state = std::string(state);
+                DLOG(INFO, "MemoryAPI initialized");
+            }
+        }
+    } else {
+        // Not found target process
+        DLOG(INFO, "GetProcessIDFromName searching exe={}", exe_name_);
+        mem_api_.reset();
+        attached_ = false;
+        auto state = (const char*)yrtr::GetFnStr(yrtr::FnLabel::kStateIdle);
+        state_.game_state = std::string(state);
+    }
+}
+
+void Trainer::DeactivateAll() {
+    bool any = false;
+    for (CheckboxState& state : std::views::values(state_.ckbox_states)) {
+        if (state.activate) {
+            any = true;
+            break;
+        }
+    }
+    if (!any) {
+        return;
+    }
+
+    OnCkboxGod(false);
+    OnCkboxInstBuild(false);
+    OnCkboxUnlimitSuperWeapon(false);
+    OnCkboxUnlimitRadar(false);
+    OnCkboxInstFire(false);
+    OnCkboxInstTurn(false);
+    OnCkboxRangeToYourBase(false);
+    OnCkboxFireToYourBase(false);
+    OnCkboxFreezeGapGenerator(false);
+    OnCkboxFreezeUnit(false);
+    OnCkboxSellTheWorld(false);
+    OnCkboxUnlimitPower(false);
+    OnCkboxBuildEveryWhere(false);
+    OnCkboxAutoRepair(false);
+    OnCkboxEnermyRevertRepair(false);
+    OnCkboxSocialismTheBest(false);
+    OnCkboxMakeAttackedMine(false);
+    OnCkboxMakeCapturedMine(false);
+    OnCkboxMakeGarrisonedMine(false);
+    OnCkboxInvadeMode(false);
+    OnCkboxUnlimitTech(false);
+    OnCkboxFastReload(false);
+    OnCkboxUnlimitFirePower(false);
+    OnCkboxInstChrono(false);
+    OnCkboxSpySpy(false);
+    OnCkboxInfantrySlip(false);
+    OnCkboxUnitLeveledUp(false);
+    OnCkboxAdjustGameSpeed(false);
+
+    ResetStates(state_);
+}
 
 #define CHECK_MEMAPI_OR_RETURN_FALSE()          \
     if (mem_api_ == nullptr) {                  \
@@ -426,77 +516,33 @@ bool TrainerFunc::OnCkboxAdjustGameSpeed(GuiContext* gui_ctx, bool activate) {
         return false;   \
     }
 
-bool TrainerFunc::UnlimitRadar() const {
-    if (!enable_unlimit_radar_) {
-        return true;
-    }
-    CHECK_MEMAPI_OR_RETURN_FALSE();
-    CHECK_RETF(IsGaming());
-    uint32_t addr;
-    CHECK_RETF(mem_api_->ReadAddress(0x00A8B230, {0x34A4}, &addr));
-    return mem_api_->WriteMemory(addr, static_cast<uint8_t>(1));
-}
-
-bool TrainerFunc::UnlimitSuperWeapon() const {
-    if (!enable_unlimit_super_weapon_) {
-        return true;
-    }
-    CHECK_MEMAPI_OR_RETURN_FALSE();
-    CHECK_RETF(IsGaming());
-    // 00 NuclearMissile
-    // 01 IronCurtain
-    // 02 ForceShield
-    // 03 LightningStorm
-    // 04 PsychicDominator
-    // 05 Chronosphere
-    // 06 Reinforcements
-    // 07 SpyPlane
-    // 08 GeneticMutator
-    // 09 PsychicReveal
-    // Seems 12 in total...
-    uint32_t addr1;
-    CHECK_RETF(mem_api_->ReadMemory(0x00A83D4C, {0x258}, &addr1));
-    for (uint32_t i = 0; i < 12; i++) {
-        uint32_t addr2;
-        CHECK_RETF(mem_api_->ReadMemory(addr1 + i * 4, &addr2));
-        int32_t dis;
-        CHECK_RETF(mem_api_->ReadMemory(addr2 + 0x78, &dis));
-        if (dis != -1) {
-            // Has the weapon
-            CHECK_RETF(mem_api_->WriteMemory(addr2 + 0x6F,
-                                             static_cast<uint8_t>(1)));
-        }
-    }
-    return true;
-}
-
-bool TrainerFunc::IsGaming() const {
+bool Trainer::IsGaming() const {
     CHECK_MEMAPI_OR_RETURN_FALSE();
     uint32_t p_player;
     CHECK_RETF(mem_api_->ReadMemory(0x00A83D4C, &p_player));
     return p_player != 0;
 }
 
-bool TrainerFunc::WriteSpeed(uint32_t speed) const {
+bool Trainer::WriteSpeed(uint32_t speed) const {
     CHECK_MEMAPI_OR_RETURN_FALSE();
     return mem_api_->WriteMemory(0x00A8EB60, speed);
 }
 
-bool TrainerFunc::WriteCredit(uint32_t credit) const {
+bool Trainer::WriteCredit(uint32_t credit) const {
     CHECK_MEMAPI_OR_RETURN_FALSE();
     uint32_t addr;
     CHECK_RETF(mem_api_->ReadAddress(0x00A83D4C, {0x30C}, &addr));
     return mem_api_->WriteMemory(addr, credit);
 }
 
-bool TrainerFunc::WriteMaxBuildingCount(uint32_t val) const {
+bool Trainer::WriteMaxBuildingCount(uint32_t val) const {
     CHECK_MEMAPI_OR_RETURN_FALSE();
     uint32_t addr;
     CHECK_RETF(mem_api_->ReadAddress(0x008871E0, {0xF0}, &addr));
     return mem_api_->WriteMemory(addr, val - 1);
 }
 
-bool TrainerFunc::TobeGhost() const {
+bool Trainer::TobeGhost() const {
     CHECK_MEMAPI_OR_RETURN_FALSE();
     uint32_t select_num;
     // Check if selecting a building
@@ -537,7 +583,7 @@ bool TrainerFunc::TobeGhost() const {
 }
 
 // Prevent building list going to grey
-bool TrainerFunc::AntiChronoDisable(bool activate) const {
+bool Trainer::AntiChronoDisable(bool activate) const {
     CHECK_MEMAPI_OR_RETURN_FALSE();
     if (activate) {
         CHECK_RETF(mem_api_->WriteMemory(
@@ -549,7 +595,7 @@ bool TrainerFunc::AntiChronoDisable(bool activate) const {
     return true;
 }
 
-bool TrainerFunc::InvadeMode(bool activate) const {
+bool Trainer::InvadeMode(bool activate) const {
     CHECK_MEMAPI_OR_RETURN_FALSE();
     if (activate) {
         CHECK_RETF(mem_api_->WriteLongJump(0x006F85DD, 0x006F8604));
@@ -562,7 +608,7 @@ bool TrainerFunc::InvadeMode(bool activate) const {
 }
 
 // Allow sell things not belong to player
-bool TrainerFunc::EnableSellAllBelong(bool activate) const {
+bool Trainer::EnableSellAllBelong(bool activate) const {
     CHECK_MEMAPI_OR_RETURN_FALSE();
     if (activate) {
         CHECK_RETF(mem_api_->WriteLongJump(0x004C6F48, 0x004C6F9C));
@@ -578,7 +624,7 @@ bool TrainerFunc::EnableSellAllBelong(bool activate) const {
 }
 
 // Allow sell things not built by player
-bool TrainerFunc::EnableSellAllBuilder(bool activate) const {
+bool Trainer::EnableSellAllBuilder(bool activate) const {
     CHECK_MEMAPI_OR_RETURN_FALSE();
     if (activate) {
         CHECK_RETF(mem_api_->WriteMemory(
@@ -593,13 +639,51 @@ bool TrainerFunc::EnableSellAllBuilder(bool activate) const {
     return true;
 }
 
+bool Trainer::UnlimitRadar() const {
+    CHECK_MEMAPI_OR_RETURN_FALSE();
+    CHECK_RETF(IsGaming());
+    uint32_t addr;
+    CHECK_RETF(mem_api_->ReadAddress(0x00A8B230, {0x34A4}, &addr));
+    return mem_api_->WriteMemory(addr, static_cast<uint8_t>(1));
+}
+
+bool Trainer::UnlimitSuperWeapon() const {
+    CHECK_MEMAPI_OR_RETURN_FALSE();
+    CHECK_RETF(IsGaming());
+    // 00 NuclearMissile
+    // 01 IronCurtain
+    // 02 ForceShield
+    // 03 LightningStorm
+    // 04 PsychicDominator
+    // 05 Chronosphere
+    // 06 Reinforcements
+    // 07 SpyPlane
+    // 08 GeneticMutator
+    // 09 PsychicReveal
+    // Seems 12 in total...
+    uint32_t addr1;
+    CHECK_RETF(mem_api_->ReadMemory(0x00A83D4C, {0x258}, &addr1));
+    for (uint32_t i = 0; i < 12; i++) {
+        uint32_t addr2;
+        CHECK_RETF(mem_api_->ReadMemory(addr1 + i * 4, &addr2));
+        int32_t dis;
+        CHECK_RETF(mem_api_->ReadMemory(addr2 + 0x78, &dis));
+        if (dis != -1) {
+            // Has the weapon
+            CHECK_RETF(mem_api_->WriteMemory(addr2 + 0x6F,
+                                             static_cast<uint8_t>(1)));
+        }
+    }
+    return true;
+}
+
 #undef CHECK_MEMAPI_OR_RETURN_FALSE
 #undef CHECK_RETF
 
 // Disable the compiler attaching runtime check functions which is whithin the
 // trainer. Asmxxx functions are executed in the game process.
 #pragma runtime_checks("", off)
-DWORD TrainerFunc::AsmClearShroud(LPVOID) {
+DWORD Trainer::AsmClearShroud(LPVOID) {
     _asm {
         pushad
         mov eax,0x00A83D4C
@@ -613,7 +697,7 @@ DWORD TrainerFunc::AsmClearShroud(LPVOID) {
     return 0;
 }
 
-DWORD TrainerFunc::AsmNuclearBomb(LPVOID) {
+DWORD Trainer::AsmNuclearBomb(LPVOID) {
     int eax_temp;
     __asm {
         pushad
@@ -659,7 +743,7 @@ DWORD TrainerFunc::AsmNuclearBomb(LPVOID) {
     return 0;
 }
 
-DWORD TrainerFunc::AsmUnitLevelUp(LPVOID) {
+DWORD Trainer::AsmUnitLevelUp(LPVOID) {
     __asm {
         pushad
         mov eax,0x00A8ECBC
@@ -683,7 +767,7 @@ DWORD TrainerFunc::AsmUnitLevelUp(LPVOID) {
     return 0;
 }
 
-DWORD TrainerFunc::AsmUnitSpeedUp(LPVOID) {
+DWORD Trainer::AsmUnitSpeedUp(LPVOID) {
     __asm {
         pushad
         mov eax,0x00A8ECBC
@@ -726,7 +810,7 @@ DWORD TrainerFunc::AsmUnitSpeedUp(LPVOID) {
     return 0;
 }
 
-DWORD TrainerFunc::AsmThisIsMine(LPVOID) {
+DWORD Trainer::AsmThisIsMine(LPVOID) {
     __asm {
         pushad
         mov eax,0x00A8ECC8
@@ -750,7 +834,7 @@ DWORD TrainerFunc::AsmThisIsMine(LPVOID) {
     return 0;
 }
 
-DWORD TrainerFunc::AsmDeleteUnit(LPVOID) {
+DWORD Trainer::AsmDeleteUnit(LPVOID) {
     __asm {
         pushad
         mov eax,0x00A8ECC8

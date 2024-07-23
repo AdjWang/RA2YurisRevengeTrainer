@@ -33,13 +33,15 @@ def print_cpp_range_array(range_collection):
 if __name__ == '__main__':
     with open(SCRIPT_DIR / '../src/char_table.h', 'r') as f:
         char_tables = f.read()
-    res = re.findall(r'u8"(.*)"', char_tables)
+    with open(SCRIPT_DIR / '../src/config.h', 'r') as f:
+        hot_keys = f.read()
+    res = re.findall(r'u8"(.*)"', char_tables + hot_keys)
     # print(res, len(res))
     zh_chs = list(set(''.join(res)))
     num_chs = [f"{i}" for i in range(10)]
-    custom_chs = list(": ")
-    # for c in (zh_chs + num_chs + custom_chs):
-    #     print(c, f"0x{ord(c):04X}")
+    custom_chs = list(": ()")
+    for c in (zh_chs + num_chs + custom_chs):
+        print(c, f"0x{ord(c):04X}")
     ords = sorted([ord(c) for c in (zh_chs + num_chs + custom_chs)])
     # for i in ords:
     #     print(f"0x{i:04X}")

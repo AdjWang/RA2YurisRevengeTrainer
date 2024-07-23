@@ -16,8 +16,24 @@ namespace yrtr {
 const ImWchar* GetGlyphRanges() {
     static const ImWchar ranges[] = {
         0x0020, 0x0020,
-        0x002D, 0x002D,
-        0x0030, 0x003A,
+        0x0028, 0x0029,
+        0x002C, 0x002E,
+        0x0030, 0x0030,
+        0x0030, 0x0031,
+        0x0031, 0x0032,
+        0x0032, 0x0033,
+        0x0033, 0x0034,
+        0x0034, 0x0035,
+        0x0035, 0x0036,
+        0x0036, 0x0037,
+        0x0037, 0x0038,
+        0x0038, 0x0039,
+        0x0039, 0x003A,
+        0x0041, 0x005A,
+        0x006B, 0x006B,
+        0x006E, 0x006F,
+        0x0075, 0x0075,
+        0x0077, 0x0077,
         0x4E07, 0x4E07,
         0x4E09, 0x4E09,
         0x4E2D, 0x4E2D,
@@ -179,9 +195,20 @@ static void SetupStyle() {
     style.FrameRounding = 4;
     style.IndentSpacing = 12.0f;
 }
+
+std::string GetFnStrWithKey(FnLabel label) {
+    int hot_key = config::GetHotkey(label);
+    if (hot_key == GLFW_KEY_UNKNOWN) {
+        return std::string((const char*)GetFnStr(label));
+    }
+    const char8_t* fn_str = GetFnStr(label);
+    const char8_t* key_str = config::KeyToString(hot_key);
+    return fmt::format("{}({})", (const char*)fn_str, (const char*)key_str);
+}
 }  // namespace
 
-GuiContext::GuiContext(GLFWwindow* window) {
+GuiContext::GuiContext(GLFWwindow* window, const State& state)
+    : state_(state) {
     // setup high dpi scale factor
     ImGui_ImplWin32_EnableDpiAwareness();
     hdpi_scale_factor_ =
@@ -248,78 +275,51 @@ void GuiContext::UpdateViewport(GLFWwindow* window, int width, int height) {
     LOG(INFO, "High dpi scale factor={:.2f}", hdpi_scale_factor_);
 }
 
-void GuiContext::EnableCheckbox(FnLabel label) {
-    if (ckbox_cbs_.contains(label)) {
-        ckbox_cbs_[label].enable = true;
-    }
-}
-
-void GuiContext::DisableCheckbox(FnLabel label) {
-    if (ckbox_cbs_.contains(label)) {
-        CheckboxState& ckbox_state = ckbox_cbs_[label];
-        if (ckbox_state.activate) {
-            ckbox_state.activate = false;
-            ckbox_state.cb(this, false);
-        }
-        ckbox_state.enable = false;
-    }
-}
-
-void GuiContext::DeactivateAll() {
-    // Only check boxes need to be deactivated
-    for (auto& [label, ckbox_state] : ckbox_cbs_) {
-        if(ckbox_state.activate) {
-            ckbox_state.activate = false;
-            ckbox_state.cb(this, false);
-        }
-    }
-    DisableCheckbox(FnLabel::kFireToYourBase);
-}
-
 #define TRIGGER_INPUT(label, val)                             \
     do {                                                      \
         if (input_cbs_.contains(FnLabel::k##label)) {         \
-            input_cbs_[FnLabel::k##label](this, val);         \
+            input_cbs_[FnLabel::k##label](val);               \
         } else {                                              \
             LOG(WARN, "Not found handler for label=" #label); \
         }                                                     \
     } while (0)
 
-#define HANDLE_INPUT(label, val)                               \
-    do {                                                       \
-        if (input_cbs_.contains(FnLabel::k##label)) {          \
-            if (ImGui::Button(GetFnChar(FnLabel::k##label))) { \
-                input_cbs_[FnLabel::k##label](this, val);      \
-            }                                                  \
-        } else {                                               \
-            LOG(WARN, "Not found handler for label=" #label);  \
-        }                                                      \
+#define HANDLE_INPUT(label, val)                                            \
+    do {                                                                    \
+        if (input_cbs_.contains(FnLabel::k##label)) {                       \
+            if (ImGui::Button(GetFnStrWithKey(FnLabel::k##label).data())) { \
+                input_cbs_[FnLabel::k##label](val);                         \
+            }                                                               \
+        } else {                                                            \
+            LOG(WARN, "Not found handler for label=" #label);               \
+        }                                                                   \
     } while (0)
 
-#define HANDLE_BUTTON(label)                                   \
-    do {                                                       \
-        if (btn_cbs_.contains(FnLabel::k##label)) {            \
-            if (ImGui::Button(GetFnChar(FnLabel::k##label))) { \
-                btn_cbs_[FnLabel::k##label](this);             \
-            }                                                  \
-        } else {                                               \
-            LOG(WARN, "Not found handler for label=" #label);  \
-        }                                                      \
+#define HANDLE_BUTTON(label)                                                \
+    do {                                                                    \
+        if (btn_cbs_.contains(FnLabel::k##label)) {                         \
+            if (ImGui::Button(GetFnStrWithKey(FnLabel::k##label).data())) { \
+                btn_cbs_[FnLabel::k##label]();                              \
+            }                                                               \
+        } else {                                                            \
+            LOG(WARN, "Not found handler for label=" #label);               \
+        }                                                                   \
     } while (0)
 
-#define HANDLE_CHECKBOX(label)                                          \
-    do {                                                                \
-        if (ckbox_cbs_.contains(FnLabel::k##label)) {                   \
-            CheckboxState& ckbox_state = ckbox_cbs_[FnLabel::k##label]; \
-            ImGui::BeginDisabled(!ckbox_state.enable);                  \
-            if (ImGui::Checkbox(GetFnChar(FnLabel::k##label),           \
-                                &ckbox_state.activate)) {               \
-                if (!ckbox_state.cb(this, ckbox_state.activate)) {      \
-                    ckbox_state.activate = false;                       \
-                }                                                       \
-            }                                                           \
-            ImGui::EndDisabled();                                       \
-        }                                                               \
+#define HANDLE_CHECKBOX(label)                                             \
+    do {                                                                   \
+        if (ckbox_cbs_.contains(FnLabel::k##label)) {                      \
+            const CheckboxState& ckbox_state =                             \
+                state_.ckbox_states.at(FnLabel::k##label);                 \
+            bool enable = ckbox_state.enable;                              \
+            bool activate = ckbox_state.activate;                          \
+            ImGui::BeginDisabled(!enable);                                 \
+            if (ImGui::Checkbox(GetFnStrWithKey(FnLabel::k##label).data(), \
+                                &activate)) {                              \
+                ckbox_cbs_[FnLabel::k##label](activate);                   \
+            }                                                              \
+            ImGui::EndDisabled();                                          \
+        }                                                                  \
     } while (0)
 
 void GuiContext::RenderClientArea() {
@@ -334,8 +334,9 @@ void GuiContext::RenderClientArea() {
                  ImGuiWindowFlags_AlwaysAutoResize);
     ImGui::SetWindowFontScale(hdpi_scale_factor_);
 
-    ImGui::Format("{}: {}", GetFnChar(FnLabel::kState), state_);
-    ImGui::Text(GetFnChar(FnLabel::kMoney));
+    ImGui::Format("{}: {}", (const char*)GetFnStr(FnLabel::kState),
+                  state_.game_state);
+    ImGui::Text((const char*)GetFnStr(FnLabel::kMoney));
     ImGui::SameLine();  // Keep the following item on the same line
     ImGui::SetNextItemWidth(100);
     static char input[128] = "";
@@ -405,10 +406,7 @@ void GuiContext::AddInputListener(FnLabel label, InputHandler cb) {
 }
 
 void GuiContext::AddCheckboxListener(FnLabel label, CheckboxHandler cb) {
-    ckbox_cbs_.emplace(label, CheckboxState {
-        .activate = false,
-        .cb = std::move(cb),
-    });
+    ckbox_cbs_.emplace(label, std::move(cb));
 }
 
 }  // namespace yrtr
