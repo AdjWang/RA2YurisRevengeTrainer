@@ -22,6 +22,9 @@ public:
     void Render() const;
 
     void RenderClientArea();
+
+    void OnHotkey(int key);
+
     void AddButtonListener(FnLabel label, ButtonHandler cb);
     void AddInputListener(FnLabel label, InputHandler cb);
     void AddCheckboxListener(FnLabel label, CheckboxHandler cb);

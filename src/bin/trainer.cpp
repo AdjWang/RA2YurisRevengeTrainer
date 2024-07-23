@@ -1,3 +1,4 @@
+#include "config.h"
 #include "logging.h"
 #include "gui.h"
 #include "vendor.h"
@@ -7,20 +8,20 @@
 #include "state.h"
 
 namespace {
-static void error_callback(int error, const char* description) {
+static void ErrorCallback(int error, const char* description) {
     LOG(FATAL, "error=[{}] {}", error, description);
 }
 
-static void key_callback(GLFWwindow* window, int key, int scancode, int action,
+static void KeyCallback(GLFWwindow* window, int key, int scancode, int action,
                          int mods) {
     UNREFERENCED_PARAMETER(scancode);
-    UNREFERENCED_PARAMETER(mods);
-    if (mods == GLFW_MOD_ALT) {
-
+    if (mods == GLFW_MOD_ALT && action == GLFW_PRESS) {
+        auto gui_ctx = reinterpret_cast<yrtr::GuiContext*>(
+            glfwGetWindowUserPointer(window));
+        DLOG(INFO, "KeyCallback alt+{} ({})",
+             (const char*)yrtr::config::KeyToString(key), key);
+        gui_ctx->OnHotkey(key);
     }
-    // TODO
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, GL_TRUE);
 }
 
 static void FramebufferSizeCallback(GLFWwindow* window, int width, int height) {
@@ -33,7 +34,7 @@ static void FramebufferSizeCallback(GLFWwindow* window, int width, int height) {
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, PSTR, int) {
     GLFWwindow* window;
-    glfwSetErrorCallback(error_callback);
+    glfwSetErrorCallback(ErrorCallback);
     if (!glfwInit()) {
         exit(EXIT_FAILURE);
     }
@@ -61,7 +62,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, PSTR, int) {
                                           yrtr::Trainer::instance()));
 
     glfwSetWindowUserPointer(window, &gui_ctx);
-    glfwSetKeyCallback(window, key_callback);
+    glfwSetKeyCallback(window, KeyCallback);
     glfwSetFramebufferSizeCallback(window, FramebufferSizeCallback);
 
     // Disable imgui.ini

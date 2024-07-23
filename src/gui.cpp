@@ -155,6 +155,32 @@ const ImWchar* GetGlyphRanges() {
 }
 
 namespace {
+static std::unordered_map<int, FnLabel> kHotkeyTable;
+
+static void InitHotkeyTable() {
+    for (int label = 0; label < (int)FnLabel::kCount; label++) {
+        kHotkeyTable.emplace(config::GetHotkey((FnLabel)label), (FnLabel)label);
+    }
+}
+
+static FnLabel GetHotkeyLabel(int key) {
+    if (kHotkeyTable.contains(key)) {
+        return kHotkeyTable[key];
+    } else {
+        return FnLabel::kInvalid;
+    }
+}
+
+static std::string GetFnStrWithKey(FnLabel label) {
+    int hot_key = config::GetHotkey(label);
+    if (hot_key == GLFW_KEY_UNKNOWN) {
+        return std::string((const char*)GetFnStr(label));
+    }
+    const char8_t* fn_str = GetFnStr(label);
+    const char8_t* key_str = config::KeyToString(hot_key);
+    return fmt::format("{}({})", (const char*)fn_str, (const char*)key_str);
+}
+
 // https://github.com/ocornut/imgui/issues/707#issuecomment-254610737
 static void SetupStyle() {
     ImGuiStyle& style = ImGui::GetStyle();
@@ -195,20 +221,11 @@ static void SetupStyle() {
     style.FrameRounding = 4;
     style.IndentSpacing = 12.0f;
 }
-
-std::string GetFnStrWithKey(FnLabel label) {
-    int hot_key = config::GetHotkey(label);
-    if (hot_key == GLFW_KEY_UNKNOWN) {
-        return std::string((const char*)GetFnStr(label));
-    }
-    const char8_t* fn_str = GetFnStr(label);
-    const char8_t* key_str = config::KeyToString(hot_key);
-    return fmt::format("{}({})", (const char*)fn_str, (const char*)key_str);
-}
 }  // namespace
 
 GuiContext::GuiContext(GLFWwindow* window, const State& state)
     : state_(state) {
+    InitHotkeyTable();
     // setup high dpi scale factor
     ImGui_ImplWin32_EnableDpiAwareness();
     hdpi_scale_factor_ =
@@ -396,6 +413,85 @@ void GuiContext::RenderClientArea() {
 #undef HANDLE_INPUT
 #undef HANDLE_BUTTON
 #undef HANDLE_CHECKBOX
+
+#define HANDLE_HOTKEY_BUTTON(label_name)       \
+    do {                                       \
+        if (label == FnLabel::k##label_name) { \
+            if (btn_cbs_.contains(label)) {    \
+                btn_cbs_[label]();             \
+            }                                  \
+            return;                            \
+        }                                      \
+    } while (0)
+
+#define HANDLE_HOTKEY_CHECKBOX(label_name)            \
+    do {                                              \
+        if (label == FnLabel::k##label_name) {        \
+            if (ckbox_cbs_.contains(label)) {         \
+                const CheckboxState& ckbox_state =    \
+                    state_.ckbox_states.at(label);    \
+                bool enable = ckbox_state.enable;     \
+                bool activate = ckbox_state.activate; \
+                if (enable) {                         \
+                    ckbox_cbs_[label](!activate);     \
+                }                                     \
+            }                                         \
+            return;                                   \
+        }                                             \
+    } while (0)
+
+void GuiContext::OnHotkey(int key) {
+    FnLabel label = GetHotkeyLabel(key);
+    if (label == FnLabel::kInvalid) {
+        return;
+    }
+    if (label == FnLabel::kApply) {
+        if (input_cbs_.contains(label)) {
+            // Set credit
+            input_cbs_[label](2333333);
+        }
+    }
+    HANDLE_HOTKEY_BUTTON(FastBuild);
+    HANDLE_HOTKEY_BUTTON(DeleteUnit);
+    HANDLE_HOTKEY_BUTTON(ClearShroud);
+    HANDLE_HOTKEY_BUTTON(GiveMeABomb);
+    HANDLE_HOTKEY_BUTTON(UnitLevelUp);
+    HANDLE_HOTKEY_BUTTON(UnitSpeedUp);
+    HANDLE_HOTKEY_BUTTON(IAMWinner);
+    HANDLE_HOTKEY_BUTTON(ThisIsMine);
+    HANDLE_HOTKEY_BUTTON(IAMGhost);
+
+    HANDLE_HOTKEY_CHECKBOX(God);
+    HANDLE_HOTKEY_CHECKBOX(InstBuild);
+    HANDLE_HOTKEY_CHECKBOX(UnlimitSuperWeapon);
+    HANDLE_HOTKEY_CHECKBOX(UnlimitRadar);
+    HANDLE_HOTKEY_CHECKBOX(InstFire);
+    HANDLE_HOTKEY_CHECKBOX(InstTurn);
+    HANDLE_HOTKEY_CHECKBOX(RangeToYourBase);
+    HANDLE_HOTKEY_CHECKBOX(FireToYourBase);
+    HANDLE_HOTKEY_CHECKBOX(FreezeGapGenerator);
+    HANDLE_HOTKEY_CHECKBOX(FreezeUnit);
+    HANDLE_HOTKEY_CHECKBOX(SellTheWorld);
+    HANDLE_HOTKEY_CHECKBOX(UnlimitPower);
+    HANDLE_HOTKEY_CHECKBOX(BuildEveryWhere);
+    HANDLE_HOTKEY_CHECKBOX(AutoRepair);
+    HANDLE_HOTKEY_CHECKBOX(EnermyRevertRepair);
+    HANDLE_HOTKEY_CHECKBOX(SocialismTheBest);
+    HANDLE_HOTKEY_CHECKBOX(MakeAttackedMine);
+    HANDLE_HOTKEY_CHECKBOX(MakeCapturedMine);
+    HANDLE_HOTKEY_CHECKBOX(MakeGarrisonedMine);
+    HANDLE_HOTKEY_CHECKBOX(InvadeMode);
+    HANDLE_HOTKEY_CHECKBOX(UnlimitTech);
+    HANDLE_HOTKEY_CHECKBOX(FastReload);
+    HANDLE_HOTKEY_CHECKBOX(UnlimitFirePower);
+    HANDLE_HOTKEY_CHECKBOX(InstChrono);
+    HANDLE_HOTKEY_CHECKBOX(SpySpy);
+    HANDLE_HOTKEY_CHECKBOX(InfantrySlip);
+    HANDLE_HOTKEY_CHECKBOX(UnitLeveledUp);
+    HANDLE_HOTKEY_CHECKBOX(AdjustGameSpeed);
+}
+#undef HANDLE_HOTKEY_BUTTON
+#undef HANDLE_HOTKEY_CHECKBOX
 
 void GuiContext::AddButtonListener(FnLabel label, ButtonHandler cb) {
     btn_cbs_.emplace(label, std::move(cb));

@@ -1,4 +1,3 @@
-#include "config.h"
 #include "logging.h"
 #include "gui.h"
 #include "trainer_func.h"
@@ -54,6 +53,7 @@ static void InitCheckboxes(GuiContext& ctx) {
     ctx.AddCheckboxListener(FnLabel::kUnitLeveledUp,      BIND_FN(OnCkboxUnitLeveledUp));
     ctx.AddCheckboxListener(FnLabel::kAdjustGameSpeed,    BIND_FN(OnCkboxAdjustGameSpeed));
 }
+#undef BIND_FN
 
 static void InitStates(State& state) {
     state.game_state = std::string((const char*)GetFnStr(FnLabel::kStateIdle));
@@ -94,7 +94,6 @@ static void ResetStates(State& state) {
     }
     state.ckbox_states[FnLabel::kFireToYourBase].enable = false;
 }
-#undef BIND_FN
 }  // namespace
 
 void Trainer::Init(std::string_view exe_name, GuiContext& gui_ctx, State& state) {

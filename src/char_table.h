@@ -4,6 +4,7 @@
 namespace yrtr {
 
 enum class FnLabel {
+    kInvalid,
     // Tip
     kState,
     kStateOk,
@@ -49,6 +50,7 @@ enum class FnLabel {
     kInfantrySlip,
     kUnitLeveledUp,
     kAdjustGameSpeed,
+    kCount,
 };
 
 constexpr const char8_t* GetFnStr(FnLabel label) {
