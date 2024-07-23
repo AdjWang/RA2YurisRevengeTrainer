@@ -1,6 +1,6 @@
 #include "logging.h"
 #include "gui.h"
-#include "trainer_func.h"
+#include "trainer.h"
 #include "win32utils.h"
 #include "ce_scripts.h"
 

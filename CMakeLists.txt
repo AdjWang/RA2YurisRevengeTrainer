@@ -48,12 +48,12 @@ target_include_directories(libimgui
 
 add_subdirectory(src/aa_engine)
 
-add_executable(${PROJECT_NAME} WIN32 src/bin/trainer.cpp
+add_executable(${PROJECT_NAME} WIN32 src/bin/main.cpp
                                      src/logging.cpp
                                      src/timer.cpp
                                      src/gui.cpp
                                      src/win32utils.cpp
-                                     src/trainer_func.cpp)
+                                     src/trainer.cpp)
 target_include_directories(${PROJECT_NAME} PRIVATE deps/fmt/include
                                            PRIVATE deps/glfw
                                            PRIVATE deps/glfw/include

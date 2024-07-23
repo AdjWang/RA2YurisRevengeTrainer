@@ -1,5 +1,5 @@
 #pragma once
-#include "vendor.h"
+#include "macro.h"
 #include "vendor.h"
 #include "char_table.h"
 #include "state.h"
@@ -36,6 +36,8 @@ private:
     std::unordered_map<FnLabel, ButtonHandler> btn_cbs_;
     std::unordered_map<FnLabel, InputHandler> input_cbs_;
     std::unordered_map<FnLabel, CheckboxHandler> ckbox_cbs_;
+
+    DISALLOW_COPY_AND_ASSIGN(GuiContext);
 };
 
 }  // namespace yrtr

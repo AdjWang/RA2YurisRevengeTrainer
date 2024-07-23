@@ -2,7 +2,7 @@
 #include "logging.h"
 #include "gui.h"
 #include "vendor.h"
-#include "trainer_func.h"
+#include "trainer.h"
 #include "char_table.h"
 #include "timer.h"
 #include "state.h"
