@@ -13,6 +13,7 @@ add_link_options(/OPT:REF /INCREMENTAL:NO /level='requireAdministrator' /uiAcces
 
 # add_compile_definitions(YRTR_LOG_STD)
 add_compile_definitions(YRTR_LOG_DBGVIEW)
+add_compile_definitions(YRTR_LOG_FILE)
 
 project(ra2_trainer)
 

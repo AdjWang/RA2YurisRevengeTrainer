@@ -13,6 +13,58 @@ enum LogLevel {
 };
 constexpr static const char* kLogPrefix = "DIWEF";
 
+#ifdef YRTR_LOG_FILE
+
+template <class T, size_t N>
+class RingBuffer {
+public:
+    RingBuffer()
+        : size_(0),
+          head_(0) {}
+    
+    void Push(T&& val) {
+        buffer_[head_] = std::forward<T>(val);
+        head_ = (head_ + 1) % N;
+        size_++;
+        if (size_ > N) {
+            size_ = N;
+        }
+    }
+
+    std::vector<T> PollAll() {
+        std::vector<T> ret;
+        if (size_ < N) {
+            ret.resize(size_);
+            for (size_t i = 0; i < size_; i++) {
+                ret[i] = std::move(buffer_[i]);
+            }
+        } else {
+            if (head_ == 0) {
+                ret.resize(size_);
+                for (size_t i = 0; i < size_; i++) {
+                    ret[i] = std::move(buffer_[i]);
+                }
+            } else {
+                ret.reserve(N);
+                size_t p_data = head_;
+                do {
+                    ret.emplace_back(std::move(buffer_[p_data]));
+                    p_data = (p_data + 1) % N;
+                } while (p_data != head_);
+            }
+        }
+        return ret;
+    }
+
+private:
+    std::array<T, N> buffer_;
+    size_t size_;
+    size_t head_;
+};
+
+extern void DumpLog();
+#endif
+
 class DummyLogger {
 public:
     DummyLogger(LogLevel, const char*, int) {}
@@ -26,20 +78,8 @@ private:
 class Logger {
 public:
     // NOTE: DO NOT use LOG macro here as a recursive invocation
-    Logger(LogLevel level, const char* filename, int line)
-    : log_level_(level) {
-        InitLogHeader(level);
-        log_stream_ << fmt::format("{} {}:{}] ", log_header_, filename, line);
-    }
-
-    Logger(bool, LogLevel level, const char* filename, int line)
-    : log_level_(level) {
-        DWORD err_val = GetLastError();
-        std::error_code ec(err_val, std::system_category());
-        InitLogHeader(level);
-        log_stream_ << fmt::format("{} {}:{}] ({}:{}) ", log_header_, filename,
-                                   line, err_val, ec.message());
-    }
+    Logger(LogLevel level, const char* filename, int line);
+    Logger(bool, LogLevel level, const char* filename, int line);
 
     template <class... Args>
     Logger(bool, LogLevel level, const char* filename, int line,
@@ -66,18 +106,7 @@ public:
                            std::forward<Args>(args)...);
     }
 
-    ~Logger() {
-#ifdef YRTR_LOG_STD
-        ::printf("%s\n", log_stream_.str().c_str());
-        ::fflush(stdout);
-#elif YRTR_LOG_DBGVIEW
-        log_stream_ << "\n";
-        ::OutputDebugString(log_stream_.str().c_str());
-#endif
-        if (UNLIKELY(log_level_ == LogLevel::kFATAL)) {
-            ::abort();
-        }
-    }
+    ~Logger();
 
     std::ostream& stream() { return log_stream_; }
 
@@ -107,7 +136,7 @@ constexpr const char* GetFileName(const char* file_path) {
     }
     return file_path;
 }
-}
+}  // namespace
 
 // #define __LOG_FILE  __FILE_NAME__
 #define __LOG_FILE  GetFileName(__FILE__)

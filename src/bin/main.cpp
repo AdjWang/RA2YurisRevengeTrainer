@@ -63,6 +63,12 @@ static LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam,
 }  // namespace
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, PSTR, int) {
+#ifdef YRTR_LOG_FILE
+    if (atexit(yrtr::DumpLog) != 0) {
+        perror("Failed to register log dump function");
+    }
+#endif
+
     GLFWwindow* window;
     glfwSetErrorCallback(ErrorCallback);
     if (!glfwInit()) {
