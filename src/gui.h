@@ -23,7 +23,7 @@ public:
 
     void RenderClientArea();
 
-    void OnHotkey(int key);
+    void Trigger(FnLabel label);
 
     void AddButtonListener(FnLabel label, ButtonHandler cb);
     void AddInputListener(FnLabel label, InputHandler cb);

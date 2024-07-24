@@ -7,8 +7,9 @@ namespace config {
 
 constexpr static const float kFontScale = 15.0f;
 constexpr static std::string_view kFontFile = "simhei.ttf";
+constexpr static uint32_t kApplyCredit = 2333333;
+constexpr static const int kWin32HotKeyMod = MOD_ALT;
 
-constexpr static const int kHotKeyMod = GLFW_MOD_ALT;
 constexpr int GetHotkey(FnLabel label) {
     switch(label) {
         case FnLabel::kApply:               return GLFW_KEY_1;

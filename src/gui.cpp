@@ -155,22 +155,6 @@ const ImWchar* GetGlyphRanges() {
 }
 
 namespace {
-static std::unordered_map<int, FnLabel> kHotkeyTable;
-
-static void InitHotkeyTable() {
-    for (int label = 0; label < (int)FnLabel::kCount; label++) {
-        kHotkeyTable.emplace(config::GetHotkey((FnLabel)label), (FnLabel)label);
-    }
-}
-
-static FnLabel GetHotkeyLabel(int key) {
-    if (kHotkeyTable.contains(key)) {
-        return kHotkeyTable[key];
-    } else {
-        return FnLabel::kInvalid;
-    }
-}
-
 static std::string GetFnStrWithKey(FnLabel label) {
     int hot_key = config::GetHotkey(label);
     if (hot_key == GLFW_KEY_UNKNOWN) {
@@ -225,7 +209,6 @@ static void SetupStyle() {
 
 GuiContext::GuiContext(GLFWwindow* window, const State& state)
     : state_(state) {
-    InitHotkeyTable();
     // setup high dpi scale factor
     ImGui_ImplWin32_EnableDpiAwareness();
     hdpi_scale_factor_ =
@@ -244,7 +227,7 @@ GuiContext::GuiContext(GLFWwindow* window, const State& state)
     std::filesystem::path font_path(win32::GetDefaultFontPath() /
                                     config::kFontFile);
     if (!std::filesystem::exists(font_path)) {
-        LOG(WARN, "Not found font={}", font_path.string());
+        LOG(FATAL, "Not found font={}", font_path.string());
     }
     io.Fonts->Clear();
     ImFont* font = io.Fonts->AddFontFromFileTTF(
@@ -414,7 +397,7 @@ void GuiContext::RenderClientArea() {
 #undef HANDLE_BUTTON
 #undef HANDLE_CHECKBOX
 
-#define HANDLE_HOTKEY_BUTTON(label_name)       \
+#define HANDLE_TRIGGER_BUTTON(label_name)      \
     do {                                       \
         if (label == FnLabel::k##label_name) { \
             if (btn_cbs_.contains(label)) {    \
@@ -424,7 +407,7 @@ void GuiContext::RenderClientArea() {
         }                                      \
     } while (0)
 
-#define HANDLE_HOTKEY_CHECKBOX(label_name)            \
+#define HANDLE_TRIGGER_CHECKBOX(label_name)           \
     do {                                              \
         if (label == FnLabel::k##label_name) {        \
             if (ckbox_cbs_.contains(label)) {         \
@@ -440,55 +423,54 @@ void GuiContext::RenderClientArea() {
         }                                             \
     } while (0)
 
-void GuiContext::OnHotkey(int key) {
-    FnLabel label = GetHotkeyLabel(key);
+void GuiContext::Trigger(FnLabel label) {
     if (label == FnLabel::kInvalid) {
         return;
     }
     if (label == FnLabel::kApply) {
         if (input_cbs_.contains(label)) {
             // Set credit
-            input_cbs_[label](2333333);
+            input_cbs_[label](config::kApplyCredit);
         }
     }
-    HANDLE_HOTKEY_BUTTON(FastBuild);
-    HANDLE_HOTKEY_BUTTON(DeleteUnit);
-    HANDLE_HOTKEY_BUTTON(ClearShroud);
-    HANDLE_HOTKEY_BUTTON(GiveMeABomb);
-    HANDLE_HOTKEY_BUTTON(UnitLevelUp);
-    HANDLE_HOTKEY_BUTTON(UnitSpeedUp);
-    HANDLE_HOTKEY_BUTTON(IAMWinner);
-    HANDLE_HOTKEY_BUTTON(ThisIsMine);
-    HANDLE_HOTKEY_BUTTON(IAMGhost);
+    HANDLE_TRIGGER_BUTTON(FastBuild);
+    HANDLE_TRIGGER_BUTTON(DeleteUnit);
+    HANDLE_TRIGGER_BUTTON(ClearShroud);
+    HANDLE_TRIGGER_BUTTON(GiveMeABomb);
+    HANDLE_TRIGGER_BUTTON(UnitLevelUp);
+    HANDLE_TRIGGER_BUTTON(UnitSpeedUp);
+    HANDLE_TRIGGER_BUTTON(IAMWinner);
+    HANDLE_TRIGGER_BUTTON(ThisIsMine);
+    HANDLE_TRIGGER_BUTTON(IAMGhost);
 
-    HANDLE_HOTKEY_CHECKBOX(God);
-    HANDLE_HOTKEY_CHECKBOX(InstBuild);
-    HANDLE_HOTKEY_CHECKBOX(UnlimitSuperWeapon);
-    HANDLE_HOTKEY_CHECKBOX(UnlimitRadar);
-    HANDLE_HOTKEY_CHECKBOX(InstFire);
-    HANDLE_HOTKEY_CHECKBOX(InstTurn);
-    HANDLE_HOTKEY_CHECKBOX(RangeToYourBase);
-    HANDLE_HOTKEY_CHECKBOX(FireToYourBase);
-    HANDLE_HOTKEY_CHECKBOX(FreezeGapGenerator);
-    HANDLE_HOTKEY_CHECKBOX(FreezeUnit);
-    HANDLE_HOTKEY_CHECKBOX(SellTheWorld);
-    HANDLE_HOTKEY_CHECKBOX(UnlimitPower);
-    HANDLE_HOTKEY_CHECKBOX(BuildEveryWhere);
-    HANDLE_HOTKEY_CHECKBOX(AutoRepair);
-    HANDLE_HOTKEY_CHECKBOX(EnermyRevertRepair);
-    HANDLE_HOTKEY_CHECKBOX(SocialismTheBest);
-    HANDLE_HOTKEY_CHECKBOX(MakeAttackedMine);
-    HANDLE_HOTKEY_CHECKBOX(MakeCapturedMine);
-    HANDLE_HOTKEY_CHECKBOX(MakeGarrisonedMine);
-    HANDLE_HOTKEY_CHECKBOX(InvadeMode);
-    HANDLE_HOTKEY_CHECKBOX(UnlimitTech);
-    HANDLE_HOTKEY_CHECKBOX(FastReload);
-    HANDLE_HOTKEY_CHECKBOX(UnlimitFirePower);
-    HANDLE_HOTKEY_CHECKBOX(InstChrono);
-    HANDLE_HOTKEY_CHECKBOX(SpySpy);
-    HANDLE_HOTKEY_CHECKBOX(InfantrySlip);
-    HANDLE_HOTKEY_CHECKBOX(UnitLeveledUp);
-    HANDLE_HOTKEY_CHECKBOX(AdjustGameSpeed);
+    HANDLE_TRIGGER_CHECKBOX(God);
+    HANDLE_TRIGGER_CHECKBOX(InstBuild);
+    HANDLE_TRIGGER_CHECKBOX(UnlimitSuperWeapon);
+    HANDLE_TRIGGER_CHECKBOX(UnlimitRadar);
+    HANDLE_TRIGGER_CHECKBOX(InstFire);
+    HANDLE_TRIGGER_CHECKBOX(InstTurn);
+    HANDLE_TRIGGER_CHECKBOX(RangeToYourBase);
+    HANDLE_TRIGGER_CHECKBOX(FireToYourBase);
+    HANDLE_TRIGGER_CHECKBOX(FreezeGapGenerator);
+    HANDLE_TRIGGER_CHECKBOX(FreezeUnit);
+    HANDLE_TRIGGER_CHECKBOX(SellTheWorld);
+    HANDLE_TRIGGER_CHECKBOX(UnlimitPower);
+    HANDLE_TRIGGER_CHECKBOX(BuildEveryWhere);
+    HANDLE_TRIGGER_CHECKBOX(AutoRepair);
+    HANDLE_TRIGGER_CHECKBOX(EnermyRevertRepair);
+    HANDLE_TRIGGER_CHECKBOX(SocialismTheBest);
+    HANDLE_TRIGGER_CHECKBOX(MakeAttackedMine);
+    HANDLE_TRIGGER_CHECKBOX(MakeCapturedMine);
+    HANDLE_TRIGGER_CHECKBOX(MakeGarrisonedMine);
+    HANDLE_TRIGGER_CHECKBOX(InvadeMode);
+    HANDLE_TRIGGER_CHECKBOX(UnlimitTech);
+    HANDLE_TRIGGER_CHECKBOX(FastReload);
+    HANDLE_TRIGGER_CHECKBOX(UnlimitFirePower);
+    HANDLE_TRIGGER_CHECKBOX(InstChrono);
+    HANDLE_TRIGGER_CHECKBOX(SpySpy);
+    HANDLE_TRIGGER_CHECKBOX(InfantrySlip);
+    HANDLE_TRIGGER_CHECKBOX(UnitLeveledUp);
+    HANDLE_TRIGGER_CHECKBOX(AdjustGameSpeed);
 }
 #undef HANDLE_HOTKEY_BUTTON
 #undef HANDLE_HOTKEY_CHECKBOX

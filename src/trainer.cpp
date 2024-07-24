@@ -108,10 +108,10 @@ Trainer::Trainer(std::string_view exe_name, State& state)
       exe_name_(exe_name),
       attached_(false) {}
 
-#define CHECK_MEMAPI_OR_REPORT()                \
-    if (mem_api_ == nullptr) {                  \
-        LOG(WARN, "MemoryAPI not initialized"); \
-        return;                                 \
+#define CHECK_MEMAPI_OR_REPORT()                                              \
+    if (mem_api_ == nullptr) {                                                \
+        LOG(WARN, "MemoryAPI not initialized. Ensure the game has started."); \
+        return;                                                               \
     }
 
 #define CHECK_REPORT(exp)                                   \
@@ -504,10 +504,10 @@ void Trainer::DeactivateAll() {
     ResetStates(state_);
 }
 
-#define CHECK_MEMAPI_OR_RETURN_FALSE()          \
-    if (mem_api_ == nullptr) {                  \
-        LOG(WARN, "MemoryAPI not initialized"); \
-        return false;                           \
+#define CHECK_MEMAPI_OR_RETURN_FALSE()                                        \
+    if (mem_api_ == nullptr) {                                                \
+        LOG(WARN, "MemoryAPI not initialized. Ensure the game has started."); \
+        return false;                                                         \
     }
 
 #define CHECK_RETF(exp) \
