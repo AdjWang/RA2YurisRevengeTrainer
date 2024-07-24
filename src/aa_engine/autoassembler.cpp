@@ -600,8 +600,7 @@ bool InjectDll(HANDLE processhandle, string dllname, string functiontocall)
 	DWORD x;
 
 	vector<BYTE> outp;
-	// int counter;
-	// DEBUG
+    // WARN: suppress warning
 	int counter = 0;
 	DWORD position,position2;
 
@@ -925,8 +924,7 @@ bool _autoassemble2(HANDLE processhandle, vector<string> code, vector<tcealloc> 
     string currentline;
     char *currentlinep;
 
-    // DEBUG
-    // DWORD currentaddress;
+    // WARN: suppress warning
     DWORD currentaddress = 0;
     vector<tassembled> assembled;
     DWORD x,y,op,op2;

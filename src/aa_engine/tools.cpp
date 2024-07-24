@@ -645,7 +645,7 @@ int init_getModuleList(HANDLE processhandle){
 		//moduleinfo.modulename = _modulename.substr(pos,length);
 
 
-		// DEBUG: disable unicode
+		// DEPRECATED: disable unicode
 		// char modulename[260];
 		// WideCharToMultiByte(CP_ACP,0,moduleentry.szModule,-1, modulename,260,NULL, NULL);
 		// moduleinfo.modulename = string(modulename);

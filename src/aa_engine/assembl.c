@@ -808,7 +808,7 @@ int Assemble(char* cmd, ulong ip, t_asmmodel* model, int attempt,
     int hasrm, hassib, dispsize, immsize;
     int anydisp, anyimm, anyjmp;
     long l, displacement, immediate, jmpoffset;
-    // DEBUG
+    // WARN: suppress warning
     jmpoffset = 0;
     char name[32], * nameend;
     char tcode[MAXCMDSIZE], tmask[MAXCMDSIZE];
