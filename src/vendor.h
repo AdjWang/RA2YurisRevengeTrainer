@@ -17,6 +17,7 @@
 #include <ranges>
 #include <span>
 #include <sstream>
+#include <thread>
 
 #include <fmt/core.h>
 

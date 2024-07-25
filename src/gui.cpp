@@ -210,6 +210,22 @@ static void SetupStyle() {
     style.FrameRounding = 4;
     style.IndentSpacing = 12.0f;
 }
+
+static void BeepEnable() {
+    std::thread t([]() {
+        Beep(600, 100);
+        Beep(1000, 100);
+    });
+    t.detach();
+}
+
+static void BeepDisable() {
+    std::thread t([]() {
+        Beep(1000, 100);
+        Beep(600, 100);
+    });
+    t.detach();
+}
 }  // namespace
 
 GuiContext::GuiContext(GLFWwindow* window, const State& state)
@@ -284,6 +300,7 @@ void GuiContext::UpdateViewport(GLFWwindow* window, int width, int height) {
     do {                                                      \
         if (input_cbs_.contains(FnLabel::k##label)) {         \
             input_cbs_[FnLabel::k##label](val);               \
+            BeepEnable();                                     \
         } else {                                              \
             LOG(WARN, "Not found handler for label=" #label); \
         }                                                     \
@@ -294,6 +311,7 @@ void GuiContext::UpdateViewport(GLFWwindow* window, int width, int height) {
         if (input_cbs_.contains(FnLabel::k##label)) {                       \
             if (ImGui::Button(GetFnStrWithKey(FnLabel::k##label).data())) { \
                 input_cbs_[FnLabel::k##label](val);                         \
+                BeepEnable();                                               \
             }                                                               \
         } else {                                                            \
             LOG(WARN, "Not found handler for label=" #label);               \
@@ -305,6 +323,7 @@ void GuiContext::UpdateViewport(GLFWwindow* window, int width, int height) {
         if (btn_cbs_.contains(FnLabel::k##label)) {                         \
             if (ImGui::Button(GetFnStrWithKey(FnLabel::k##label).data())) { \
                 btn_cbs_[FnLabel::k##label]();                              \
+                BeepEnable();                                               \
             }                                                               \
         } else {                                                            \
             LOG(WARN, "Not found handler for label=" #label);               \
@@ -322,6 +341,11 @@ void GuiContext::UpdateViewport(GLFWwindow* window, int width, int height) {
             if (ImGui::Checkbox(GetFnStrWithKey(FnLabel::k##label).data(), \
                                 &activate)) {                              \
                 ckbox_cbs_[FnLabel::k##label](activate);                   \
+                if (activate) {                                            \
+                    BeepEnable();                                          \
+                } else {                                                   \
+                    BeepDisable();                                         \
+                }                                                          \
             }                                                              \
             ImGui::EndDisabled();                                          \
         }                                                                  \
@@ -407,6 +431,7 @@ void GuiContext::RenderClientArea() {
         if (label == FnLabel::k##label_name) { \
             if (btn_cbs_.contains(label)) {    \
                 btn_cbs_[label]();             \
+                BeepEnable();                  \
             }                                  \
             return;                            \
         }                                      \
@@ -422,6 +447,11 @@ void GuiContext::RenderClientArea() {
                 bool activate = ckbox_state.activate; \
                 if (enable) {                         \
                     ckbox_cbs_[label](!activate);     \
+                    if (!activate) {                  \
+                        BeepEnable();                 \
+                    } else {                          \
+                        BeepDisable();                \
+                    }                                 \
                 }                                     \
             }                                         \
             return;                                   \
@@ -436,6 +466,7 @@ void GuiContext::Trigger(FnLabel label) {
         if (input_cbs_.contains(label)) {
             // Set credit
             input_cbs_[label](config::kApplyCredit);
+            BeepEnable();
         }
     }
     HANDLE_TRIGGER_BUTTON(FastBuild);
