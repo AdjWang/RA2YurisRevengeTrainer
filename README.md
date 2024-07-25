@@ -17,6 +17,8 @@ cmake --build ./build --config Release --target ra2_trainer -j $env:NUMBER_OF_PR
 
 # 功能简介
 
+快捷键：Alt+功能括号后标记的按键
+
 说明信息中涉及的功能用斜体表示。
 
 ## 输入框
