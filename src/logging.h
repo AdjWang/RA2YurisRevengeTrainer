@@ -160,7 +160,7 @@ constexpr const char* GetFileName(const char* file_path) {
 #define DLOG(level, ...) DEVNULL
 #endif
 
-#define LOG_IF(lvl, cond) !(cond) ? DEVNULL : LOG(lvl)
+#define LOG_IF(lvl, cond) !(cond) ? DEVNULL : PLOG(lvl)
 
 #define CHECK(cond) LOG_IF(FATAL, !(cond)) << "Check failed: " #cond " "
 #define CHECK_EQ(a, b) LOG_IF(FATAL,  ((a)!=(b))) << fmt::format("Check failed: " #a "={} EQ " #b "={}", (a), (b))

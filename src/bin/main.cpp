@@ -23,16 +23,26 @@ static std::unordered_map<int, yrtr::FnLabel> kHotkeyTable;
 
 static void InitHotkey(HWND hWnd) {
     for (int label = 0; label < (int)yrtr::FnLabel::kCount; label++) {
-        kHotkeyTable.emplace(yrtr::config::GetHotkey((yrtr::FnLabel)label),
-                             (yrtr::FnLabel)label);
         int key = yrtr::config::GetHotkey((yrtr::FnLabel)label);
         if (key != GLFW_KEY_UNKNOWN) {
             int scancode = glfwGetKeyScancode(key);
             int vk = MapVirtualKey(scancode, MAPVK_VSC_TO_VK);
             CHECK(vk > 0);
-            CHECK(RegisterHotKey(
-                hWnd, label, yrtr::config::kWin32HotKeyMod | MOD_NOREPEAT, vk));
+            if (!RegisterHotKey(hWnd, label,
+                                yrtr::config::kWin32HotKeyMod | MOD_NOREPEAT,
+                                vk)) {
+                yrtr::DisableHotkeyGUI(key);
+                char key_name[10];
+                if (GetKeyNameText(scancode << 16, key_name, 10) > 0) {
+                    LOG(WARN, "RegisterHotkey failed. Key name={}", key_name);
+                } else {
+                    LOG(WARN, "RegisterHotkey failed. Key num={}", vk);
+                }
+                continue;
+            }
         }
+        kHotkeyTable.emplace(yrtr::config::GetHotkey((yrtr::FnLabel)label),
+                             (yrtr::FnLabel)label);
     }
 }
 

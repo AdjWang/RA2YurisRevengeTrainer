@@ -6,6 +6,8 @@
 
 namespace yrtr {
 
+extern void DisableHotkeyGUI(int key);
+
 class GuiContext {
 public:
     using ButtonHandler = std::function<void()>;

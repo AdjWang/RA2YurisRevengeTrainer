@@ -9,9 +9,14 @@ template <class... TArgs>
 void Format(const fmt::format_string<TArgs...>& fmt_str, TArgs... args) {
     Text(fmt::format(fmt_str, std::forward<TArgs>(args)...).c_str());
 }
-}
+}  // namespace ImGui
 
 namespace yrtr {
+
+static std::unordered_set<int> kDisabledHotkey;
+void DisableHotkeyGUI(int key) {
+    kDisabledHotkey.emplace(key);
+}
 
 const ImWchar* GetGlyphRanges() {
     static const ImWchar ranges[] = {
@@ -157,8 +162,8 @@ const ImWchar* GetGlyphRanges() {
 namespace {
 static std::string GetFnStrWithKey(FnLabel label) {
     int hot_key = config::GetHotkey(label);
-    if (hot_key == GLFW_KEY_UNKNOWN) {
-        return std::string((const char*)GetFnStr(label));
+    if (kDisabledHotkey.contains(hot_key) || hot_key == GLFW_KEY_UNKNOWN) {
+        return fmt::format("{}()", ((const char*)GetFnStr(label)));
     }
     const char8_t* fn_str = GetFnStr(label);
     const char8_t* key_str = config::KeyToString(hot_key);

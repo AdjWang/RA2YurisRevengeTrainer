@@ -13,6 +13,7 @@
 #include <format>
 #include <iostream>
 #include <unordered_map>
+#include <unordered_set>
 #include <ranges>
 #include <span>
 #include <sstream>
