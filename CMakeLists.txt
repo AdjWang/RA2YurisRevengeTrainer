@@ -7,7 +7,7 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS OFF)
 set(BUILD_SHARED_LIBS OFF)
 set(CMAKE_DEBUG_POSTFIX "")
 
-add_compile_options(/MP /Gy /GS-)
+add_compile_options(/MP /Gy /GS- /utf-8)
 add_compile_definitions(_SILENCE_ALL_CXX23_DEPRECATION_WARNINGS)
 add_link_options(/OPT:REF /INCREMENTAL:NO /level='requireAdministrator' /uiAccess='false')
 
@@ -61,8 +61,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE deps/fmt/include
                                            PRIVATE ${IMGUI_INCLUDES}
                                            PRIVATE src)
 target_compile_options(${PROJECT_NAME} PRIVATE /W4
-                                       PRIVATE /WX
-                                       PRIVATE /utf-8)
+                                       PRIVATE /WX)
 target_link_libraries(${PROJECT_NAME} PRIVATE OpenGL::GL
                                       PRIVATE libimgui
                                       PRIVATE glfw
