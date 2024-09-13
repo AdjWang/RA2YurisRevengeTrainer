@@ -255,7 +255,7 @@ int clock_gettime(int, struct timespec *tv) {
     return (0);
 }
 
-std::filesystem::path GetDefaultFontPath() {
+std::filesystem::path GetDefaultFontDir() {
     PWSTR ppszPath;
     HRESULT res = SHGetKnownFolderPath(FOLDERID_Fonts, /*dwFlags*/ 0,
                                        /*hToken*/ NULL, &ppszPath);

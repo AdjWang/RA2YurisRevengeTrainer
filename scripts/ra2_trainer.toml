@@ -1,0 +1,6 @@
+[global]
+executable_name = "gamemd.exe"
+# Available: zh, en
+language = "zh"
+# Default using simhei.ttf for zh and arial.ttf for en. Only used for custom fonts.
+# font_path = "C:\\Windows\\Fonts\\arial.ttf"

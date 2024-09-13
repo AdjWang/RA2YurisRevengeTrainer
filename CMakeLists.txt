@@ -31,6 +31,8 @@ set(GLFW_BUILD_DOCS OFF CACHE BOOL "disable glfw docs")
 set(GLFW_INSTALL OFF CACHE BOOL "use glfw as a submodule")
 add_subdirectory(deps/glfw)
 
+add_subdirectory(deps/tomlplusplus)
+
 set(IMGUI_INCLUDES deps/imgui
                    deps/imgui/backends)
 set(IMGUI_SOURCES  deps/imgui/imgui.cpp
@@ -50,6 +52,7 @@ target_include_directories(libimgui
 add_subdirectory(src/aa_engine)
 
 add_executable(${PROJECT_NAME} WIN32 src/bin/main.cpp
+                                     src/config.cpp
                                      src/logging.cpp
                                      src/timer.cpp
                                      src/gui.cpp
@@ -58,6 +61,7 @@ add_executable(${PROJECT_NAME} WIN32 src/bin/main.cpp
 target_include_directories(${PROJECT_NAME} PRIVATE deps/fmt/include
                                            PRIVATE deps/glfw
                                            PRIVATE deps/glfw/include
+                                           PRIVATE deps/tomlplusplus/include
                                            PRIVATE ${IMGUI_INCLUDES}
                                            PRIVATE src)
 target_compile_options(${PROJECT_NAME} PRIVATE /W4
@@ -66,7 +70,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE OpenGL::GL
                                       PRIVATE libimgui
                                       PRIVATE glfw
                                       PRIVATE fmt::fmt
-                                      PRIVATE aa_engine)
+                                      PRIVATE aa_engine
+                                      PRIVATE tomlplusplus::tomlplusplus)
 
 add_executable(disasm src/bin/test_disasm.cpp
                       src/logging.cpp
@@ -74,6 +79,7 @@ add_executable(disasm src/bin/test_disasm.cpp
 target_include_directories(disasm PRIVATE deps/fmt/include
                                   PRIVATE deps/glfw
                                   PRIVATE deps/glfw/include
+                                  PRIVATE deps/tomlplusplus/include
                                   PRIVATE ${IMGUI_INCLUDES}
                                   PRIVATE src)
 target_link_libraries(disasm PRIVATE fmt::fmt

@@ -1,3 +1,4 @@
+#include "config.h"
 #include "logging.h"
 #include "gui.h"
 #include "trainer.h"
@@ -56,7 +57,7 @@ static void InitCheckboxes(GuiContext& ctx) {
 #undef BIND_FN
 
 static void InitStates(State& state) {
-    state.game_state = std::string((const char*)GetFnStr(FnLabel::kStateIdle));
+    state.game_state = std::string((const char*)GetFnStr(FnLabel::kStateIdle, config::GetGlobalConfig().lang));
     state.ckbox_states.emplace(FnLabel::kGod,                CheckboxState{.enable=true, .activate=false});
     state.ckbox_states.emplace(FnLabel::kInstBuild,          CheckboxState{.enable=true, .activate=false});
     state.ckbox_states.emplace(FnLabel::kUnlimitSuperWeapon, CheckboxState{.enable=true, .activate=false});
@@ -114,10 +115,17 @@ Trainer::Trainer(std::string_view exe_name, State& state)
         return;                                                               \
     }
 
-#define CHECK_REPORT(exp)                                   \
-    if (!(exp)) {                                           \
-        LOG(WARN, __FUNCTION__ " Failed to execute " #exp); \
-        return;                                             \
+// For some unknown reason, spanning between game instances may cause previous
+// handle invalid. Give it a chance to retry.
+#define CHECK_REPORT(exp)                                                      \
+    if (!(exp)) {                                                              \
+        LOG(WARN, __FUNCTION__ " Retry execute " #exp);                        \
+        mem_api_.reset();                                                      \
+        UpdateProcState();                                                     \
+        if (!(exp)) {                                                          \
+            LOG(WARN, __FUNCTION__ " Failed to execute " #exp);                \
+            return;                                                            \
+        }                                                                      \
     }
 
 void Trainer::OnBtnApply(uint32_t val) {
@@ -444,8 +452,8 @@ void Trainer::UpdateProcState() {
             mem_api_.reset(new win32::MemoryAPI(pid_));
             if (mem_api_->CheckHandle()) {
                 attached_ = true;
-                auto state =
-                    (const char*)yrtr::GetFnStr(yrtr::FnLabel::kStateOk);
+                auto state = (const char *)yrtr::GetFnStr(
+                    yrtr::FnLabel::kStateOk, config::GetGlobalConfig().lang);
                 state_.game_state = std::string(state);
                 DLOG(INFO, "MemoryAPI initialized");
             }
@@ -455,7 +463,8 @@ void Trainer::UpdateProcState() {
         DLOG(INFO, "GetProcessIDFromName searching exe={}", exe_name_);
         mem_api_.reset();
         attached_ = false;
-        auto state = (const char*)yrtr::GetFnStr(yrtr::FnLabel::kStateIdle);
+        auto state = (const char *)yrtr::GetFnStr(
+            yrtr::FnLabel::kStateIdle, config::GetGlobalConfig().lang);
         state_.game_state = std::string(state);
     }
 }

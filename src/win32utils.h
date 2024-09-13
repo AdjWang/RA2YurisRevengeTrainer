@@ -112,14 +112,14 @@ public:
     bool CreateRemoteThread(void* fn, size_t code_size = 0x256) const;
     bool AutoAssemble(std::string_view script, bool activate) const;
 
-   private:
+private:
     std::unique_ptr<HandleGuard> handle_;
 
     DISALLOW_COPY_AND_ASSIGN(MemoryAPI);
 };
 
 int clock_gettime(int X, struct timespec *tv);
-std::filesystem::path GetDefaultFontPath();
+std::filesystem::path GetDefaultFontDir();
 BOOL GetProcessIDFromName(LPCSTR name, LPDWORD id);
 
 }  // namespace win32

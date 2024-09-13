@@ -1,4 +1,5 @@
 #pragma once
+#include "macro.h"
 #include "vendor.h"
 
 namespace yrtr {
@@ -53,7 +54,7 @@ enum class FnLabel {
     kCount,
 };
 
-constexpr const char8_t* GetFnStr(FnLabel label) {
+constexpr const char8_t* GetFnStrZh(FnLabel label) {
     switch(label){
         case FnLabel::kState:               return u8"状态";
         case FnLabel::kStateOk:             return u8"游戏运行中";
@@ -98,6 +99,77 @@ constexpr const char8_t* GetFnStr(FnLabel label) {
         case FnLabel::kUnitLeveledUp:       return u8"部队全部三级";
         case FnLabel::kAdjustGameSpeed:     return u8"任务调速";
         default: return u8"unknown";
+    }
+}
+
+constexpr const char8_t* GetFnStrEn(FnLabel label) {
+    switch(label){
+        case FnLabel::kState:               return u8"State";
+        case FnLabel::kStateOk:             return u8"Game running";
+        case FnLabel::kStateIdle:           return u8"Game not running";
+        case FnLabel::kMoney:               return u8"Money";
+        case FnLabel::kApply:               return u8"Apply";
+        case FnLabel::kFastBuild:           return u8"Fast build";
+        case FnLabel::kDeleteUnit:          return u8"Delete unit";
+        case FnLabel::kClearShroud:         return u8"Clear shroud";
+        case FnLabel::kGiveMeABomb:         return u8"Give me a bomb";
+        case FnLabel::kUnitLevelUp:         return u8"Selected units level up";
+        case FnLabel::kUnitSpeedUp:         return u8"Selected units speed up";
+        case FnLabel::kIAMWinner:           return u8"I am winner";
+        case FnLabel::kThisIsMine:          return u8"This is mine";
+        case FnLabel::kIAMGhost:            return u8"I am ghost";
+        case FnLabel::kGod:                 return u8"I am god";
+        case FnLabel::kInstBuild:           return u8"Instant build";
+        case FnLabel::kUnlimitSuperWeapon:  return u8"No super weapon cd";
+        case FnLabel::kUnlimitRadar:        return u8"Permanent radar";
+        case FnLabel::kInstFire:            return u8"No fire cd";
+        case FnLabel::kInstTurn:            return u8"Instant turn";
+        case FnLabel::kRangeToYourBase:     return u8"Range to your base";
+        case FnLabel::kFireToYourBase:      return u8"Fire to your base";
+        case FnLabel::kFreezeGapGenerator:  return u8"Disable gap generator";
+        case FnLabel::kFreezeUnit:          return u8"Disable enermy units";
+        case FnLabel::kSellTheWorld:        return u8"Sell the world";
+        case FnLabel::kUnlimitPower:        return u8"Unlimit power";
+        case FnLabel::kBuildEveryWhere:     return u8"Build everywhere";
+        case FnLabel::kAutoRepair:          return u8"Auto repair";
+        case FnLabel::kEnermyRevertRepair:  return u8"Enermy revert repair";
+        case FnLabel::kSocialismTheBest:    return u8"Socialism the best";
+        case FnLabel::kMakeAttackedMine:    return u8"Make attacked mine";
+        case FnLabel::kMakeCapturedMine:    return u8"Make captured mine";
+        case FnLabel::kMakeGarrisonedMine:  return u8"Make garrisoned mine";
+        case FnLabel::kInvadeMode:          return u8"Invade mode";
+        case FnLabel::kUnlimitTech:         return u8"Unlimit technology";
+        case FnLabel::kFastReload:          return u8"Fast reload";
+        case FnLabel::kUnlimitFirePower:    return u8"Unlimit gun power";
+        case FnLabel::kInstChrono:          return u8"Instant chrono";
+        case FnLabel::kSpySpy:              return u8"Spy spy";
+        case FnLabel::kInfantrySlip:        return u8"Infantry slip";
+        case FnLabel::kUnitLeveledUp:       return u8"Unit leveled up";
+        case FnLabel::kAdjustGameSpeed:     return u8"Adjustable game speed";
+        default: return u8"unknown";
+    }
+}
+
+enum class Lang {
+    kZh,
+    kEn,
+};
+
+inline constexpr std::string_view StrLang(Lang lang) {
+    switch (lang) {
+        case Lang::kZh: return "zh";
+        case Lang::kEn: return "en";
+        default: return "unknown";
+    }
+}
+
+inline const char8_t* GetFnStr(FnLabel label, Lang lang) {
+    if (lang == Lang::kZh) {
+        return GetFnStrZh(label);
+    } else if (lang == Lang::kEn) {
+        return GetFnStrEn(label);
+    } else {
+        UNREACHABLE();
     }
 }
 

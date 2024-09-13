@@ -2401,8 +2401,8 @@ assembled.push_back(assembledtemp);
 		if(true == _getAddressFromName(processhandle, currentline.substr(0,currentline.size()-1), &currentaddress)){
 			continue; //next line
 		}else{
-			string strtemp = "This address specifier is not valid: " + currentline;
-			MessageBoxA(0,strtemp.c_str(),0,0);
+			// string strtemp = "This address specifier is not valid: " + currentline;
+			// MessageBoxA(0,strtemp.c_str(),0,0);
 			return false;
 		}
 

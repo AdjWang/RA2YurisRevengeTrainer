@@ -5,10 +5,21 @@
 namespace yrtr {
 namespace config {
 
+static constexpr const std::string_view kConfigFile = "ra2_trainer.toml";
 constexpr static const float kFontScale = 15.0f;
-constexpr static std::string_view kFontFile = "simhei.ttf";
+constexpr static std::string_view kDefaultFontFileZh = "simhei.ttf";
+constexpr static std::string_view kDefaultFontFileEn = "arial.ttf";
 constexpr static uint32_t kApplyCredit = 2333333;
 constexpr static const int kWin32HotKeyMod = MOD_ALT;
+
+struct GlobalConfig {
+    std::string exec_name;
+    Lang lang;
+    std::filesystem::path font_path;
+};
+
+void InitConfig();
+const GlobalConfig& GetGlobalConfig();
 
 constexpr int GetHotkey(FnLabel label) {
     switch(label) {

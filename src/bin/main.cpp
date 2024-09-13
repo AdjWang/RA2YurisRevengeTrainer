@@ -60,7 +60,7 @@ static LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam,
     if (uMsg == WM_HOTKEY &&
         (LOWORD(lParam) & yrtr::config::kWin32HotKeyMod) > 0) {
 
-        LOG(INFO, "msg={} key={}", uMsg, HIWORD(lParam));
+        // LOG(INFO, "msg={} key={}", uMsg, HIWORD(lParam));
         yrtr::GuiContext* gui_ctx =
             (yrtr::GuiContext*)GetProp(hWnd, "GuiContext");
         CHECK(gui_ctx);
@@ -78,6 +78,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, PSTR, int) {
         perror("Failed to register log dump function");
     }
 #endif
+    yrtr::config::InitConfig();
 
     GLFWwindow* window;
     glfwSetErrorCallback(ErrorCallback);
@@ -109,7 +110,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, PSTR, int) {
     yrtr::GuiContext gui_ctx(window, state);
     BOOL res2 = SetProp(hWnd, "GuiContext", &gui_ctx);
     CHECK(res2) << GetLastError();
-    yrtr::Trainer::Init("gamemd.exe", gui_ctx, state);
+    yrtr::Trainer::Init(yrtr::config::GetGlobalConfig().exec_name, gui_ctx,
+                        state);
     yrtr::Timer::SetTimer(yrtr::Trainer::kTimerIdProcWatch, 1.0 /*second*/,
                           std::bind_front(&yrtr::Trainer::OnProcWatchTimer,
                                           yrtr::Trainer::instance()));
