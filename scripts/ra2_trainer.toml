@@ -1,6 +1,17 @@
-[global]
-executable_name = "gamemd.exe"
+[ra2_trainer]
 # Available: zh, en
 language = "zh"
-# Default using simhei.ttf for zh and arial.ttf for en. Only used for custom fonts.
+enable_dpi_awareness = false
+
+# font_path is optional, fontex_path is required.
+# If using fonts that separate characters and emojis, set both font_path and fontex_path.
+# If using fonts both supplies characters and emojis, set only fontex_path.
 # font_path = "C:\\Windows\\Fonts\\arial.ttf"
+# fontex_path = "C:\\Windows\\Fonts\\NotoColorEmoji-Regular.ttf"
+# Segoe UI Emoji font family is available on win10 and win11.
+# https://learn.microsoft.com/en-us/typography/font-list/segoe-ui-emoji
+font_path = "C:\\Windows\\Fonts\\simhei.ttf"
+fontex_path = "C:\\Windows\\Fonts\\seguiemj.ttf"
+
+# Optional, only used for debugging.
+hotreload_directory = "ra2_trainer_hotreload"

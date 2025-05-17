@@ -1,0 +1,21 @@
+LIBRARY   wsock32
+EXPORTS
+	_getsockopt		@7
+	_ntohl			@14
+	_htons			@9
+	_recvfrom		@17
+	_htonl			@8
+	_setsockopt		@21
+	_sendto			@20
+	_ntohs			@15
+	_gethostname	@57
+	_WSAStartup		@115
+	_EnumProtocolsA @1111
+	_WSAAsyncSelect @101
+	_WSACleanup		@116
+	_WSAGetLastError @111
+	_inet_ntoa		@11
+	_socket			@23
+	_bind			@2
+	_closesocket	@3
+	_gethostbyname	@52

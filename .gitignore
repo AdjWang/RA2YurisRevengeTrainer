@@ -1,2 +1,5 @@
-build/
 .vscode/
+build/
+deps/
+!deps/dglad/
+!deps/glad/
