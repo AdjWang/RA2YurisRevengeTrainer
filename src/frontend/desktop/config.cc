@@ -69,6 +69,22 @@ Lang Config::lang() const {
   }
 }
 
+void Config::DisableHotkeyGUI(int key) {
+  disabled_hot_key_.emplace(key);
+}
+
+std::string Config::GetFnStrWithKey(FnLabel label) {
+  int hot_key = Config::GetHotkey(label);
+  if (disabled_hot_key_.contains(hot_key) || hot_key == GLFW_KEY_UNKNOWN) {
+    return std::format("{}()",
+                       reinterpret_cast<const char*>(GetFnStr(label, lang())));
+  }
+  const char8_t* fn_str = GetFnStr(label, lang());
+  const char8_t* key_str = Config::KeyToString(hot_key);
+  return std::format("{}({})", reinterpret_cast<const char*>(fn_str),
+                     reinterpret_cast<const char*>(key_str));
+}
+
 fs::path Config::GetAbsolutePath(const fs::path& relpath) const {
   if (relpath.is_absolute()) {
     return relpath;

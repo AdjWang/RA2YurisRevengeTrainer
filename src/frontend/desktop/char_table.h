@@ -24,6 +24,10 @@ inline constexpr std::string_view StrLang(Lang lang) {
 
 enum class GuiLabel {
   kTitle,
+  kState,
+  kStateOk,
+  kStateIdle,
+  kMoney,
   kAssist,
   kFilter,
   kSelectingHouseList,
@@ -36,6 +40,10 @@ enum class GuiLabel {
 constexpr const char8_t* GetGuiStrZh(GuiLabel label) {
   switch (label) {
     case GuiLabel::kTitle:              return u8"辅助工具";
+    case GuiLabel::kState:              return u8"状态";
+    case GuiLabel::kStateOk:            return u8"游戏运行中";
+    case GuiLabel::kStateIdle:          return u8"未检测到游戏";
+    case GuiLabel::kMoney:              return u8"钱";
     case GuiLabel::kAssist:             return u8"功能";
     case GuiLabel::kFilter:             return u8"过滤";
     case GuiLabel::kSelectingHouseList: return u8"选中阵营";
@@ -49,6 +57,10 @@ constexpr const char8_t* GetGuiStrZh(GuiLabel label) {
 constexpr const char8_t* GetGuiStrEn(GuiLabel label) {
   switch (label) {
     case GuiLabel::kTitle:              return u8"Assist Tool";
+    case GuiLabel::kState:              return u8"State";
+    case GuiLabel::kStateOk:            return u8"Game running";
+    case GuiLabel::kStateIdle:          return u8"Game not running";
+    case GuiLabel::kMoney:              return u8"Money";
     case GuiLabel::kAssist:             return u8"Assist";
     case GuiLabel::kFilter:             return u8"Filter";
     case GuiLabel::kSelectingHouseList: return u8"Selecting house";
@@ -71,10 +83,6 @@ inline const char8_t* GetGuiStr(GuiLabel label, Lang lang) {
 
 constexpr const char8_t* GetFnStrZh(FnLabel label) {
   switch (label) {
-    case FnLabel::kState:               return u8"状态";
-    case FnLabel::kStateOk:             return u8"游戏运行中";
-    case FnLabel::kStateIdle:           return u8"未检测到游戏";
-    case FnLabel::kMoney:               return u8"钱";
     case FnLabel::kApply:               return u8"修改";
     case FnLabel::kFastBuild:           return u8"快速建造";
     case FnLabel::kDeleteUnit:          return u8"删除单位";
@@ -119,10 +127,6 @@ constexpr const char8_t* GetFnStrZh(FnLabel label) {
 
 constexpr const char8_t* GetFnStrEn(FnLabel label) {
   switch (label) {
-    case FnLabel::kState:               return u8"State";
-    case FnLabel::kStateOk:             return u8"Game running";
-    case FnLabel::kStateIdle:           return u8"Game not running";
-    case FnLabel::kMoney:               return u8"Money";
     case FnLabel::kApply:               return u8"Apply";
     case FnLabel::kFastBuild:           return u8"Fast build";
     case FnLabel::kDeleteUnit:          return u8"Delete unit";

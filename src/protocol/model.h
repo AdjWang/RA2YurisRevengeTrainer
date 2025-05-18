@@ -13,11 +13,6 @@ namespace yrtr {
 
 enum class FnLabel {
   kInvalid,
-  // Tip
-  kState,
-  kStateOk,
-  kStateIdle,
-  kMoney,
   // Button
   kApply,
   kFastBuild,
@@ -60,6 +55,11 @@ enum class FnLabel {
   kAdjustGameSpeed,
   kCount,
 };
+
+constexpr std::string_view StrFnLabel(FnLabel label) {
+  // TODO
+  return std::to_string(static_cast<int>(label));
+}
 
 struct CheckboxState {
   bool enable = true;

@@ -2,7 +2,10 @@
 
 #include "base/windows_shit.h"
 #define EAT_SHIT_FIRST  // prevent linter move windows shit down
+#include "base/macro.h"
+__YRTR_BEGIN_THIRD_PARTY_HEADERS
 #include "absl/debugging/symbolize.h"
+__YRTR_END_THIRD_PARTY_HEADERS
 #include "base/logging.h"
 #include "base/thread.h"
 #include "frontend/desktop/char_table.h"
@@ -35,51 +38,49 @@ static void FramebufferSizeCallback(GLFWwindow* window, int width, int height) {
 static std::unordered_map<int, FnLabel> kHotkeyTable;
 
 static void InitHotkey(HWND hWnd) {
-  // TODO
-  UNREFERENCED_PARAMETER(hWnd);
-  // for (int label = 0; label < (int)FnLabel::kCount; label++) {
-  //   int key = config::GetHotkey((FnLabel)label);
-  //   if (key != GLFW_KEY_UNKNOWN) {
-  //     int scancode = glfwGetKeyScancode(key);
-  //     int vk = MapVirtualKey(scancode, MAPVK_VSC_TO_VK);
-  //     CHECK(vk > 0);
-  //     if (!RegisterHotKey(hWnd, label,
-  //                         config::kWin32HotKeyMod | MOD_NOREPEAT, vk)) {
-  //       DisableHotkeyGUI(key);
-  //       char key_name[10];
-  //       if (GetKeyNameText(scancode << 16, key_name, 10) > 0) {
-  //         LOG(WARN, "RegisterHotkey failed. Key name={}", key_name);
-  //       } else {
-  //         LOG(WARN, "RegisterHotkey failed. Key num={}", vk);
-  //       }
-  //       continue;
-  //     }
-  //   }
-  //   kHotkeyTable.emplace(config::GetHotkey((FnLabel)label),
-  //                        (FnLabel)label);
-  // }
+  Config* config = Config::instance();
+  DCHECK_NOTNULL(config);
+  for (int label = 0; label < static_cast<int>(FnLabel::kCount); label++) {
+    int key = config->GetHotkey(static_cast<FnLabel>(label));
+    if (key != GLFW_KEY_UNKNOWN) {
+      int scancode = glfwGetKeyScancode(key);
+      int vk = MapVirtualKey(scancode, MAPVK_VSC_TO_VK);
+      CHECK(vk > 0);
+      if (!RegisterHotKey(hWnd, label, Config::kWin32HotKeyMod | MOD_NOREPEAT,
+                          vk)) {
+        config->DisableHotkeyGUI(key);
+        char key_name[10];
+        if (GetKeyNameText(scancode << 16, key_name, 10) > 0) {
+          LOG_F(WARNING, "RegisterHotkey failed. Key name={}", key_name);
+        } else {
+          LOG_F(WARNING, "RegisterHotkey failed. Key num={}", vk);
+        }
+        continue;
+      }
+    }
+    kHotkeyTable.emplace(key, static_cast<FnLabel>(label));
+  }
 }
 
-// static FnLabel GetHotkeyLabel(int key) {
-//   if (kHotkeyTable.contains(key)) {
-//     return kHotkeyTable[key];
-//   } else {
-//     return FnLabel::kInvalid;
-//   }
-// }
+static FnLabel GetHotkeyLabel(int key) {
+  if (kHotkeyTable.contains(key)) {
+    return kHotkeyTable[key];
+  } else {
+    return FnLabel::kInvalid;
+  }
+}
 
 static WNDPROC glfw_wndproc = NULL;
 static LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam,
                               LPARAM lParam) {
-  // TODO
-  // if (uMsg == WM_HOTKEY &&
-  //     (LOWORD(lParam) & config::kWin32HotKeyMod) > 0) {
-  //   // LOG(INFO, "msg={} key={}", uMsg, HIWORD(lParam));
-  //   Gui* gui = reinterpret_cast<Gui*>(GetProp(hWnd, "Gui"));
-  //   CHECK(gui);
-  //   gui->Trigger(GetHotkeyLabel(HIWORD(lParam)));
-  //   return DefWindowProc(hWnd, uMsg, wParam, lParam);
-  // }
+  if (uMsg == WM_HOTKEY &&
+      (LOWORD(lParam) & Config::kWin32HotKeyMod) > 0) {
+    // LOG(INFO, "msg={} key={}", uMsg, HIWORD(lParam));
+    Gui* gui = reinterpret_cast<Gui*>(GetProp(hWnd, "Gui"));
+    CHECK(gui);
+    gui->Trigger(GetHotkeyLabel(HIWORD(lParam)));
+    return DefWindowProc(hWnd, uMsg, wParam, lParam);
+  }
   return CallWindowProc(glfw_wndproc, hWnd, uMsg, wParam, lParam);
 }
 
@@ -118,6 +119,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, PSTR, int) {
     glfwTerminate();
     exit(EXIT_FAILURE);
   }
+  // Load configurations.
+  // Search configuration file at the same directory with the dll.
+  CHECK(Config::Load(fs::canonical(fs::path(exe_path)).parent_path()));
   // GLFW not implements global hotkey listener, thus the win32 message hook
   // is necessary
   HWND hWnd = glfwGetWin32Window(window);
@@ -130,9 +134,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, PSTR, int) {
   glfwMakeContextCurrent(window);
   glfwSwapInterval(1);  // Enable vsync
 
-  // Load configurations.
-  // Search configuration file at the same directory with the dll.
-  CHECK(Config::Load(fs::canonical(fs::path(exe_path)).parent_path()));
   ImGuiWindow gui_ctx(window);
   State state;
   Gui gui(state, Config::instance()->lang());

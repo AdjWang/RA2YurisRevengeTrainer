@@ -8,6 +8,7 @@
 #define EAT_SHIT_FIRST  // prevent linter move windows shit down
 #include "base/logging.h"
 #include "base/thread.h"
+#include "frontend/desktop/config.h"
 #include "imgui.h"
 
 // I'm gonna kick all c_str()s' ass.
@@ -152,7 +153,7 @@ void Gui::RenderClientArea() {
 }
 
 void Gui::RenderTabAssists() {
-  ImGui::Text(GetFnStr(FnLabel::kMoney));
+  ImGui::Text(GetGuiStr(GuiLabel::kMoney));
   ImGui::SameLine();  // Keep the following item on the same line
   ImGui::SetNextItemWidth(100);
   static char input[128] = "";
@@ -288,9 +289,48 @@ void Gui::RenderTabFilters() {
 void Gui::Trigger(FnLabel label) const {
   DCHECK(yrtr::IsWithinRendererThread());
   if (label == FnLabel::kInvalid) {
+    HLOG_F(WARNING, "Invalid label");
     return;
   }
-  NOT_IMPLEMENTED();
+  // There's have only one input widget now.
+  DCHECK_LE(input_cbs_.size(), 1u);
+  auto it_input = input_cbs_.find(label);
+  if (it_input != input_cbs_.end()) {
+    // Set credit.
+    it_input->second(233333);
+    return;
+  }
+  auto it_btn = btn_cbs_.find(label);
+  if (it_btn != btn_cbs_.end()) {
+    it_btn->second();
+    return;
+  }
+  CheckboxStateMap ckbox_states;
+  {
+    absl::MutexLock lk(&state_.ckbox_states_mu);
+    ckbox_states = state_.ckbox_states;
+  }
+  auto it_ckbox_state = ckbox_states.find(label);
+  auto it_ckbox = ckbox_cbs_.find(label);
+  if (it_ckbox_state != ckbox_states.end() && it_ckbox != ckbox_cbs_.end()) {
+    bool enable = it_ckbox_state->second.enable;
+    if (enable) {
+      bool activate = it_ckbox_state->second.activate;
+      it_ckbox->second(!activate);
+    }
+    return;
+  }
+  // Report errors.
+  if (it_input == input_cbs_.end() && it_btn == btn_cbs_.end() &&
+      it_ckbox == ckbox_cbs_.end()) {
+    HLOG_F(WARNING, "Not found handler for label={}", StrFnLabel(label));
+    return;
+  }
+  if (it_ckbox_state == ckbox_states.end()) {
+    HLOG_F(WARNING, "Not found state for label={}", StrFnLabel(label));
+    return;
+  }
+  UNREACHABLE();
 }
 
 void Gui::AddButtonListener(FnLabel label, ButtonHandler cb) {
@@ -311,8 +351,9 @@ std::string Gui::GetGuiStr(GuiLabel label) {
 }
 
 std::string Gui::GetFnStr(FnLabel label) {
-  const char8_t* fn_str = yrtr::frontend::GetFnStr(label, lang_);
-  return std::string(reinterpret_cast<const char*>(fn_str));
+  Config* config = Config::instance();
+  DCHECK_NOTNULL(config);
+  return config->GetFnStrWithKey(label);
 }
 
 }  // namespace frontend
