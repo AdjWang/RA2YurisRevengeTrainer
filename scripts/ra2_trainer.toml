@@ -12,6 +12,3 @@ enable_dpi_awareness = false
 # https://learn.microsoft.com/en-us/typography/font-list/segoe-ui-emoji
 font_path = "C:\\Windows\\Fonts\\simhei.ttf"
 fontex_path = "C:\\Windows\\Fonts\\seguiemj.ttf"
-
-# Optional, only used for debugging.
-hotreload_directory = "ra2_trainer_hotreload"

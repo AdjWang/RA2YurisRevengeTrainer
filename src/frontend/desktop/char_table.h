@@ -18,7 +18,7 @@ inline constexpr std::string_view StrLang(Lang lang) {
   switch (lang) {
     case Lang::kZh: return "zh";
     case Lang::kEn: return "en";
-    default:                 return "unknown";
+    default:        return "unknown";
   }
 }
 

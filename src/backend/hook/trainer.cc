@@ -1,5 +1,7 @@
 #include "backend/hook/trainer.h"
 
+#include "base/macro.h"
+__YRTR_BEGIN_THIRD_PARTY_HEADERS
 #include "AbstractTypeClass.h"
 #include "FactoryClass.h"
 #include "GeneralDefinitions.h"
@@ -12,11 +14,14 @@
 #include "SpawnManagerClass.h"
 #include "SuperClass.h"
 #include "TechnoClass.h"
+__YRTR_END_THIRD_PARTY_HEADERS
 #include "backend/hook/hook_point.h"
 #include "base/logging.h"
 #include "base/thread.h"
 
 namespace yrtr {
+namespace backend {
+namespace hook {
 SideMap Trainer::protected_houses_;
 bool Trainer::activate_disable_gagap_ = false;
 
@@ -482,7 +487,7 @@ Trainer::Trainer(State& state)
       activate_inst_superweapon_(false),
       activate_inst_turn_turret_(false),
       activate_inst_turn_body_(false) {
-  mem_api_ = std::make_unique<yrtr::hook::MemoryAPI>();
+  mem_api_ = std::make_unique<MemoryAPI>();
   InitStates(state);
 }
 
@@ -1066,4 +1071,6 @@ bool Trainer::UnlimitRadar() const {
   return true;
 }
 
+}  // namespace hook
+}  // namespace backend
 }  // namespace yrtr

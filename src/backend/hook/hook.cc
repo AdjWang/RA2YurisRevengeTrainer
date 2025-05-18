@@ -3,45 +3,13 @@
 #include "MinHook.h"
 #include "Syringe/Syringe.h"
 #include "base/logging.h"
-#include "hook/game_loop.h"
-#include "hook/logging.h"
-#include "hook/memory_api.h"
-#include "hook/message_box.h"
-#include "hook/render_loop.h"
+#include "backend/hook/game_loop.h"
+#include "backend/hook/logging.h"
+#include "backend/hook/memory_api.h"
 
 namespace yrtr {
+namespace backend {
 namespace hook {
-
-#define HOOK_VFUNC(vft, index, hook, original)                                 \
-  do {                                                                         \
-    MH_STATUS status_temp = MH_CreateHook(                                     \
-        reinterpret_cast<LPVOID>(vft[index]), reinterpret_cast<LPVOID>(&hook), \
-        reinterpret_cast<LPVOID*>(&original));                                 \
-    CHECK_F(status_temp == MH_STATUS::MH_OK, "status={}",                      \
-            static_cast<int>(status));                                         \
-  } while (0)
-
-struct HookGuard {
-  HookGuard() {
-    MH_STATUS status;
-    status = MH_Initialize();
-    CHECK_F(status == MH_STATUS::MH_OK, "status={}", static_cast<int>(status));
-    static constexpr uint32_t kResetIndex = 16u;
-    static constexpr uint32_t kPresentIndex = 17u;
-    HOOK_VFUNC(GetD3D9DeviceVtbl(), kResetIndex, HookD3D9Reset,
-               OriginalD3D9Reset);
-    HOOK_VFUNC(GetD3D9DeviceVtbl(), kPresentIndex, HookD3D9Present,
-               OriginalD3D9Present);
-    status = MH_EnableHook(MH_ALL_HOOKS);
-    CHECK_F(status == MH_STATUS::MH_OK, "status={}", static_cast<int>(status));
-  }
-  ~HookGuard() {
-    MH_STATUS status = MH_Uninitialize();
-    CHECK_F(status == MH_STATUS::MH_OK, "status={}", static_cast<int>(status));
-  }
-};
-#undef HOOK_VFUNC
-static std::unique_ptr<HookGuard> hook_guard;
 
 void InstallHooks() {
   static std::once_flag install_once;
@@ -51,22 +19,17 @@ void InstallHooks() {
     HookCreateWindow();
     HookUpdate();
     HookExitGame();
-
-    SetOnWindowCreated([&](HWND hWnd) {
-      LOG_F(INFO, "Hook D3D9 functions");
-      CHECK(InitD3D9DeviceVtbl(hWnd));
-      hook_guard = std::make_unique<HookGuard>();
-    });
   });
 }
 
 }  // namespace hook
+}  // namespace backend
 }  // namespace yrtr
 
 DEFINE_HOOK(0x006BB9D8, RA2WinMain, 5) {
   UNREFERENCED_PARAMETER(R);
   LOG_F(INFO, "WinMain");
-  yrtr::hook::InstallHooks();
+  yrtr::backend::hook::InstallHooks();
   return 0;
 }
 
@@ -142,7 +105,6 @@ DEFINE_HOOK(0x007CD810, DetachDebugger, 9) {
 #endif
   // // DEBUG
   // MessageBox(NULL, "", "", MB_OK);
-  // yrtr::debug::HookMessageBox();
   return 0;
 }
 #endif

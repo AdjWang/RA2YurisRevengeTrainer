@@ -20,9 +20,7 @@ else()
   set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 endif()
 
-# Abseil logging reports warning C4127: conditional expression is constant
-# Abseil flags reports warning C4324: 'absl::lts_20240722::flags_internal::FlagValueAndInitBit<T>': structure was padded due to alignment specifier
-add_compile_options(/Zc:__cplusplus /MP /utf-8 /EHsc /wd4127 /wd4324 $<$<CONFIG:Release>:/Gy>)
+add_compile_options(/Zc:__cplusplus /MP /utf-8 /EHsc $<$<CONFIG:Release>:/Gy>)
 add_compile_definitions(
   NOMINMAX  # Disable min/max macros in minwindef.h. They are sucks!
   _SILENCE_ALL_CXX23_DEPRECATION_WARNINGS
@@ -75,11 +73,11 @@ target_link_libraries(wsock32
 add_library(yrtr_base STATIC
   ${YRTR_SOURCE_DIR}/base/debug.cc
   ${YRTR_SOURCE_DIR}/base/logging.cc
+  ${YRTR_SOURCE_DIR}/base/task_queue.cc
   ${YRTR_SOURCE_DIR}/base/thread.cc
 )
 target_include_directories(yrtr_base
   PUBLIC $<BUILD_INTERFACE:${YRTR_DEPS_OUTPUT_DIR}/include>
-  PUBLIC $<BUILD_INTERFACE:${YRTR_DEPS_OUTPUT_DIR}/include/YRpp>
   PUBLIC $<BUILD_INTERFACE:${YRTR_SOURCE_DIR}>
   PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
@@ -127,11 +125,12 @@ add_custom_command(TARGET ra2_trainer POST_BUILD
   ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE})
 
 add_library(yrtr_backend STATIC
+  ${YRTR_SOURCE_DIR}/backend/config.cc
   ${YRTR_SOURCE_DIR}/backend/hook/game_loop.cc
   ${YRTR_SOURCE_DIR}/backend/hook/hook.cc
   ${YRTR_SOURCE_DIR}/backend/hook/logging.cc
   ${YRTR_SOURCE_DIR}/backend/hook/memory_api.cc
-  ${YRTR_SOURCE_DIR}/backend/task_queue.cc
+  ${YRTR_SOURCE_DIR}/backend/hook/trainer.cc
 )
 target_include_directories(yrtr_backend
   PUBLIC $<BUILD_INTERFACE:${YRTR_DEPS_OUTPUT_DIR}/include>

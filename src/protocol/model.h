@@ -57,8 +57,51 @@ enum class FnLabel {
 };
 
 constexpr std::string_view StrFnLabel(FnLabel label) {
-  // TODO
-  return std::to_string(static_cast<int>(label));
+  switch (label) {
+    case FnLabel::kInvalid:             return "Invalid";
+    // Button
+    case FnLabel::kApply:               return "Apply";
+    case FnLabel::kFastBuild:           return "FastBuild";
+    case FnLabel::kDeleteUnit:          return "DeleteUnit";
+    case FnLabel::kClearShroud:         return "ClearShroud";
+    case FnLabel::kGiveMeABomb:         return "GiveMeABomb";
+    case FnLabel::kUnitLevelUp:         return "UnitLevelUp";
+    case FnLabel::kUnitSpeedUp:         return "UnitSpeedUp";
+    case FnLabel::kIAMWinner:           return "IAMWinner";
+    case FnLabel::kThisIsMine:          return "ThisIsMine";
+    case FnLabel::kIAMGhost:            return "IAMGhost";
+    // Checkbox
+    case FnLabel::kGod:                 return "God";
+    case FnLabel::kInstBuild:           return "InstBuild";
+    case FnLabel::kUnlimitSuperWeapon:  return "UnlimitSuperWeapon";
+    case FnLabel::kUnlimitRadar:        return "UnlimitRadar";
+    case FnLabel::kInstFire:            return "InstFire";
+    case FnLabel::kInstTurn:            return "InstTurn";
+    case FnLabel::kRangeToYourBase:     return "RangeToYourBase";
+    case FnLabel::kFireToYourBase:      return "FireToYourBase";
+    case FnLabel::kFreezeGapGenerator:  return "FreezeGapGenerator";
+    case FnLabel::kFreezeUnit:          return "FreezeUnit";
+    case FnLabel::kSellTheWorld:        return "SellTheWorld";
+    case FnLabel::kUnlimitPower:        return "UnlimitPower";
+    case FnLabel::kBuildEveryWhere:     return "BuildEveryWhere";
+    case FnLabel::kAutoRepair:          return "AutoRepair";
+    case FnLabel::kEnermyRevertRepair:  return "EnermyRevertRepair";
+    case FnLabel::kSocialismTheBest:    return "SocialismTheBest";
+    case FnLabel::kMakeAttackedMine:    return "MakeAttackedMine";
+    case FnLabel::kMakeCapturedMine:    return "MakeCapturedMine";
+    case FnLabel::kMakeGarrisonedMine:  return "MakeGarrisonedMine";
+    case FnLabel::kInvadeMode:          return "InvadeMode";
+    case FnLabel::kUnlimitTech:         return "UnlimitTech";
+    case FnLabel::kFastReload:          return "FastReload";
+    case FnLabel::kUnlimitFirePower:    return "UnlimitFirePower";
+    case FnLabel::kInstChrono:          return "InstChrono";
+    case FnLabel::kSpySpy:              return "SpySpy";
+    case FnLabel::kInfantrySlip:        return "InfantrySlip";
+    case FnLabel::kEverythingElited:    return "EverythingElited";
+    case FnLabel::kAdjustGameSpeed:     return "AdjustGameSpeed";
+    case FnLabel::kCount:               return "Count";
+    default:                            return "unknown";
+  }
 }
 
 struct CheckboxState {
@@ -78,6 +121,7 @@ struct SideDesc {
 using CheckboxStateMap = absl::flat_hash_map<FnLabel, CheckboxState>;
 using SideMap = absl::btree_map<UniqId, SideDesc>;
 
+// Stored in backend.
 struct State {
   // Write by controller, read by view.
   // Export checkbox states to controller to bind them with the game state

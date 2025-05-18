@@ -12,6 +12,7 @@ __YRTR_END_THIRD_PARTY_HEADERS
 #include "backend/hook/hook_point.h"
 
 namespace yrtr {
+namespace backend {
 namespace hook {
 
 class HandleGuard;
@@ -101,4 +102,5 @@ class MemoryAPI {
 };
 
 }  // namespace hook
+}  // namespace backend
 }  // namespace yrtr

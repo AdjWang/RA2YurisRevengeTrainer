@@ -7,8 +7,8 @@ __YRTR_BEGIN_THIRD_PARTY_HEADERS
 #include "absl/container/flat_hash_map.h"
 #include "absl/synchronization/mutex.h"
 __YRTR_END_THIRD_PARTY_HEADERS
-#include "hook/memory_api.h"
-#include "tool/assist/model.h"
+#include "backend/hook/memory_api.h"
+#include "protocol/model.h"
 
 namespace yrpp {
 class AbstractClass;
@@ -16,13 +16,13 @@ class HouseClass;
 class ObjectClass;
 }  // namespace yrpp
 
-namespace assist {
+namespace yrtr {
+namespace backend {
+namespace hook {
 // MVC -- controller.
 
 class Trainer {
  public:
-  static constexpr int kTimerIdProcWatch = 0;
-  static constexpr int kTimerIdTrainerFunc = 1;
   static bool is_active_disable_gagap() { return activate_disable_gagap_; }
   static bool ShouldProtect(yrpp::AbstractClass* obj);
   static bool ShouldProtect(yrpp::HouseClass* house);
@@ -90,7 +90,7 @@ class Trainer {
 
   // Be care of race conditions.
   State& state_;
-  std::unique_ptr<yrtr::hook::MemoryAPI> mem_api_;
+  std::unique_ptr<MemoryAPI> mem_api_;
   using OpList = absl::InlinedVector<TriggerOp, 3>;
   absl::Mutex pending_ops_mu_;
   OpList pending_ops_ ABSL_GUARDED_BY(pending_ops_mu_);
@@ -115,4 +115,6 @@ class Trainer {
   DISALLOW_COPY_AND_ASSIGN(Trainer);
 };
 
-}  // namespace assist
+}  // namespace hook
+}  // namespace backend
+}  // namespace yrtr

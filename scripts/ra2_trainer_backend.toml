@@ -1,0 +1,3 @@
+[ra2_trainer]
+# Optional, only used for debugging.
+hotreload_directory = "ra2_trainer_hotreload"

@@ -118,7 +118,6 @@ class Config {
 
   const fs::path& font_path() const { return font_path_; }
   const fs::path& fontex_path() const { return fontex_path_; }
-  const fs::path& hotreload_dir() const { return hotreload_dir_; }
 
   void DisableHotkeyGUI(int key);
   std::string GetFnStrWithKey(FnLabel label);
@@ -132,8 +131,6 @@ class Config {
   static constexpr std::string_view kDefaultFontPath = "";
   static constexpr std::string_view kDefaultFontExPath =
       "C:\\Windows\\Fonts\\seguiemj.ttf";
-  static constexpr std::string_view kDefaultHotreloadDir =
-      "ra2_trainer_hotreload";
   static constexpr std::array<std::string_view, 2> kAvailableLang{"zh", "en"};
 
   const fs::path cfg_dir_;
@@ -143,7 +140,6 @@ class Config {
 
   fs::path font_path_;
   fs::path fontex_path_;
-  fs::path hotreload_dir_;
 
   absl::flat_hash_set<int> disabled_hot_key_;
 

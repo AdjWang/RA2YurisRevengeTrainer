@@ -1,10 +1,11 @@
-#include "backend/memory_api.h"
+#include "backend/hook/memory_api.h"
 
 #include "base/windows_shit.h"
 #define EAT_SHIT_FIRST  // prevent linter move windows shit down
 #include "base/logging.h"
 
 namespace yrtr {
+namespace backend {
 namespace hook {
 
 class HandleGuard {
@@ -213,4 +214,5 @@ void MemoryAPI::RestoreAllHooks() {
 }
 
 }  // namespace hook
+}  // namespace backend
 }  // namespace yrtr

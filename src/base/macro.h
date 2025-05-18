@@ -66,11 +66,14 @@
 #define CACHE_LINE_SIZE 64
 
 #ifdef _MSC_VER
+// Abseil logging reports warning C4127: conditional expression is constant
+// Abseil flags reports warning C4324: 'absl::lts_20240722::flags_internal::FlagValueAndInitBit<T>': structure was padded due to alignment specifier
+// warning C4731: 'yrpp::XxxClass::Xxx': frame pointer register 'ebp' modified by inline assembly
 #define __YRTR_BEGIN_THIRD_PARTY_HEADERS \
     _Pragma("warning(push, 0)") \
-    _Pragma("warning(disable:4100)") \
+    _Pragma("warning(disable:4127)") \
     _Pragma("warning(disable:4324)") \
-    _Pragma("warning(disable:4996)")
+    _Pragma("warning(disable:4731)")
 #define __YRTR_END_THIRD_PARTY_HEADERS _Pragma("warning(pop)")
 #else
 #define __YRTR_BEGIN_THIRD_PARTY_HEADERS

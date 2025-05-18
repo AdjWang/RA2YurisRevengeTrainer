@@ -1,4 +1,4 @@
-#include "config.h"
+#include "frontend/desktop/config.h"
 
 #include <optional>
 
@@ -56,8 +56,7 @@ Config::Config(const fs::path& cfg_path)
       lang_(kDefaultLang),
       enable_dpi_awareness_(false),
       font_path_(kDefaultFontPath),
-      fontex_path_(kDefaultFontExPath),
-      hotreload_dir_(kDefaultHotreloadDir) {}
+      fontex_path_(kDefaultFontExPath) {}
 
 Lang Config::lang() const {
   if (lang_ == "zh") {
@@ -100,9 +99,6 @@ void Config::LoadGlobal(const toml::table& global) {
   font_path_ = TryLoad<std::string>(global, "font_path")
                    .value_or(std::string(kDefaultFontPath));
   fontex_path_ = CheckLoad<std::string>(global, "fontex_path");
-  hotreload_dir_ =
-      cfg_dir_ / TryLoad<std::string>(global, "hotreload_directory")
-                     .value_or(std::string(kDefaultHotreloadDir));
   // Verify.
   CHECK_F(std::find(kAvailableLang.begin(), kAvailableLang.end(), lang_) !=
               kAvailableLang.end(),
@@ -113,12 +109,6 @@ void Config::LoadGlobal(const toml::table& global) {
   CHECK_F(fs::exists(fontex_path_), "Failed to find fontex_path={}",
           fontex_path_);
   CHECK_F(!(font_path_ == "" && fontex_path_ == ""), "Not providing font");
-#ifdef YRTR_DEBUG
-  if (hotreload_dir_ != "" && !fs::exists(hotreload_dir_)) {
-    // Hotreload directory is optional, only provides warning.
-    HLOG_F(WARNING, "Failed to find hotreload_dir={}", hotreload_dir_);
-  }
-#endif
 }
 
 }  // namespace frontend
