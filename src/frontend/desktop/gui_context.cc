@@ -1,9 +1,9 @@
-#include "frontend/gui_context.h"
+#include "frontend/desktop/gui_context.h"
 
 #include "base/thread.h"
-#include "frontend/config.h"
-#include "frontend/context.h"
-#include "frontend/glfw.h"
+#include "frontend/desktop/config.h"
+#include "frontend/desktop/context.h"
+#include "frontend/desktop/glfw.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -11,6 +11,7 @@
 #include "misc/freetype/imgui_freetype.h"
 
 namespace yrtr {
+namespace frontend {
 
 namespace {
 inline std::string_view get_log_header() { return "ImGuiWindow "; }
@@ -216,4 +217,5 @@ void ImGuiWindow::Render() {
   }
 }
 
+}  // namespace frontend
 }  // namespace yrtr

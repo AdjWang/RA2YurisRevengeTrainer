@@ -48,7 +48,7 @@ static void InitStates(State& state) {
   state.ckbox_states.emplace(FnLabel::kInstChrono,         CheckboxState{.enable=true, .activate=false});
   state.ckbox_states.emplace(FnLabel::kSpySpy,             CheckboxState{.enable=true, .activate=false});
   state.ckbox_states.emplace(FnLabel::kInfantrySlip,       CheckboxState{.enable=true, .activate=false});
-  state.ckbox_states.emplace(FnLabel::kEverythingElited,      CheckboxState{.enable=true, .activate=false});
+  state.ckbox_states.emplace(FnLabel::kEverythingElited,   CheckboxState{.enable=true, .activate=false});
   state.ckbox_states.emplace(FnLabel::kAdjustGameSpeed,    CheckboxState{.enable=true, .activate=false});
 }
 
@@ -963,7 +963,30 @@ bool Trainer::SetEnableCheckbox(FnLabel label, bool enable) {
   return state_.ckbox_states[label].activate;
 }
 
+namespace {
+static void BeepEnable() {
+  std::thread t([]() {
+    Beep(600, 100);
+    Beep(1000, 100);
+  });
+  t.detach();
+}
+
+static void BeepDisable() {
+  std::thread t([]() {
+    Beep(1000, 100);
+    Beep(600, 100);
+  });
+  t.detach();
+}
+}  // namespace
+
 void Trainer::UpdateCheckboxState(FnLabel label, bool activate) {
+  if (activate) {
+    BeepEnable();
+  } else {
+    BeepDisable();
+  }
   absl::MutexLock lk(&state_.ckbox_states_mu);
   state_.ckbox_states[label].activate = activate;
 }

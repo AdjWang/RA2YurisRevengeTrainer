@@ -7,6 +7,7 @@
 #include "protocol/model.h"
 
 namespace yrtr {
+namespace frontend {
 
 enum class Lang {
   kZh,
@@ -174,4 +175,5 @@ inline const char8_t* GetFnStr(FnLabel label, Lang lang) {
   }
 }
 
+}  // namespace frontend
 }  // namespace yrtr

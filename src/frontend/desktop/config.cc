@@ -6,6 +6,7 @@
 #include "formatter/std.h"
 
 namespace yrtr {
+namespace frontend {
 
 namespace {
 std::string_view get_log_header() { return "Config "; }
@@ -104,4 +105,5 @@ void Config::LoadGlobal(const toml::table& global) {
 #endif
 }
 
+}  // namespace frontend
 }  // namespace yrtr

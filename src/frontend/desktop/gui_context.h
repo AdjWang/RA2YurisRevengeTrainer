@@ -4,12 +4,13 @@
 
 #include "base/windows_shit.h"
 #define EAT_SHIT_FIRST  // prevent linter move windows shit down
-#include "frontend/glfw.h"
+#include "frontend/desktop/glfw.h"
 #include "base/logging.h"
 #include "base/macro.h"
-#include "frontend/context.h"
+#include "frontend/desktop/context.h"
 
 namespace yrtr {
+namespace frontend {
 
 #define __YRTR_WINDOW_TYPE GLFWwindow*
 
@@ -30,4 +31,5 @@ class ImGuiWindow : public GuiContext {
   DISALLOW_COPY_AND_ASSIGN(ImGuiWindow);
 };
 
+}  // namespace frontend
 }  // namespace yrtr

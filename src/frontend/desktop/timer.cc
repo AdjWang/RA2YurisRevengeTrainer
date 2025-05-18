@@ -1,8 +1,9 @@
-#include "frontend/timer.h"
+#include "frontend/desktop/timer.h"
 
-#include "frontend/glfw.h"
+#include "frontend/desktop/glfw.h"
 
 namespace yrtr {
+namespace frontend {
 
 std::unordered_map<int, Timer::TimerData> Timer::timer_data_;
 
@@ -25,4 +26,5 @@ void Timer::Update() {
   }
 }
 
+}  // namespace frontend
 }  // namespace yrtr

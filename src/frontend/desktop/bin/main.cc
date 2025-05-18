@@ -5,13 +5,16 @@
 #include "absl/debugging/symbolize.h"
 #include "base/logging.h"
 #include "base/thread.h"
-#include "frontend/char_table.h"
-#include "frontend/config.h"
-#include "frontend/glfw.h"
-#include "frontend/gui.h"
-#include "frontend/gui_context.h"
-#include "frontend/timer.h"
+#include "frontend/desktop/char_table.h"
+#include "frontend/desktop/config.h"
+#include "frontend/desktop/glfw.h"
+#include "frontend/desktop/gui.h"
+#include "frontend/desktop/gui_context.h"
+#include "frontend/desktop/timer.h"
 #include "protocol/model.h"
+
+using namespace yrtr;
+using namespace yrtr::frontend;
 
 void SetViewport(int x, int y, int width, int height) {
   glViewport(x, y, width, height);
@@ -24,25 +27,25 @@ static void ErrorCallback(int error, const char* description) {
 
 static void FramebufferSizeCallback(GLFWwindow* window, int width, int height) {
   auto gui_ctx =
-      reinterpret_cast<yrtr::GuiContext*>(glfwGetWindowUserPointer(window));
+      reinterpret_cast<GuiContext*>(glfwGetWindowUserPointer(window));
   SetViewport(0, 0, width, height);
   gui_ctx->UpdateViewport(width, height);
 }
 
-static std::unordered_map<int, yrtr::FnLabel> kHotkeyTable;
+static std::unordered_map<int, FnLabel> kHotkeyTable;
 
 static void InitHotkey(HWND hWnd) {
   // TODO
   UNREFERENCED_PARAMETER(hWnd);
-  // for (int label = 0; label < (int)yrtr::FnLabel::kCount; label++) {
-  //   int key = yrtr::config::GetHotkey((yrtr::FnLabel)label);
+  // for (int label = 0; label < (int)FnLabel::kCount; label++) {
+  //   int key = config::GetHotkey((FnLabel)label);
   //   if (key != GLFW_KEY_UNKNOWN) {
   //     int scancode = glfwGetKeyScancode(key);
   //     int vk = MapVirtualKey(scancode, MAPVK_VSC_TO_VK);
   //     CHECK(vk > 0);
   //     if (!RegisterHotKey(hWnd, label,
-  //                         yrtr::config::kWin32HotKeyMod | MOD_NOREPEAT, vk)) {
-  //       yrtr::DisableHotkeyGUI(key);
+  //                         config::kWin32HotKeyMod | MOD_NOREPEAT, vk)) {
+  //       DisableHotkeyGUI(key);
   //       char key_name[10];
   //       if (GetKeyNameText(scancode << 16, key_name, 10) > 0) {
   //         LOG(WARN, "RegisterHotkey failed. Key name={}", key_name);
@@ -52,16 +55,16 @@ static void InitHotkey(HWND hWnd) {
   //       continue;
   //     }
   //   }
-  //   kHotkeyTable.emplace(yrtr::config::GetHotkey((yrtr::FnLabel)label),
-  //                        (yrtr::FnLabel)label);
+  //   kHotkeyTable.emplace(config::GetHotkey((FnLabel)label),
+  //                        (FnLabel)label);
   // }
 }
 
-// static yrtr::FnLabel GetHotkeyLabel(int key) {
+// static FnLabel GetHotkeyLabel(int key) {
 //   if (kHotkeyTable.contains(key)) {
 //     return kHotkeyTable[key];
 //   } else {
-//     return yrtr::FnLabel::kInvalid;
+//     return FnLabel::kInvalid;
 //   }
 // }
 
@@ -70,9 +73,9 @@ static LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam,
                               LPARAM lParam) {
   // TODO
   // if (uMsg == WM_HOTKEY &&
-  //     (LOWORD(lParam) & yrtr::config::kWin32HotKeyMod) > 0) {
+  //     (LOWORD(lParam) & config::kWin32HotKeyMod) > 0) {
   //   // LOG(INFO, "msg={} key={}", uMsg, HIWORD(lParam));
-  //   yrtr::Gui* gui = reinterpret_cast<yrtr::Gui*>(GetProp(hWnd, "Gui"));
+  //   Gui* gui = reinterpret_cast<Gui*>(GetProp(hWnd, "Gui"));
   //   CHECK(gui);
   //   gui->Trigger(GetHotkeyLabel(HIWORD(lParam)));
   //   return DefWindowProc(hWnd, uMsg, wParam, lParam);
@@ -84,12 +87,12 @@ static LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam,
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, PSTR, int) {
 #ifdef YRTR_LOG_FILE
-  if (atexit(yrtr::DumpLog) != 0) {
+  if (atexit(DumpLog) != 0) {
     perror("Failed to register log dump function");
   }
 #endif
-  yrtr::logging::InitLogging(yrtr::logging::LogSink::kDbgView);
-  yrtr::SetupRendererThreadOnce();
+  logging::InitLogging(logging::LogSink::kDbgView);
+  SetupRendererThreadOnce();
 
   char exe_path[MAX_PATH] = {0};
   DWORD nSize = GetModuleFileNameA(hInstance, exe_path, _countof(exe_path));
@@ -129,27 +132,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, PSTR, int) {
 
   // Load configurations.
   // Search configuration file at the same directory with the dll.
-  CHECK(yrtr::Config::Load(fs::canonical(fs::path(exe_path)).parent_path()));
-  yrtr::ImGuiWindow gui_ctx(window);
-  yrtr::State state;
-  yrtr::Gui gui(state, yrtr::Config::instance()->lang());
+  CHECK(Config::Load(fs::canonical(fs::path(exe_path)).parent_path()));
+  ImGuiWindow gui_ctx(window);
+  State state;
+  Gui gui(state, Config::instance()->lang());
   {
-    BOOL res =
-        SetProp(hWnd, "GuiContext", static_cast<yrtr::GuiContext*>(&gui_ctx));
+    BOOL res = SetProp(hWnd, "GuiContext", static_cast<GuiContext*>(&gui_ctx));
     CHECK(res) << GetLastError();
   }
   {
     BOOL res = SetProp(hWnd, "Gui", &gui);
     CHECK(res) << GetLastError();
   }
-  // yrtr::Trainer::Init(yrtr::config::GetGlobalConfig().exec_name, gui_ctx,
+  // Trainer::Init(config::GetGlobalConfig().exec_name, gui_ctx,
   //                     state);
-  // yrtr::Timer::SetTimer(yrtr::Trainer::kTimerIdProcWatch, 1.0 /*second*/,
-  //                       std::bind_front(&yrtr::Trainer::OnProcWatchTimer,
-  //                                       yrtr::Trainer::instance()));
-  // yrtr::Timer::SetTimer(yrtr::Trainer::kTimerIdTrainerFunc, 0.3 /*second*/,
-  //                       std::bind_front(&yrtr::Trainer::OnFuncScanTimer,
-  //                                       yrtr::Trainer::instance()));
+  // Timer::SetTimer(Trainer::kTimerIdProcWatch, 1.0 /*second*/,
+  //                       std::bind_front(&Trainer::OnProcWatchTimer,
+  //                                       Trainer::instance()));
+  // Timer::SetTimer(Trainer::kTimerIdTrainerFunc, 0.3 /*second*/,
+  //                       std::bind_front(&Trainer::OnFuncScanTimer,
+  //                                       Trainer::instance()));
 
   glfwSetWindowUserPointer(window, &gui_ctx);
   glfwSetFramebufferSizeCallback(window, FramebufferSizeCallback);
@@ -157,7 +159,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, PSTR, int) {
   glEnable(GL_BLEND);
   glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
   while (!glfwWindowShouldClose(window)) {
-    yrtr::Timer::Update();
+    Timer::Update();
 
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);

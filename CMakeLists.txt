@@ -94,10 +94,10 @@ target_link_libraries(yrtr_base
 )
 
 add_library(yrtr_frontend STATIC
-  ${YRTR_SOURCE_DIR}/frontend/config.cc
-  ${YRTR_SOURCE_DIR}/frontend/timer.cc
-  ${YRTR_SOURCE_DIR}/frontend/gui.cc
-  ${YRTR_SOURCE_DIR}/frontend/gui_context.cc
+  ${YRTR_SOURCE_DIR}/frontend/desktop/config.cc
+  ${YRTR_SOURCE_DIR}/frontend/desktop/timer.cc
+  ${YRTR_SOURCE_DIR}/frontend/desktop/gui.cc
+  ${YRTR_SOURCE_DIR}/frontend/desktop/gui_context.cc
 )
 target_include_directories(yrtr_frontend
   PUBLIC $<BUILD_INTERFACE:${YRTR_DEPS_OUTPUT_DIR}/include>
@@ -116,7 +116,7 @@ target_link_libraries(yrtr_frontend
   PRIVATE tomlplusplus::tomlplusplus
 )
 
-add_executable(ra2_trainer WIN32 ${YRTR_SOURCE_DIR}/frontend/bin/main.cc)
+add_executable(ra2_trainer WIN32 ${YRTR_SOURCE_DIR}/frontend/desktop/bin/main.cc)
 target_compile_options(ra2_trainer PRIVATE /W4 $<$<CONFIG:Debug>:/WX>)
 target_link_libraries(ra2_trainer PRIVATE yrtr_frontend glfw)
 

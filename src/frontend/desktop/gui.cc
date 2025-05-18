@@ -1,4 +1,4 @@
-#include "frontend/gui.h"
+#include "frontend/desktop/gui.h"
 
 #include <ranges>
 #include <thread>
@@ -43,25 +43,10 @@ bool Selectable(const std::string& label, bool selected = false,
 }  // namespace ImGui
 
 namespace yrtr {
+namespace frontend {
 
 namespace {
 inline std::string_view get_log_header() { return "Gui "; }
-
-static void BeepEnable() {
-  std::thread t([]() {
-    Beep(600, 100);
-    Beep(1000, 100);
-  });
-  t.detach();
-}
-
-static void BeepDisable() {
-  std::thread t([]() {
-    Beep(1000, 100);
-    Beep(600, 100);
-  });
-  t.detach();
-}
 
 static void PushStyle() {
   // Customize window style here.
@@ -94,7 +79,6 @@ void Gui::Render() {
     auto it = input_cbs_.find(FnLabel::k##label);             \
     if (it != input_cbs_.end()) {                             \
       it->second(val);                                        \
-      BeepEnable();                                           \
     } else {                                                  \
       HLOG_F(WARNING, "Not found handler for label=" #label); \
     }                                                         \
@@ -106,7 +90,6 @@ void Gui::Render() {
       auto it = input_cbs_.find(FnLabel::k##label);             \
       if (it != input_cbs_.end()) {                             \
         it->second(val);                                        \
-        BeepEnable();                                           \
       } else {                                                  \
         HLOG_F(WARNING, "Not found handler for label=" #label); \
       }                                                         \
@@ -119,7 +102,6 @@ void Gui::Render() {
       auto it = btn_cbs_.find(FnLabel::k##label);               \
       if (it != btn_cbs_.end()) {                               \
         it->second();                                           \
-        BeepEnable();                                           \
       } else {                                                  \
         HLOG_F(WARNING, "Not found handler for label=" #label); \
       }                                                         \
@@ -135,11 +117,6 @@ void Gui::Render() {
       ImGui::BeginDisabled(!enable);                                         \
       if (ImGui::Checkbox(GetFnStr(FnLabel::k##label).data(), &activate)) {  \
         ckbox_cbs_[FnLabel::k##label](activate);                             \
-        if (activate) {                                                      \
-          BeepEnable();                                                      \
-        } else {                                                             \
-          BeepDisable();                                                     \
-        }                                                                    \
       }                                                                      \
       ImGui::EndDisabled();                                                  \
     } else {                                                                 \
@@ -329,13 +306,14 @@ void Gui::AddCheckboxListener(FnLabel label, CheckboxHandler cb) {
 }
 
 std::string Gui::GetGuiStr(GuiLabel label) {
-  const char8_t* gui_str = yrtr::GetGuiStr(label, lang_);
+  const char8_t* gui_str = yrtr::frontend::GetGuiStr(label, lang_);
   return std::string(reinterpret_cast<const char*>(gui_str));
 }
 
 std::string Gui::GetFnStr(FnLabel label) {
-  const char8_t* fn_str = yrtr::GetFnStr(label, lang_);
+  const char8_t* fn_str = yrtr::frontend::GetFnStr(label, lang_);
   return std::string(reinterpret_cast<const char*>(fn_str));
 }
 
+}  // namespace frontend
 }  // namespace yrtr

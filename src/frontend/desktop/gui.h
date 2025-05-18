@@ -3,10 +3,11 @@
 #include <unordered_map>
 
 #include "base/macro.h"
-#include "frontend/char_table.h"
+#include "frontend/desktop/char_table.h"
 #include "protocol/model.h"
 
 namespace yrtr {
+namespace frontend {
 // MVC -- view.
 
 class Gui {
@@ -47,4 +48,5 @@ class Gui {
   DISALLOW_COPY_AND_ASSIGN(Gui);
 };
 
+}  // namespace frontend
 }  // namespace yrtr

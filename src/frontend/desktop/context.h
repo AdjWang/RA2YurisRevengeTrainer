@@ -2,6 +2,7 @@
 #include "base/macro.h"
 
 namespace yrtr {
+namespace frontend {
 
 class GuiContext {
  public:
@@ -17,4 +18,5 @@ class GuiContext {
   DISALLOW_COPY_AND_ASSIGN(GuiContext);
 };
 
+}  // namespace frontend
 }  // namespace yrtr

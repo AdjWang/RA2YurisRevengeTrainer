@@ -10,10 +10,11 @@ namespace fs = std::filesystem;
 __YRTR_BEGIN_THIRD_PARTY_HEADERS
 #include "absl/container/flat_hash_set.h"
 __YRTR_END_THIRD_PARTY_HEADERS
-#include "frontend/char_table.h"
+#include "frontend/desktop/char_table.h"
 #include "toml++/toml.hpp"
 
 namespace yrtr {
+namespace frontend {
 
 class Config {
  public:
@@ -56,4 +57,5 @@ class Config {
   DISALLOW_COPY_AND_ASSIGN(Config);
 };
 
+}  // namespace frontend
 }  // namespace yrtr

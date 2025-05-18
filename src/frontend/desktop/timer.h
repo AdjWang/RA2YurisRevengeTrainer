@@ -3,6 +3,7 @@
 #include <unordered_map>
 
 namespace yrtr {
+namespace frontend {
 
 class Timer {
  public:
@@ -19,4 +20,5 @@ class Timer {
   static std::unordered_map<int, TimerData> timer_data_;
 };
 
+}  // namespace frontend
 }  // namespace yrtr
