@@ -14,6 +14,7 @@ __YRTR_END_THIRD_PARTY_HEADERS
 #include "frontend/desktop/gui.h"
 #include "frontend/desktop/gui_context.h"
 #include "frontend/desktop/timer.h"
+#include "protocol/client.h"
 #include "protocol/model.h"
 
 using namespace yrtr;
@@ -145,8 +146,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, PSTR, int) {
     BOOL res = SetProp(hWnd, "Gui", &gui);
     CHECK(res) << GetLastError();
   }
-  // Trainer::Init(config::GetGlobalConfig().exec_name, gui_ctx,
-  //                     state);
+  Client client(gui);
+
+  Timer::SetTimer(Client::kTimerIdUpdateState, 0.2 /*second*/,
+                  std::bind_front(&Client::UpdateState, &client));
   // Timer::SetTimer(Trainer::kTimerIdProcWatch, 1.0 /*second*/,
   //                       std::bind_front(&Trainer::OnProcWatchTimer,
   //                                       Trainer::instance()));

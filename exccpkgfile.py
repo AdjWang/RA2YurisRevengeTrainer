@@ -94,6 +94,16 @@ class AbseilCpp(exccpkg.Package):
         return CMakeCommon.build(cfg, src_dir, "-DABSL_MSVC_STATIC_RUNTIME=ON")
 
 
+class CppHttplib(exccpkg.Package):
+    def __init__(self) -> None:
+        super().__init__(self.download, CMakeCommon.build, CMakeCommon.install)
+
+    @staticmethod
+    def download(cfg: Config) -> Path:
+        url = "https://github.com/yhirose/cpp-httplib/archive/refs/tags/v0.20.1.tar.gz"
+        return CMakeCommon.download(cfg, url, "cpp-httplib-0.20.1", ".tar.gz")
+
+
 class Freetype(exccpkg.Package):
     def __init__(self) -> None:
         super().__init__(self.download, CMakeCommon.build, CMakeCommon.install)
@@ -170,19 +180,30 @@ class Imgui(exccpkg.Package):
         ...
 
 
-class Minhook(exccpkg.Package):
+class NlohmannJson(exccpkg.Package):
     def __init__(self) -> None:
-        super().__init__(self.download, self.build, CMakeCommon.install)
+        super().__init__(self.download, self.build, self.install)
 
     @staticmethod
     def download(cfg: Config) -> Path:
-        url = "https://github.com/TsudaKageyu/minhook/archive/refs/tags/v1.3.4.tar.gz"
-        return CMakeCommon.download(cfg, url, "minhook-1.3.4", ".tar.gz")
+        url = "https://github.com/nlohmann/json/releases/download/v3.11.3/json.hpp"
+        download_path = cfg.download_dir / "nlohmann-json-3.11.3.hpp"
+        tools.download(url, download_path)
+        output_dir = cfg.deps_dir / "nlohmann-json-3.11.3"
+        tools.mkdirp(output_dir)
+        shutil.copy(download_path, output_dir)
+        return output_dir
 
     @staticmethod
     def build(cfg: Config, src_dir: Path) -> Path:
-        return CMakeCommon.build(cfg, src_dir, "-DBUILD_SHARED_LIBS=OFF")
-
+        build_dir = src_dir
+        return build_dir
+    
+    @staticmethod
+    def install(cfg: Config, build_dir: Path) -> None:
+        install_dir = cfg.install_dir / "include/nlohmann"
+        tools.mkdirp(install_dir)
+        shutil.copy(build_dir / "nlohmann-json-3.11.3.hpp", install_dir / "json.hpp")
 
 
 class Plutosvg(exccpkg.Package):
@@ -287,11 +308,13 @@ def resolve(cfg: Config) -> None:
     tools.mkdirp(cfg.install_dir)
     deps = [
         AbseilCpp(),
+        CppHttplib(),
         Freetype(),
         Glfw(),
         GoogleTest(),
         Gsl(),
         Imgui(),
+        NlohmannJson(),
         Plutosvg(),
         Syringe(),
         Toml(),

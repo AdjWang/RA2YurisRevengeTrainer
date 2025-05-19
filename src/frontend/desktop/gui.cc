@@ -36,6 +36,10 @@ bool Button(const std::string& label, const ImVec2& size = ImVec2(0, 0)) {
   return Button(label.c_str(), size);
 }
 
+bool Checkbox(const std::string& label, bool* v) {
+  return Checkbox(label.c_str(), v);
+}
+
 bool Selectable(const std::string& label, bool selected = false,
                 ImGuiSelectableFlags flags = 0,
                 const ImVec2& size = ImVec2(0, 0)) {
@@ -75,59 +79,6 @@ void Gui::Render() {
   PopStyle();
 }
 
-#define TRIGGER_INPUT(label, val)                             \
-  do {                                                        \
-    auto it = input_cbs_.find(FnLabel::k##label);             \
-    if (it != input_cbs_.end()) {                             \
-      it->second(val);                                        \
-    } else {                                                  \
-      HLOG_F(WARNING, "Not found handler for label=" #label); \
-    }                                                         \
-  } while (0)
-
-#define HANDLE_INPUT(label, val)                                \
-  do {                                                          \
-    if (ImGui::Button(GetFnStr(FnLabel::k##label))) {           \
-      auto it = input_cbs_.find(FnLabel::k##label);             \
-      if (it != input_cbs_.end()) {                             \
-        it->second(val);                                        \
-      } else {                                                  \
-        HLOG_F(WARNING, "Not found handler for label=" #label); \
-      }                                                         \
-    }                                                           \
-  } while (0)
-
-#define HANDLE_BUTTON(label)                                    \
-  do {                                                          \
-    if (ImGui::Button(GetFnStr(FnLabel::k##label))) {           \
-      auto it = btn_cbs_.find(FnLabel::k##label);               \
-      if (it != btn_cbs_.end()) {                               \
-        it->second();                                           \
-      } else {                                                  \
-        HLOG_F(WARNING, "Not found handler for label=" #label); \
-      }                                                         \
-    }                                                           \
-  } while (0)
-
-#define HANDLE_CHECKBOX(label)                                               \
-  do {                                                                       \
-    if (ckbox_cbs_.contains(FnLabel::k##label)) {                            \
-      const CheckboxState& ckbox_state = ckbox_states.at(FnLabel::k##label); \
-      bool enable = ckbox_state.enable;                                      \
-      bool activate = ckbox_state.activate;                                  \
-      ImGui::BeginDisabled(!enable);                                         \
-      if (ImGui::Checkbox(GetFnStr(FnLabel::k##label).data(), &activate)) {  \
-        ckbox_cbs_[FnLabel::k##label](activate);                             \
-      }                                                                      \
-      ImGui::EndDisabled();                                                  \
-    } else {                                                                 \
-      bool activate = false;                                                 \
-      if (ImGui::Checkbox(GetFnStr(FnLabel::k##label).data(), &activate)) {  \
-        HLOG_F(WARNING, "Not found handler for label=" #label);              \
-      }                                                                      \
-    }                                                                        \
-  } while (0)
-
 void Gui::RenderClientArea() {
   ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f));
   ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
@@ -157,66 +108,54 @@ void Gui::RenderTabAssists() {
   ImGui::SameLine();  // Keep the following item on the same line
   ImGui::SetNextItemWidth(100);
   static char input[128] = "";
+  // Triggered by press enter.
   bool triggered = ImGui::InputText(
       "##input", input, IM_ARRAYSIZE(input),
       ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_EnterReturnsTrue);
   char* end = nullptr;
   uint32_t input_val = std::strtoul(input, &end, 10);
   ImGui::SameLine();
-  HANDLE_INPUT(Apply, input_val);
-  if (triggered) {
-    TRIGGER_INPUT(Apply, input_val);
+  if (ImGui::Button(GetFnStr(FnLabel::kApply)) || triggered) {
+    auto it = input_cbs_.find(FnLabel::kApply);
+    if (it != input_cbs_.end()) {
+      it->second(input_val);
+    } else {
+      HLOG_F(WARNING, "Not found handler for label=Apply");
+    }
   }
-
-  HANDLE_BUTTON(FastBuild);
-  HANDLE_BUTTON(DeleteUnit);
-  HANDLE_BUTTON(ClearShroud);
-  HANDLE_BUTTON(GiveMeABomb);
-  HANDLE_BUTTON(UnitLevelUp);
-  HANDLE_BUTTON(UnitSpeedUp);
-  HANDLE_BUTTON(IAMWinner);
-  HANDLE_BUTTON(ThisIsMine);
-  HANDLE_BUTTON(IAMGhost);
-
+  for (auto& [label, handler] : btn_cbs_) {
+    if (ImGui::Button(GetFnStr(label))) {
+      if (handler != nullptr) {
+        handler();
+      } else {
+        HLOG_F(WARNING, "Not found handler for label={}", StrFnLabel(label));
+      }
+    }
+  }
   CheckboxStateMap ckbox_states;
   {
     absl::MutexLock lk(&state_.ckbox_states_mu);
     ckbox_states = state_.ckbox_states;
   }
-  HANDLE_CHECKBOX(God);
-  HANDLE_CHECKBOX(InstBuild);
-  HANDLE_CHECKBOX(UnlimitSuperWeapon);
-  HANDLE_CHECKBOX(UnlimitRadar);
-  HANDLE_CHECKBOX(InstFire);
-  HANDLE_CHECKBOX(InstTurn);
-  HANDLE_CHECKBOX(RangeToYourBase);
-  HANDLE_CHECKBOX(FireToYourBase);
-  HANDLE_CHECKBOX(FreezeGapGenerator);
-  HANDLE_CHECKBOX(FreezeUnit);
-  HANDLE_CHECKBOX(SellTheWorld);
-  HANDLE_CHECKBOX(UnlimitPower);
-  HANDLE_CHECKBOX(BuildEveryWhere);
-  HANDLE_CHECKBOX(AutoRepair);
-  HANDLE_CHECKBOX(EnermyRevertRepair);
-  HANDLE_CHECKBOX(SocialismTheBest);
-  HANDLE_CHECKBOX(MakeAttackedMine);
-  HANDLE_CHECKBOX(MakeCapturedMine);
-  HANDLE_CHECKBOX(MakeGarrisonedMine);
-  HANDLE_CHECKBOX(InvadeMode);
-  HANDLE_CHECKBOX(UnlimitTech);
-  HANDLE_CHECKBOX(FastReload);
-  HANDLE_CHECKBOX(UnlimitFirePower);
-  HANDLE_CHECKBOX(InstChrono);
-  HANDLE_CHECKBOX(SpySpy);
-  HANDLE_CHECKBOX(InfantrySlip);
-  HANDLE_CHECKBOX(EverythingElited);
-  HANDLE_CHECKBOX(AdjustGameSpeed);
-
+  for (auto& [label, handler] : ckbox_cbs_) {
+    bool enable = false;
+    bool activate = false;
+    auto it = ckbox_states.find(label);
+    if (it != ckbox_states.end()) {
+      enable = it->second.enable;
+      activate = it->second.activate;
+    }
+    ImGui::BeginDisabled(!enable);
+    if (ImGui::Checkbox(GetFnStr(label), &activate)) {
+      if (handler != nullptr) {
+        handler(activate);
+      } else {
+        HLOG_F(WARNING, "Not found handler for label={}", StrFnLabel(label));
+      }
+    }
+    ImGui::EndDisabled();
+  }
 }
-#undef TRIGGER_INPUT
-#undef HANDLE_INPUT
-#undef HANDLE_BUTTON
-#undef HANDLE_CHECKBOX
 
 void Gui::RenderTabFilters() {
   float client_width =

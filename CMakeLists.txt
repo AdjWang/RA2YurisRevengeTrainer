@@ -32,6 +32,7 @@ add_link_options($<$<CONFIG:Release>:/OPT:REF> $<$<CONFIG:Release>:/INCREMENTAL:
 find_package(absl REQUIRED)
 find_package(Freetype REQUIRED)
 find_package(glfw3 REQUIRED)
+find_package(httplib REQUIRED)
 find_package(Microsoft.GSL REQUIRED)
 find_package(plutosvg REQUIRED)
 find_package(tomlplusplus REQUIRED)
@@ -96,6 +97,7 @@ add_library(yrtr_frontend STATIC
   ${YRTR_SOURCE_DIR}/frontend/desktop/timer.cc
   ${YRTR_SOURCE_DIR}/frontend/desktop/gui.cc
   ${YRTR_SOURCE_DIR}/frontend/desktop/gui_context.cc
+  ${YRTR_SOURCE_DIR}/protocol/client.cc
 )
 target_include_directories(yrtr_frontend
   PUBLIC $<BUILD_INTERFACE:${YRTR_DEPS_OUTPUT_DIR}/include>

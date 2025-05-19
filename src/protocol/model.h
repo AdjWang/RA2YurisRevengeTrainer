@@ -7,12 +7,14 @@ __YRTR_BEGIN_THIRD_PARTY_HEADERS
 #include "absl/container/flat_hash_map.h"
 #include "absl/synchronization/mutex.h"
 __YRTR_END_THIRD_PARTY_HEADERS
+#include "nlohmann/json.hpp"
+using json = nlohmann::json;
 
 namespace yrtr {
 // MVC -- model.
 
 enum class FnLabel {
-  kInvalid,
+  kInvalid = -1,
   // Button
   kApply,
   kFastBuild,
@@ -23,35 +25,26 @@ enum class FnLabel {
   kUnitSpeedUp,
   kIAMWinner,
   kThisIsMine,
-  kIAMGhost,
   // Checkbox
   kGod,
   kInstBuild,
   kUnlimitSuperWeapon,
-  kUnlimitRadar,
   kInstFire,
   kInstTurn,
   kRangeToYourBase,
   kFireToYourBase,
   kFreezeGapGenerator,
-  kFreezeUnit,
   kSellTheWorld,
-  kUnlimitPower,
   kBuildEveryWhere,
   kAutoRepair,
-  kEnermyRevertRepair,
+  // TODO
   kSocialismTheBest,
-  kMakeAttackedMine,
-  kMakeCapturedMine,
   kMakeGarrisonedMine,
   kInvadeMode,
   kUnlimitTech,
-  kFastReload,
   kUnlimitFirePower,
   kInstChrono,
   kSpySpy,
-  kInfantrySlip,
-  kEverythingElited,
   kAdjustGameSpeed,
   kCount,
 };
@@ -69,35 +62,25 @@ constexpr std::string_view StrFnLabel(FnLabel label) {
     case FnLabel::kUnitSpeedUp:         return "UnitSpeedUp";
     case FnLabel::kIAMWinner:           return "IAMWinner";
     case FnLabel::kThisIsMine:          return "ThisIsMine";
-    case FnLabel::kIAMGhost:            return "IAMGhost";
     // Checkbox
     case FnLabel::kGod:                 return "God";
     case FnLabel::kInstBuild:           return "InstBuild";
     case FnLabel::kUnlimitSuperWeapon:  return "UnlimitSuperWeapon";
-    case FnLabel::kUnlimitRadar:        return "UnlimitRadar";
     case FnLabel::kInstFire:            return "InstFire";
     case FnLabel::kInstTurn:            return "InstTurn";
     case FnLabel::kRangeToYourBase:     return "RangeToYourBase";
     case FnLabel::kFireToYourBase:      return "FireToYourBase";
     case FnLabel::kFreezeGapGenerator:  return "FreezeGapGenerator";
-    case FnLabel::kFreezeUnit:          return "FreezeUnit";
     case FnLabel::kSellTheWorld:        return "SellTheWorld";
-    case FnLabel::kUnlimitPower:        return "UnlimitPower";
     case FnLabel::kBuildEveryWhere:     return "BuildEveryWhere";
     case FnLabel::kAutoRepair:          return "AutoRepair";
-    case FnLabel::kEnermyRevertRepair:  return "EnermyRevertRepair";
     case FnLabel::kSocialismTheBest:    return "SocialismTheBest";
-    case FnLabel::kMakeAttackedMine:    return "MakeAttackedMine";
-    case FnLabel::kMakeCapturedMine:    return "MakeCapturedMine";
     case FnLabel::kMakeGarrisonedMine:  return "MakeGarrisonedMine";
     case FnLabel::kInvadeMode:          return "InvadeMode";
     case FnLabel::kUnlimitTech:         return "UnlimitTech";
-    case FnLabel::kFastReload:          return "FastReload";
     case FnLabel::kUnlimitFirePower:    return "UnlimitFirePower";
     case FnLabel::kInstChrono:          return "InstChrono";
     case FnLabel::kSpySpy:              return "SpySpy";
-    case FnLabel::kInfantrySlip:        return "InfantrySlip";
-    case FnLabel::kEverythingElited:    return "EverythingElited";
     case FnLabel::kAdjustGameSpeed:     return "AdjustGameSpeed";
     case FnLabel::kCount:               return "Count";
     default:                            return "unknown";

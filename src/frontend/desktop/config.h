@@ -33,33 +33,24 @@ class Config {
       case FnLabel::kUnitSpeedUp:         return GLFW_KEY_7;
       case FnLabel::kIAMWinner:           return GLFW_KEY_8;
       case FnLabel::kThisIsMine:          return GLFW_KEY_9;
-      case FnLabel::kIAMGhost:            return GLFW_KEY_0;
       case FnLabel::kGod:                 return GLFW_KEY_Q;
       case FnLabel::kInstBuild:           return GLFW_KEY_W;
       case FnLabel::kUnlimitSuperWeapon:  return GLFW_KEY_E;
-      case FnLabel::kUnlimitRadar:        return GLFW_KEY_R;
       case FnLabel::kInstFire:            return GLFW_KEY_T;
       case FnLabel::kInstTurn:            return GLFW_KEY_Y;
       case FnLabel::kRangeToYourBase:     return GLFW_KEY_U;
       case FnLabel::kFireToYourBase:      return GLFW_KEY_I;
       case FnLabel::kFreezeGapGenerator:  return GLFW_KEY_O;
-      case FnLabel::kFreezeUnit:          return GLFW_KEY_P;
       case FnLabel::kSellTheWorld:        return GLFW_KEY_A;
-      case FnLabel::kUnlimitPower:        return GLFW_KEY_S;
       case FnLabel::kBuildEveryWhere:     return GLFW_KEY_D;
       case FnLabel::kAutoRepair:          return GLFW_KEY_F;
-      case FnLabel::kEnermyRevertRepair:  return GLFW_KEY_G;
       case FnLabel::kSocialismTheBest:    return GLFW_KEY_H;
-      case FnLabel::kMakeAttackedMine:    return GLFW_KEY_J;
-      case FnLabel::kMakeCapturedMine:    return GLFW_KEY_K;
       case FnLabel::kMakeGarrisonedMine:  return GLFW_KEY_L;
       case FnLabel::kInvadeMode:          return GLFW_KEY_Z;
       case FnLabel::kUnlimitTech:         return GLFW_KEY_X;
-      case FnLabel::kFastReload:          return GLFW_KEY_C;
       case FnLabel::kUnlimitFirePower:    return GLFW_KEY_V;
       case FnLabel::kInstChrono:          return GLFW_KEY_B;
       case FnLabel::kSpySpy:              return GLFW_KEY_N;
-      case FnLabel::kInfantrySlip:        return GLFW_KEY_M;
       case FnLabel::kAdjustGameSpeed:     return GLFW_KEY_PERIOD;   /* . */
       default: return GLFW_KEY_UNKNOWN;
     }

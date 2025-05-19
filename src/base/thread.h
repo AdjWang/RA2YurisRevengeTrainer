@@ -8,11 +8,14 @@ using ThreadId = uint32_t;
 
 ThreadId GetGameLoopThreadId();
 ThreadId GetRendererThreadId();
+ThreadId GetNetThreadId();
 void SetupGameLoopThreadOnce(ThreadId tid = 0);
 void SetupRendererThreadOnce(ThreadId tid = 0);
+void SetupNetThreadOnce(ThreadId tid = 0);
 bool IsWithinThread(ThreadId tid);
 bool IsWithinGameLoopThread();
 bool IsWithinRendererThread();
+bool IsWithinNetThread();
 // For debugging.
 std::string InspectThreads();
 

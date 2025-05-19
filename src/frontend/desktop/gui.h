@@ -1,6 +1,6 @@
 #pragma once
 #include <functional>
-#include <unordered_map>
+#include <map>
 
 #include "base/macro.h"
 #include "frontend/desktop/char_table.h"
@@ -12,8 +12,8 @@ namespace frontend {
 
 class Gui {
  public:
-  using ButtonHandler = std::function<void()>;
   using InputHandler = std::function<void(uint32_t)>;
+  using ButtonHandler = std::function<void()>;
   using CheckboxHandler = std::function<void(bool)>;
 
   Gui(State& state, Lang lang);
@@ -34,9 +34,9 @@ class Gui {
   State& state_;
   const Lang lang_;
 
-  std::unordered_map<FnLabel, ButtonHandler> btn_cbs_;
-  std::unordered_map<FnLabel, InputHandler> input_cbs_;
-  std::unordered_map<FnLabel, CheckboxHandler> ckbox_cbs_;
+  std::map<FnLabel, InputHandler> input_cbs_;
+  std::map<FnLabel, ButtonHandler> btn_cbs_;
+  std::map<FnLabel, CheckboxHandler> ckbox_cbs_;
 
   void RenderClientArea();
   void RenderTabAssists();
