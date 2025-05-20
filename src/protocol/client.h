@@ -17,25 +17,30 @@ class Client {
 
   Client(frontend::Gui& gui);
   ~Client();
-  const State& state() const { return state_; }
-  void UpdateState();
-  void ServeAsBackend();
+  // Despite invoked by render loop, I'm still gonna name it "Update".
+  void Update();
+  // Use an explicit stop to put it before the window destroied. Otherwise if
+  // someday a background buggy thread blocks after the main window closed,
+  // it leaves a zombie background process that really hard to be noticed.
+  void Stop();
+  void GetState();
 
  private:
   // Limit maximum pending state getting requests.
   static constexpr int kMaxGetState = 1;
-  State state_;
+  frontend::Gui& gui_;
   httplib::Client cli_;
   httplib::ThreadPool thread_pool_;
   yrtr::TaskQueue render_loop_ch_;
   std::atomic<int> get_state_count_;
 
-  void GetState();
+  void SendGetState();
   void ParseState(const std::string& data);
-  void SendInput(FnLabel label, uint32_t val);
-  void SendButton(FnLabel label);
-  void SendCheckbox(FnLabel label, bool activate);
-  void PostData(std::string_view path, std::string&& data);
+  void SendPostInput(FnLabel label, uint32_t val);
+  void SendPostButton(FnLabel label);
+  void SendPostCheckbox(FnLabel label, bool activate);
+  void SendPostProtectedList(SideMap&& side_map);
+  void SendPostData(std::string_view path, std::string&& data);
 
   DISALLOW_COPY_AND_ASSIGN(Client);
 };

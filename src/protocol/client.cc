@@ -1,5 +1,7 @@
 #include "protocol/client.h"
 
+#include <chrono>
+
 #include "base/windows_shit.h"
 #define EAT_SHIT_FIRST  // prevent linter move windows shit down
 #include "base/logging.h"
@@ -14,25 +16,37 @@ using json = nlohmann::json;
 
 namespace yrtr {
 
-#define BIND_BUTTON(fnname)                                             \
-  gui.AddButtonListener(FnLabel::k##fnname, [this]() {                  \
-    thread_pool_.enqueue([this]() { SendButton(FnLabel::k##fnname); }); \
+#define BIND_BUTTON(fnname)                                                 \
+  gui.AddButtonListener(FnLabel::k##fnname, [this]() {                      \
+    thread_pool_.enqueue([this]() { SendPostButton(FnLabel::k##fnname); }); \
   });
-#define BIND_CHECKBOX(fnname)                                                \
-  gui.AddCheckboxListener(FnLabel::k##fnname, [this](bool activate) {        \
-    thread_pool_.enqueue(                                                    \
-        [this, activate]() { SendCheckbox(FnLabel::k##fnname, activate); }); \
+#define BIND_CHECKBOX(fnname)                                         \
+  gui.AddCheckboxListener(FnLabel::k##fnname, [this](bool activate) { \
+    thread_pool_.enqueue([this, activate]() {                         \
+      SendPostCheckbox(FnLabel::k##fnname, activate);                 \
+    });                                                               \
   });
 
 Client::Client(frontend::Gui& gui)
-    : cli_("http://localhost:35271"),
-      thread_pool_(1),
+    : gui_(gui),
+      cli_("http://localhost:35271"),
+      thread_pool_(/*n*/ 1),
       get_state_count_(0) {
+  // This tool is used in LAN, 50ms should be enough. Large timeout queues too
+  // many jobs in sending queue when the backend is not running, making the gui
+  // actions, like close window, acts lagging.
+  cli_.set_connection_timeout(std::chrono::milliseconds(50));
   thread_pool_.enqueue([&]() { SetupNetThreadOnce(); });
   render_loop_ch_.SetThreadId(GetRendererThreadId());
 
+  gui.AddHouseListListener([this](SideMap&& side_map) {
+    thread_pool_.enqueue([this, side_map = std::move(side_map)]() mutable {
+      SendPostProtectedList(std::move(side_map));
+    });
+  });
   gui.AddInputListener(FnLabel::kApply, [this](uint32_t val) {
-    thread_pool_.enqueue([this, val]() { SendInput(FnLabel::kApply, val); });
+    thread_pool_.enqueue(
+        [this, val]() { SendPostInput(FnLabel::kApply, val); });
   });
   BIND_BUTTON(FastBuild);
   BIND_BUTTON(DeleteUnit);
@@ -65,24 +79,29 @@ Client::Client(frontend::Gui& gui)
 #undef BIND_BUTTON
 #undef BIND_CHECKBOX
 
-Client::~Client() {
+Client::~Client() {}
+
+void Client::Stop() {
+  cli_.stop();
   thread_pool_.shutdown();
 }
 
-void Client::UpdateState() {
+void Client::Update() {
   DCHECK(yrtr::IsWithinRendererThread());
-  thread_pool_.enqueue([&]() { GetState(); });
   render_loop_ch_.ExecuteTasks();
 }
 
 void Client::GetState() {
+  DCHECK(yrtr::IsWithinRendererThread());
+  thread_pool_.enqueue([this]() { SendGetState(); });
+}
+
+void Client::SendGetState() {
   DCHECK(yrtr::IsWithinNetThread());
-  if (get_state_count_.load(std::memory_order_relaxed) >= kMaxGetState) {
+  auto _ = gsl::finally([&]() { get_state_count_.fetch_sub(1); });
+  if (get_state_count_.fetch_add(1) + 1 > kMaxGetState) {
     return;
   }
-  get_state_count_.fetch_add(1, std::memory_order_relaxed);
-  auto _ = gsl::finally(
-      [&]() { get_state_count_.fetch_sub(1, std::memory_order_relaxed); });
   httplib::Result res = cli_.Get(kApiGetState.data());
   if (res) {
     if (res->status == 200) {
@@ -98,37 +117,48 @@ void Client::GetState() {
 
 void Client::ParseState(const std::string& data) {
   DCHECK(yrtr::IsWithinNetThread());
-  UNREFERENCED_PARAMETER(data);
-  // TODO
+  render_loop_ch_.ExecuteOrScheduleTask([this, data = data]() {
+    DCHECK(yrtr::IsWithinRendererThread());
+    State state = json::parse(data);
+    gui_.UpdateState(state);
+  });
 }
 
-void Client::SendInput(FnLabel label, uint32_t val) {
+void Client::SendPostInput(FnLabel label, uint32_t val) {
   DCHECK(yrtr::IsWithinNetThread());
   json data;
   data.emplace("type", "input");
   data.emplace("label", static_cast<int>(label));
   data.emplace("val", val);
-  PostData(kApiPostEvent, data.dump());
+  SendPostData(kApiPostEvent, data.dump());
 }
 
-void Client::SendButton(FnLabel label) {
+void Client::SendPostButton(FnLabel label) {
   DCHECK(yrtr::IsWithinNetThread());
   json data;
   data.emplace("type", "button");
   data.emplace("label", static_cast<int>(label));
-  PostData(kApiPostEvent, data.dump());
+  SendPostData(kApiPostEvent, data.dump());
 }
 
-void Client::SendCheckbox(FnLabel label, bool activate) {
+void Client::SendPostCheckbox(FnLabel label, bool activate) {
   DCHECK(yrtr::IsWithinNetThread());
   json data;
   data.emplace("type", "checkbox");
   data.emplace("label", static_cast<int>(label));
   data.emplace("val", activate);
-  PostData(kApiPostEvent, data.dump());
+  SendPostData(kApiPostEvent, data.dump());
 }
 
-void Client::PostData(std::string_view path, std::string&& data) {
+void Client::SendPostProtectedList(SideMap&& side_map) {
+  DCHECK(yrtr::IsWithinNetThread());
+  json data;
+  data.emplace("type", "protected_list");
+  data.emplace("val", std::move(side_map));
+  SendPostData(kApiPostEvent, data.dump());
+}
+
+void Client::SendPostData(std::string_view path, std::string&& data) {
   httplib::Result res = cli_.Post(path.data(), data, "application/json");
   if (res) {
     if (res->status != 200) {

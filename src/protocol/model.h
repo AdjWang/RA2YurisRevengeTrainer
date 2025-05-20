@@ -108,6 +108,13 @@ struct SideDesc {
 using CheckboxStateMap = std::unordered_map<FnLabel, CheckboxState>;
 using SideMap = std::map<UniqId, SideDesc>;
 
+// Only compare keys.
+inline bool AreEqual(const SideMap& lhs, const SideMap& rhs) {
+  return lhs.size() == rhs.size() &&
+         std::equal(lhs.begin(), lhs.end(), rhs.begin(),
+                    [](auto a, auto b) { return a.first == b.first; });
+}
+
 // Stored in backend.
 struct State {
   // Write by controller, read by view.

@@ -66,11 +66,15 @@ static void PopStyle() {
 }
 } // namespace
 
-Gui::Gui(State& state, Lang lang)
-    : state_(state),
-      lang_(lang) {}
+Gui::Gui(Lang lang) : lang_(lang) {}
 
 Gui::~Gui() {}
+
+void Gui::UpdateState(const State& state) {
+  DCHECK(yrtr::IsWithinRendererThread());
+  // This should be the only point writing to state.
+  state_ = state;
+}
 
 void Gui::Render() {
   DCHECK(yrtr::IsWithinRendererThread());
@@ -132,11 +136,7 @@ void Gui::RenderTabAssists() {
       }
     }
   }
-  CheckboxStateMap ckbox_states;
-  {
-    absl::MutexLock lk(&state_.ckbox_states_mu);
-    ckbox_states = state_.ckbox_states;
-  }
+  const CheckboxStateMap& ckbox_states = state_.ckbox_states;
   for (auto& [label, handler] : ckbox_cbs_) {
     bool enable = false;
     bool activate = false;
@@ -160,16 +160,10 @@ void Gui::RenderTabAssists() {
 void Gui::RenderTabFilters() {
   float client_width =
       ImGui::GetContentRegionAvail().x - ImGui::GetStyle().FramePadding.x * 2;
-  // Read, modify and update.
-  SideMap selecting_houses;
-  SideMap protected_houses;
-  {
-    absl::MutexLock lk(&state_.houses_mu);
-    // Readonly.
-    selecting_houses = state_.selecting_houses;
-    // Read and write.
-    protected_houses = state_.protected_houses;
-  }
+  // Readonly.
+  const SideMap& selecting_houses = state_.selecting_houses;
+  // Read and write.
+  SideMap protected_houses = state_.protected_houses;
   ImGui::BeginGroup();
   ImGui::Text(GetGuiStr(GuiLabel::kSelectingHouseList));
   ImGui::SameLine();
@@ -215,13 +209,15 @@ void Gui::RenderTabFilters() {
     }
     ImGui::EndListBox();
   }
-
   ImGui::EndChild();
   ImGui::EndGroup();
-  {
-    absl::MutexLock lk(&state_.houses_mu);
-    // Do not write back selecting_houses, it's readonly here.
-    state_.protected_houses = protected_houses;
+  // Trigger update data if modified any item.
+  if (!AreEqual(protected_houses, state_.protected_houses)) {
+    if (house_list_cb_ != nullptr) {
+      house_list_cb_(std::move(protected_houses));
+    } else {
+      HLOG_F(WARNING, "Not found handler for house list update");
+    }
   }
 }
 
@@ -244,11 +240,7 @@ void Gui::Trigger(FnLabel label) const {
     it_btn->second();
     return;
   }
-  CheckboxStateMap ckbox_states;
-  {
-    absl::MutexLock lk(&state_.ckbox_states_mu);
-    ckbox_states = state_.ckbox_states;
-  }
+  const CheckboxStateMap& ckbox_states = state_.ckbox_states;
   auto it_ckbox_state = ckbox_states.find(label);
   auto it_ckbox = ckbox_cbs_.find(label);
   if (it_ckbox_state != ckbox_states.end() && it_ckbox != ckbox_cbs_.end()) {
@@ -282,6 +274,10 @@ void Gui::AddInputListener(FnLabel label, InputHandler cb) {
 
 void Gui::AddCheckboxListener(FnLabel label, CheckboxHandler cb) {
   ckbox_cbs_.emplace(label, std::move(cb));
+}
+
+void Gui::AddHouseListListener(HouseListHandler cb) {
+  house_list_cb_ = std::move(cb);
 }
 
 std::string Gui::GetGuiStr(GuiLabel label) {

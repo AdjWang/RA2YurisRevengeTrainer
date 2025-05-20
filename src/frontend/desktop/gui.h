@@ -15,10 +15,12 @@ class Gui {
   using InputHandler = std::function<void(uint32_t)>;
   using ButtonHandler = std::function<void()>;
   using CheckboxHandler = std::function<void(bool)>;
+  using HouseListHandler = std::function<void(SideMap&&)>;
 
-  Gui(State& state, Lang lang);
+  Gui(Lang lang);
   ~Gui();
 
+  void UpdateState(const State& state);
   void Render();
   // Provides a way to trigger from outside event, e.g., hotkeys. Triggered
   // widgets are represented on gui and would change states, just like which
@@ -28,15 +30,16 @@ class Gui {
   void AddButtonListener(FnLabel label, ButtonHandler cb);
   void AddInputListener(FnLabel label, InputHandler cb);
   void AddCheckboxListener(FnLabel label, CheckboxHandler cb);
+  void AddHouseListListener(HouseListHandler cb);
 
  private:
-  // Be care of race conditions.
-  State& state_;
+  State state_;
   const Lang lang_;
 
   std::map<FnLabel, InputHandler> input_cbs_;
   std::map<FnLabel, ButtonHandler> btn_cbs_;
   std::map<FnLabel, CheckboxHandler> ckbox_cbs_;
+  HouseListHandler house_list_cb_;
 
   void RenderClientArea();
   void RenderTabAssists();

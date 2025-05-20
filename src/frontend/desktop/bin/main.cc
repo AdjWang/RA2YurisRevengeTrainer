@@ -136,8 +136,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, PSTR, int) {
   glfwSwapInterval(1);  // Enable vsync
 
   ImGuiWindow gui_ctx(window);
-  State state;
-  Gui gui(state, Config::instance()->lang());
+  Gui gui(Config::instance()->lang());
   {
     BOOL res = SetProp(hWnd, "GuiContext", static_cast<GuiContext*>(&gui_ctx));
     CHECK(res) << GetLastError();
@@ -149,13 +148,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, PSTR, int) {
   Client client(gui);
 
   Timer::SetTimer(Client::kTimerIdUpdateState, 0.2 /*second*/,
-                  std::bind_front(&Client::UpdateState, &client));
-  // Timer::SetTimer(Trainer::kTimerIdProcWatch, 1.0 /*second*/,
-  //                       std::bind_front(&Trainer::OnProcWatchTimer,
-  //                                       Trainer::instance()));
-  // Timer::SetTimer(Trainer::kTimerIdTrainerFunc, 0.3 /*second*/,
-  //                       std::bind_front(&Trainer::OnFuncScanTimer,
-  //                                       Trainer::instance()));
+                  std::bind_front(&Client::GetState, &client));
 
   glfwSetWindowUserPointer(window, &gui_ctx);
   glfwSetFramebufferSizeCallback(window, FramebufferSizeCallback);
@@ -164,6 +157,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, PSTR, int) {
   glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
   while (!glfwWindowShouldClose(window)) {
     Timer::Update();
+    client.Update();
 
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -176,6 +170,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, PSTR, int) {
     glfwSwapBuffers(window);
     glfwWaitEventsTimeout(0.2);
   }
+  // Stop before window destroied to catch bugs immediately instead of leaving a
+  // zombie background process without visible window.
+  client.Stop();
 
   glfwDestroyWindow(window);
   glfwTerminate();
