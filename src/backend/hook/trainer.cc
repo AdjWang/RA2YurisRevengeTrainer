@@ -472,14 +472,14 @@ static void __declspec(naked) __cdecl InjectSpySpy() {
     return;                                                  \
   }
 
-Trainer::Trainer(State& state)
-    : state_(state),
-      activate_inst_building_(false),
+Trainer::Trainer()
+    : activate_inst_building_(false),
       activate_inst_superweapon_(false),
       activate_inst_turn_turret_(false),
       activate_inst_turn_body_(false) {
   mem_api_ = std::make_unique<MemoryAPI>();
-  InitStates(state);
+  absl::MutexLock lk(&state_mu_);
+  InitStates(state_);
 }
 
 bool Trainer::ShouldProtect(yrpp::AbstractClass* obj) {
@@ -528,7 +528,7 @@ void Trainer::Update(double /*delta*/) {
         });
   });
   {
-    absl::MutexLock lk(&state_.houses_mu);
+    absl::MutexLock lk(&state_mu_);
     state_.selecting_houses.swap(selecting_houses);
     protected_houses_ = state_.protected_houses;
   }
@@ -954,7 +954,7 @@ void Trainer::ForeachProtectedHouse(std::function<void(yrpp::HouseClass*)> cb) {
 }
 
 bool Trainer::SetEnableCheckbox(FnLabel label, bool enable) {
-  absl::MutexLock lk(&state_.ckbox_states_mu);
+  absl::MutexLock lk(&state_mu_);
   state_.ckbox_states[label].enable = enable;
   return state_.ckbox_states[label].activate;
 }
@@ -983,7 +983,7 @@ void Trainer::UpdateCheckboxState(FnLabel label, bool activate) {
   } else {
     BeepDisable();
   }
-  absl::MutexLock lk(&state_.ckbox_states_mu);
+  absl::MutexLock lk(&state_mu_);
   state_.ckbox_states[label].activate = activate;
 }
 

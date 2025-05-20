@@ -63,7 +63,6 @@ Client::Client(frontend::Gui& gui)
 }
 
 #undef BIND_BUTTON
-#undef BIND_BUTTON
 #undef BIND_CHECKBOX
 
 Client::~Client() {

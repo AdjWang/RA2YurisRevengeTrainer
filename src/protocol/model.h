@@ -1,5 +1,7 @@
 #pragma once
+#include <map>
 #include <string>
+#include <unordered_map>
 
 #include "base/macro.h"
 __YRTR_BEGIN_THIRD_PARTY_HEADERS
@@ -90,6 +92,7 @@ constexpr std::string_view StrFnLabel(FnLabel label) {
 struct CheckboxState {
   bool enable = true;
   bool activate = false;
+  NLOHMANN_DEFINE_TYPE_INTRUSIVE(CheckboxState, enable, activate);
 };
 
 using UniqId = uint32_t;
@@ -97,27 +100,27 @@ using UniqId = uint32_t;
 struct SideDesc {
   UniqId uniq_id;
   std::string name;
+  NLOHMANN_DEFINE_TYPE_INTRUSIVE(SideDesc, uniq_id, name);
 
   std::string item_name() const { return name; }
 };
 
-using CheckboxStateMap = absl::flat_hash_map<FnLabel, CheckboxState>;
-using SideMap = absl::btree_map<UniqId, SideDesc>;
+using CheckboxStateMap = std::unordered_map<FnLabel, CheckboxState>;
+using SideMap = std::map<UniqId, SideDesc>;
 
 // Stored in backend.
 struct State {
   // Write by controller, read by view.
   // Export checkbox states to controller to bind them with the game state
   // instead of gui state.
-  absl::Mutex ckbox_states_mu;
-  CheckboxStateMap ckbox_states ABSL_GUARDED_BY(ckbox_states_mu);
+  CheckboxStateMap ckbox_states;
   // "House" emm..., fine, classic westwood naming convention. Use map to drop
   // duplications.
-  absl::Mutex houses_mu;
-  SideMap selecting_houses ABSL_GUARDED_BY(houses_mu);
-
+  SideMap selecting_houses;
   // Read by controller, write by view.
-  SideMap protected_houses ABSL_GUARDED_BY(houses_mu);
+  SideMap protected_houses;
+  NLOHMANN_DEFINE_TYPE_INTRUSIVE(State, ckbox_states, selecting_houses,
+                                 protected_houses);
 };
 
 }  // namespace yrtr

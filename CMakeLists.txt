@@ -174,4 +174,7 @@ if (YRTR_BUILD_TEST)
   #   PRIVATE yrtr_base
   #   PRIVATE libimgui
   # )
+
+  add_executable(test_json ${YRTR_SOURCE_DIR}/protocol/test_json.cc)
+  target_link_libraries(test_json PRIVATE yrtr_base)
 endif()

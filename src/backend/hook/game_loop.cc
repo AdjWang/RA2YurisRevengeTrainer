@@ -21,7 +21,6 @@ namespace hook {
 
 namespace {
 static TaskQueue game_loop_ch;
-static State state;
 static std::unique_ptr<Trainer> trainer;
 
 static void DoDestroyWindow() {
@@ -45,7 +44,7 @@ static void PreCreateWindow(HINSTANCE hInstance) {
   }
   // Search configuration file at the same directory with the dll.
   CHECK(Config::Load(fs::canonical(fs::path(dll_path)).parent_path()));
-  trainer = std::make_unique<Trainer>(state);
+  trainer = std::make_unique<Trainer>();
 }
 
 static void __declspec(naked) __cdecl InjectCreateWindow() {

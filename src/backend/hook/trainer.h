@@ -27,9 +27,14 @@ class Trainer {
   static bool ShouldProtect(yrpp::AbstractClass* obj);
   static bool ShouldProtect(yrpp::HouseClass* house);
 
-  Trainer(State& state);
+  Trainer();
   Trainer(Trainer&&) = delete;
   Trainer& operator=(Trainer&&) = delete;
+
+  State state() const {
+    absl::MutexLock lk(&state_mu_);
+    return state_;
+  }
 
   void Update(double delta);
 
@@ -74,26 +79,14 @@ class Trainer {
   void OnCkboxAdjustGameSpeed(bool activate);
 
  private:
-  struct TriggerOp {
-    FnLabel label;
-    // Nullptr for button, uint32_t for input, and bool for checkbox.
-    void* data;
-  };
-
   // Update from state before use.
   static SideMap protected_houses_;
   static bool activate_disable_gagap_;
 
-  static void ForeachSelectingObject(
-      std::function<void(yrpp::ObjectClass*)> cb);
-  static void ForeachProtectedHouse(std::function<void(yrpp::HouseClass*)> cb);
+  mutable absl::Mutex state_mu_;
+  State state_ ABSL_GUARDED_BY(state_mu_);
 
-  // Be care of race conditions.
-  State& state_;
   std::unique_ptr<MemoryAPI> mem_api_;
-  using OpList = absl::InlinedVector<TriggerOp, 3>;
-  absl::Mutex pending_ops_mu_;
-  OpList pending_ops_ ABSL_GUARDED_BY(pending_ops_mu_);
 
   bool activate_inst_building_;
   bool activate_inst_superweapon_;
@@ -101,6 +94,10 @@ class Trainer {
   bool activate_inst_turn_body_;
   // From VA:00450645, controls auto repair.
   absl::flat_hash_map<UniqId /*house_id*/, int /*iq_level*/> iq_levels_;
+
+  static void ForeachSelectingObject(
+      std::function<void(yrpp::ObjectClass*)> cb);
+  static void ForeachProtectedHouse(std::function<void(yrpp::HouseClass*)> cb);
 
   void UpdateCheckboxState(FnLabel label, bool activate);
   // Return the activate state before set enable.
