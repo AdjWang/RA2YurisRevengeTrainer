@@ -145,7 +145,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, PSTR, int) {
     BOOL res = SetProp(hWnd, "Gui", &gui);
     CHECK(res) << GetLastError();
   }
-  Client client(gui);
+  Client client(gui, Config::instance()->port());
 
   Timer::SetTimer(Client::kTimerIdUpdateState, 0.2 /*second*/,
                   std::bind_front(&Client::GetState, &client));

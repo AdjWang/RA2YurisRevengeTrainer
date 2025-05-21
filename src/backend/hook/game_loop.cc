@@ -14,17 +14,20 @@ __YRTR_END_THIRD_PARTY_HEADERS
 #include "backend/hook/trainer.h"
 #include "base/logging.h"
 #include "base/thread.h"
+#include "protocol/server.h"
 
 namespace yrtr {
 namespace backend {
 namespace hook {
 
 namespace {
-static TaskQueue game_loop_ch;
 static std::unique_ptr<Trainer> trainer;
+static std::unique_ptr<Server> server;
 
 static void DoDestroyWindow() {
   // Reclaim resources here.
+  server.reset();
+  trainer.reset();
 }
 
 // int __thiscall CreateWindow_777C30(HINSTANCE hInstance, int xRight, int
@@ -32,7 +35,6 @@ static void DoDestroyWindow() {
 static void PreCreateWindow(HINSTANCE hInstance) {
   // Setup thread id.
   SetupGameLoopThreadOnce();
-  game_loop_ch.SetThreadId(GetGameLoopThreadId());
   // Load configurations.
   char dll_path[MAX_PATH] = {0};
   DWORD nSize = GetModuleFileNameA(hInstance, dll_path, _countof(dll_path));
@@ -45,6 +47,7 @@ static void PreCreateWindow(HINSTANCE hInstance) {
   // Search configuration file at the same directory with the dll.
   CHECK(Config::Load(fs::canonical(fs::path(dll_path)).parent_path()));
   trainer = std::make_unique<Trainer>();
+  server = std::make_unique<Server>(*trainer.get(), Config::instance()->port());
 }
 
 static void __declspec(naked) __cdecl InjectCreateWindow() {
@@ -75,7 +78,8 @@ static void Update() {
   double delta_sec = static_cast<double>(delta_us) / 10e6;
   DCHECK_NOTNULL(trainer);
   trainer->Update(delta_sec);
-  game_loop_ch.ExecuteTasks();
+  DCHECK_NOTNULL(server);
+  server->Update();
 }
 static void __declspec(naked) __cdecl InjectUpdate() {
   static const uint32_t jmp_back = GetJumpBack(kHpUpdate);
@@ -93,11 +97,11 @@ static void __declspec(naked) __cdecl InjectUpdate() {
 
 static void ExitGame() {
   LOG_F(INFO, "Manually send destroy event");
+  DestroyWindowOnce();
   auto ra2WndProc = reinterpret_cast<WNDPROC>(0x007775C0);
   CHECK_NOTNULL(ra2WndProc);
   HWND hWnd = *(reinterpret_cast<HWND*>(0x00B73550));
   CallWindowProc(ra2WndProc, hWnd, WM_DESTROY, NULL, NULL);
-  DestroyWindowOnce();
 }
 static void __declspec(naked) __cdecl InjectExitGame() {
   static const uint32_t jmp_back = GetJumpBack(kHpExitGame);
@@ -111,8 +115,6 @@ static void __declspec(naked) __cdecl InjectExitGame() {
   }
 }
 }  // namespace
-
-TaskQueue& GetGameLoopChannel() { return game_loop_ch; }
 
 void HookCreateWindow() {
   DLOG_F(INFO, "[SCARLET-HOOK] {}", __func__);

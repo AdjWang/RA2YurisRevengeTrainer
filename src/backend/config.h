@@ -24,6 +24,10 @@ class Config {
 
   Config(const fs::path& cfg_path);
 
+  uint16_t port() const {
+    // TODO
+    return 35271;
+  }
   const fs::path& hotreload_dir() const { return hotreload_dir_; }
 
   // Inputs a relative path, return absolute path relative to configuration file

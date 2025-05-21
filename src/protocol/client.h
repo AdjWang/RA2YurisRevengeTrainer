@@ -12,10 +12,8 @@ namespace yrtr {
 class Client {
  public:
   static constexpr int kTimerIdUpdateState = 1;
-  static constexpr std::string_view kApiGetState = "/state";
-  static constexpr std::string_view kApiPostEvent = "/event";
 
-  Client(frontend::Gui& gui);
+  Client(frontend::Gui& gui, uint16_t port);
   ~Client();
   // Despite invoked by render loop, I'm still gonna name it "Update".
   void Update();

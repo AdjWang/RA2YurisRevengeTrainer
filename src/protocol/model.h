@@ -39,7 +39,6 @@ enum class FnLabel {
   kSellTheWorld,
   kBuildEveryWhere,
   kAutoRepair,
-  // TODO
   kSocialismTheBest,
   kMakeGarrisonedMine,
   kInvadeMode,
@@ -115,6 +114,9 @@ inline bool AreEqual(const SideMap& lhs, const SideMap& rhs) {
                     [](auto a, auto b) { return a.first == b.first; });
 }
 
+static constexpr std::string_view kApiGetState = "/state";
+static constexpr std::string_view kApiPostEvent = "/event";
+
 // Stored in backend.
 struct State {
   // Write by controller, read by view.
@@ -129,5 +131,77 @@ struct State {
   NLOHMANN_DEFINE_TYPE_INTRUSIVE(State, ckbox_states, selecting_houses,
                                  protected_houses);
 };
+
+template <class T>
+struct Event {
+  std::string type;
+  FnLabel label;
+  T val;
+  NLOHMANN_DEFINE_TYPE_INTRUSIVE(Event, type, label, val);
+};
+
+inline std::string MakeInputEvent(FnLabel label, uint32_t val) {
+  Event<uint32_t> event{
+      .type = "input",
+      .label = label,
+      .val = val,
+  };
+  return json(event).dump();
+}
+
+inline Event<uint32_t> ParseInputEvent(const json& data) {
+  auto event = data.get<Event<uint32_t>>();
+  DCHECK_EQ(event.type, "input");
+  DCHECK_NE(static_cast<int>(event.label), static_cast<int>(FnLabel::kInvalid));
+  return event;
+}
+
+inline std::string MakeButtonEvent(FnLabel label) {
+  Event<int> event{
+      .type = "button",
+      .label = label,
+      .val = -1,
+  };
+  return json(event).dump();
+}
+
+inline Event<int> ParseButtonEvent(const json& data) {
+  auto event = data.get<Event<int>>();
+  DCHECK_EQ(event.type, "button");
+  DCHECK_NE(static_cast<int>(event.label), static_cast<int>(FnLabel::kInvalid));
+  return event;
+}
+
+inline std::string MakeCheckboxEvent(FnLabel label, bool activate) {
+  Event<bool> event{
+      .type = "checkbox",
+      .label = label,
+      .val = activate,
+  };
+  return json(event).dump();
+}
+
+inline Event<bool> ParseCheckboxEvent(const json& data) {
+  auto event = data.get<Event<bool>>();
+  DCHECK_EQ(event.type, "checkbox");
+  DCHECK_NE(static_cast<int>(event.label), static_cast<int>(FnLabel::kInvalid));
+  return event;
+}
+
+inline std::string MakeProtectedListEvent(SideMap&& side_map) {
+  Event<SideMap> event{
+      .type = "protected_list",
+      .label = FnLabel::kInvalid,
+      .val = std::move(side_map),
+  };
+  return json(event).dump();
+}
+
+inline Event<SideMap> ParseProtectedListEvent(const json& data) {
+  auto event = data.get<Event<SideMap>>();
+  DCHECK_EQ(event.type, "protected_list");
+  DCHECK_EQ(static_cast<int>(event.label), static_cast<int>(FnLabel::kInvalid));
+  return event;
+}
 
 }  // namespace yrtr

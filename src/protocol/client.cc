@@ -11,8 +11,6 @@ __YRTR_BEGIN_THIRD_PARTY_HEADERS
 __YRTR_END_THIRD_PARTY_HEADERS
 #include "base/thread.h"
 #include "gsl/util"
-#include "nlohmann/json.hpp"
-using json = nlohmann::json;
 
 namespace yrtr {
 
@@ -27,9 +25,9 @@ namespace yrtr {
     });                                                               \
   });
 
-Client::Client(frontend::Gui& gui)
+Client::Client(frontend::Gui& gui, uint16_t port)
     : gui_(gui),
-      cli_("http://localhost:35271"),
+      cli_(std::format("http://localhost:{}", port)),
       thread_pool_(/*n*/ 1),
       get_state_count_(0) {
   // This tool is used in LAN, 50ms should be enough. Large timeout queues too
@@ -126,36 +124,22 @@ void Client::ParseState(const std::string& data) {
 
 void Client::SendPostInput(FnLabel label, uint32_t val) {
   DCHECK(yrtr::IsWithinNetThread());
-  json data;
-  data.emplace("type", "input");
-  data.emplace("label", static_cast<int>(label));
-  data.emplace("val", val);
-  SendPostData(kApiPostEvent, data.dump());
+  SendPostData(kApiPostEvent, MakeInputEvent(label, val));
 }
 
 void Client::SendPostButton(FnLabel label) {
   DCHECK(yrtr::IsWithinNetThread());
-  json data;
-  data.emplace("type", "button");
-  data.emplace("label", static_cast<int>(label));
-  SendPostData(kApiPostEvent, data.dump());
+  SendPostData(kApiPostEvent, MakeButtonEvent(label));
 }
 
 void Client::SendPostCheckbox(FnLabel label, bool activate) {
   DCHECK(yrtr::IsWithinNetThread());
-  json data;
-  data.emplace("type", "checkbox");
-  data.emplace("label", static_cast<int>(label));
-  data.emplace("val", activate);
-  SendPostData(kApiPostEvent, data.dump());
+  SendPostData(kApiPostEvent, MakeCheckboxEvent(label, activate));
 }
 
 void Client::SendPostProtectedList(SideMap&& side_map) {
   DCHECK(yrtr::IsWithinNetThread());
-  json data;
-  data.emplace("type", "protected_list");
-  data.emplace("val", std::move(side_map));
-  SendPostData(kApiPostEvent, data.dump());
+  SendPostData(kApiPostEvent, MakeProtectedListEvent(std::move(side_map)));
 }
 
 void Client::SendPostData(std::string_view path, std::string&& data) {

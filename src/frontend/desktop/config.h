@@ -107,6 +107,10 @@ class Config {
   Lang lang() const;
   bool enable_dpi_awareness() const { return enable_dpi_awareness_; }
 
+  uint16_t port() const {
+    // TODO
+    return 35271;
+  }
   const fs::path& font_path() const { return font_path_; }
   const fs::path& fontex_path() const { return fontex_path_; }
 

@@ -133,6 +133,7 @@ add_library(yrtr_backend STATIC
   ${YRTR_SOURCE_DIR}/backend/hook/logging.cc
   ${YRTR_SOURCE_DIR}/backend/hook/memory_api.cc
   ${YRTR_SOURCE_DIR}/backend/hook/trainer.cc
+  ${YRTR_SOURCE_DIR}/protocol/server.cc
 )
 target_include_directories(yrtr_backend
   PUBLIC $<BUILD_INTERFACE:${YRTR_DEPS_OUTPUT_DIR}/include>

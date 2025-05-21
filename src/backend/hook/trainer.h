@@ -37,6 +37,31 @@ class Trainer {
   }
 
   void Update(double delta);
+  void OnInputEvent(FnLabel label, uint32_t val);
+  void OnButtonEvent(FnLabel label);
+  void OnCheckboxEvent(FnLabel label, bool activate);
+  void OnProtectedListEvent(SideMap&& side_map);
+
+ private:
+  // Update from state before use.
+  static SideMap protected_houses_;
+  static bool activate_disable_gagap_;
+
+  mutable absl::Mutex state_mu_;
+  State state_ ABSL_GUARDED_BY(state_mu_);
+
+  std::unique_ptr<MemoryAPI> mem_api_;
+
+  bool activate_inst_building_;
+  bool activate_inst_superweapon_;
+  bool activate_inst_turn_turret_;
+  bool activate_inst_turn_body_;
+  // From VA:00450645, controls auto repair.
+  absl::flat_hash_map<UniqId /*house_id*/, int /*iq_level*/> iq_levels_;
+
+  static void ForeachSelectingObject(
+      std::function<void(yrpp::ObjectClass*)> cb);
+  static void ForeachProtectedHouse(std::function<void(yrpp::HouseClass*)> cb);
 
   void OnInputCredit(uint32_t val);
   void OnBtnFastBuild();
@@ -64,7 +89,7 @@ class Trainer {
   void OnCkboxBuildEveryWhere(bool activate);
   void OnCkboxAutoRepair(bool activate);
   // void OnCkboxEnermyRevertRepair(bool activate);
-  // void OnCkboxSocialismTheBest(bool activate);
+  void OnCkboxSocialismTheBest(bool activate);
   // void OnCkboxMakeAttackedMine(bool activate);
   // void OnCkboxMakeCapturedMine(bool activate);
   void OnCkboxMakeGarrisonedMine(bool activate);
@@ -77,27 +102,6 @@ class Trainer {
   // void OnCkboxInfantrySlip(bool activate);
   // void OnCkboxUnitLeveledUp(bool activate);
   void OnCkboxAdjustGameSpeed(bool activate);
-
- private:
-  // Update from state before use.
-  static SideMap protected_houses_;
-  static bool activate_disable_gagap_;
-
-  mutable absl::Mutex state_mu_;
-  State state_ ABSL_GUARDED_BY(state_mu_);
-
-  std::unique_ptr<MemoryAPI> mem_api_;
-
-  bool activate_inst_building_;
-  bool activate_inst_superweapon_;
-  bool activate_inst_turn_turret_;
-  bool activate_inst_turn_body_;
-  // From VA:00450645, controls auto repair.
-  absl::flat_hash_map<UniqId /*house_id*/, int /*iq_level*/> iq_levels_;
-
-  static void ForeachSelectingObject(
-      std::function<void(yrpp::ObjectClass*)> cb);
-  static void ForeachProtectedHouse(std::function<void(yrpp::HouseClass*)> cb);
 
   void UpdateCheckboxState(FnLabel label, bool activate);
   // Return the activate state before set enable.

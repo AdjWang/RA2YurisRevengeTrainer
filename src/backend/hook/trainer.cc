@@ -534,6 +534,66 @@ void Trainer::Update(double /*delta*/) {
   }
 }
 
+void Trainer::OnInputEvent(FnLabel label, uint32_t val) {
+  DCHECK(yrtr::IsWithinGameLoopThread());
+#ifdef YRTR_DEBUG
+  // There's only one input event for now.
+  DCHECK_EQ(static_cast<int>(label), static_cast<int>(FnLabel::kApply));
+#else
+  UNREFERENCED_PARAMETER(label);
+#endif
+  OnInputCredit(val);
+}
+
+void Trainer::OnButtonEvent(FnLabel label) {
+  DCHECK(yrtr::IsWithinGameLoopThread());
+  switch (label) {
+    case FnLabel::kFastBuild:   OnBtnFastBuild();   break;
+    case FnLabel::kDeleteUnit:  OnBtnDeleteUnit();  break;
+    case FnLabel::kClearShroud: OnBtnClearShroud(); break;
+    case FnLabel::kGiveMeABomb: OnBtnGiveMeABomb(); break;
+    case FnLabel::kUnitLevelUp: OnBtnUnitLevelUp(); break;
+    case FnLabel::kUnitSpeedUp: OnBtnUnitSpeedUp(); break;
+    case FnLabel::kIAMWinner:   OnBtnIAMWinner();   break;
+    case FnLabel::kThisIsMine:  OnBtnThisIsMine();  break;
+    default:
+      LOG_F(ERROR, "Unknown button event={}", StrFnLabel(label));
+  }
+}
+
+void Trainer::OnCheckboxEvent(FnLabel label, bool activate) {
+  DCHECK(yrtr::IsWithinGameLoopThread());
+  switch (label) {
+    case FnLabel::kGod:                 OnCkboxGod(activate);                 break;
+    case FnLabel::kInstBuild:           OnCkboxInstBuild(activate);           break;
+    case FnLabel::kUnlimitSuperWeapon:  OnCkboxUnlimitSuperWeapon(activate);  break;
+    case FnLabel::kInstFire:            OnCkboxInstFire(activate);            break;
+    case FnLabel::kInstTurn:            OnCkboxInstTurn(activate);            break;
+    case FnLabel::kRangeToYourBase:     OnCkboxRangeToYourBase(activate);     break;
+    case FnLabel::kFireToYourBase:      OnCkboxFireToYourBase(activate);      break;
+    case FnLabel::kFreezeGapGenerator:  OnCkboxFreezeGapGenerator(activate);  break;
+    case FnLabel::kSellTheWorld:        OnCkboxSellTheWorld(activate);        break;
+    case FnLabel::kBuildEveryWhere:     OnCkboxBuildEveryWhere(activate);     break;
+    case FnLabel::kAutoRepair:          OnCkboxAutoRepair(activate);          break;
+    case FnLabel::kSocialismTheBest:    OnCkboxSocialismTheBest(activate);    break;
+    case FnLabel::kMakeGarrisonedMine:  OnCkboxMakeGarrisonedMine(activate);  break;
+    case FnLabel::kInvadeMode:          OnCkboxInvadeMode(activate);          break;
+    case FnLabel::kUnlimitTech:         OnCkboxUnlimitTech(activate);         break;
+    case FnLabel::kUnlimitFirePower:    OnCkboxUnlimitFirePower(activate);    break;
+    case FnLabel::kInstChrono:          OnCkboxInstChrono(activate);          break;
+    case FnLabel::kSpySpy:              OnCkboxSpySpy(activate);              break;
+    case FnLabel::kAdjustGameSpeed:     OnCkboxAdjustGameSpeed(activate);     break;
+    default:
+      LOG_F(ERROR, "Unknown checkbox event={}", StrFnLabel(label));
+  }
+}
+
+void Trainer::OnProtectedListEvent(SideMap&& side_map) {
+  DCHECK(yrtr::IsWithinGameLoopThread());
+  absl::MutexLock lk(&state_mu_);
+  state_.protected_houses = std::move(side_map);
+}
+
 void Trainer::OnInputCredit(uint32_t val) {
   DLOG_F(INFO, "Trigger {} val={}", __FUNCTION__, val);
   DCHECK(yrtr::IsWithinGameLoopThread());
@@ -829,6 +889,17 @@ void Trainer::OnCkboxAutoRepair(bool activate) {
     CHECK_REPORT(mem_api_->RestoreHook(kHpAutoRepairNeutral));
   }
   UpdateCheckboxState(FnLabel::kAutoRepair, activate);
+}
+
+void Trainer::OnCkboxSocialismTheBest(bool activate) {
+  DLOG_F(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
+  DCHECK(yrtr::IsWithinGameLoopThread());
+  CHECK_MEMAPI_OR_REPORT();
+  // TODO
+  if (activate) {
+  } else {
+  }
+  UpdateCheckboxState(FnLabel::kSocialismTheBest, activate);
 }
 
 void Trainer::OnCkboxMakeGarrisonedMine(bool activate) {
