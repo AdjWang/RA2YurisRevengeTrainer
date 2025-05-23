@@ -25,8 +25,23 @@ namespace hook {
 SideMap Trainer::protected_houses_;
 bool Trainer::activate_disable_gagap_ = false;
 
-namespace {
-static void InitStates(State& state) {
+void BeepEnable() {
+  std::thread t([]() {
+    Beep(600, 100);
+    Beep(1000, 100);
+  });
+  t.detach();
+}
+
+void BeepDisable() {
+  std::thread t([]() {
+    Beep(1000, 100);
+    Beep(600, 100);
+  });
+  t.detach();
+}
+
+void InitStates(State& state) {
   state.ckbox_states.emplace(FnLabel::kGod,                CheckboxState{.enable=true, .activate=false});
   state.ckbox_states.emplace(FnLabel::kInstBuild,          CheckboxState{.enable=true, .activate=false});
   state.ckbox_states.emplace(FnLabel::kUnlimitSuperWeapon, CheckboxState{.enable=true, .activate=false});
@@ -48,6 +63,7 @@ static void InitStates(State& state) {
   state.ckbox_states.emplace(FnLabel::kAdjustGameSpeed,    CheckboxState{.enable=true, .activate=false});
 }
 
+namespace {
 // TODO
 // static void ResetStates(State& state) {
 //   for (CheckboxState& ckbox_state : std::views::values(state.ckbox_states)) {
@@ -483,7 +499,7 @@ Trainer::Trainer()
 }
 
 bool Trainer::ShouldProtect(yrpp::AbstractClass* obj) {
-  DCHECK(yrtr::IsWithinGameLoopThread());
+  DCHECK(IsWithinGameLoopThread());
   DCHECK_NOTNULL(obj);
   bool result = false;
   ForeachProtectedHouse([&](yrpp::HouseClass* house) {
@@ -493,7 +509,7 @@ bool Trainer::ShouldProtect(yrpp::AbstractClass* obj) {
 }
 
 bool Trainer::ShouldProtect(yrpp::HouseClass* house) {
-  DCHECK(yrtr::IsWithinGameLoopThread());
+  DCHECK(IsWithinGameLoopThread());
   DCHECK_NOTNULL(house);
   bool result = false;
   ForeachProtectedHouse([&](yrpp::HouseClass* protected_house) {
@@ -503,7 +519,7 @@ bool Trainer::ShouldProtect(yrpp::HouseClass* house) {
 }
 
 void Trainer::Update(double /*delta*/) {
-  DCHECK(yrtr::IsWithinGameLoopThread());
+  DCHECK(IsWithinGameLoopThread());
   // Perform activated operations.
   if (activate_inst_building_) {
     FinishBuilding();
@@ -535,7 +551,7 @@ void Trainer::Update(double /*delta*/) {
 }
 
 void Trainer::OnInputEvent(FnLabel label, uint32_t val) {
-  DCHECK(yrtr::IsWithinGameLoopThread());
+  DCHECK(IsWithinGameLoopThread());
 #ifdef YRTR_DEBUG
   // There's only one input event for now.
   DCHECK_EQ(static_cast<int>(label), static_cast<int>(FnLabel::kApply));
@@ -546,7 +562,7 @@ void Trainer::OnInputEvent(FnLabel label, uint32_t val) {
 }
 
 void Trainer::OnButtonEvent(FnLabel label) {
-  DCHECK(yrtr::IsWithinGameLoopThread());
+  DCHECK(IsWithinGameLoopThread());
   switch (label) {
     case FnLabel::kFastBuild:   OnBtnFastBuild();   break;
     case FnLabel::kDeleteUnit:  OnBtnDeleteUnit();  break;
@@ -562,7 +578,7 @@ void Trainer::OnButtonEvent(FnLabel label) {
 }
 
 void Trainer::OnCheckboxEvent(FnLabel label, bool activate) {
-  DCHECK(yrtr::IsWithinGameLoopThread());
+  DCHECK(IsWithinGameLoopThread());
   switch (label) {
     case FnLabel::kGod:                 OnCkboxGod(activate);                 break;
     case FnLabel::kInstBuild:           OnCkboxInstBuild(activate);           break;
@@ -589,21 +605,22 @@ void Trainer::OnCheckboxEvent(FnLabel label, bool activate) {
 }
 
 void Trainer::OnProtectedListEvent(SideMap&& side_map) {
-  DCHECK(yrtr::IsWithinGameLoopThread());
+  DCHECK(IsWithinGameLoopThread());
   absl::MutexLock lk(&state_mu_);
   state_.protected_houses = std::move(side_map);
 }
 
 void Trainer::OnInputCredit(uint32_t val) {
   DLOG_F(INFO, "Trigger {} val={}", __FUNCTION__, val);
-  DCHECK(yrtr::IsWithinGameLoopThread());
+  DCHECK(IsWithinGameLoopThread());
   CHECK_REPORT(IsGaming());
   CHECK_REPORT(WriteCredit(val));
+  BeepEnable();
 }
 
 void Trainer::OnBtnFastBuild() {
   DLOG_F(INFO, "Trigger {}", __FUNCTION__);
-  DCHECK(yrtr::IsWithinGameLoopThread());
+  DCHECK(IsWithinGameLoopThread());
   CHECK_MEMAPI_OR_REPORT();
   CHECK_REPORT(IsGaming());
   ForeachProtectedHouse([](yrpp::HouseClass* house) {
@@ -613,29 +630,32 @@ void Trainer::OnBtnFastBuild() {
     house->NumConYards = 15;
     house->NumShipyards = 15;
   });
+  BeepEnable();
 }
 
 void Trainer::OnBtnDeleteUnit() {
   DLOG_F(INFO, "Trigger {}", __FUNCTION__);
-  DCHECK(yrtr::IsWithinGameLoopThread());
+  DCHECK(IsWithinGameLoopThread());
   CHECK_MEMAPI_OR_REPORT();
   CHECK_REPORT(IsGaming());
   ForeachSelectingObject([](yrpp::ObjectClass* obj) { obj->UnInit(); });
+  BeepEnable();
 }
 
 void Trainer::OnBtnClearShroud() {
   DLOG_F(INFO, "Trigger {}", __FUNCTION__);
-  DCHECK(yrtr::IsWithinGameLoopThread());
+  DCHECK(IsWithinGameLoopThread());
   CHECK_MEMAPI_OR_REPORT();
   CHECK_REPORT(IsGaming());
   if (yrpp::HouseClass::CurrentPlayer != nullptr) {
     yrpp::MapClass::Instance->Reveal(yrpp::HouseClass::CurrentPlayer);
   }
+  BeepEnable();
 }
 
 void Trainer::OnBtnGiveMeABomb() {
   DLOG_F(INFO, "Trigger {}", __FUNCTION__);
-  DCHECK(yrtr::IsWithinGameLoopThread());
+  DCHECK(IsWithinGameLoopThread());
   CHECK_MEMAPI_OR_REPORT();
   CHECK_REPORT(IsGaming());
   yrpp::HouseClass* house = yrpp::HouseClass::CurrentPlayer;
@@ -667,11 +687,12 @@ void Trainer::OnBtnGiveMeABomb() {
   DCHECK_NOTNULL(nuke_inst);
   nuke_inst->Grant(/*oneTime*/ true, /*announce*/ false, /*onHold*/ false);
   yrpp::SidebarClass::Instance->AddCameo(yrpp::AbstractType::Special, index);
+  BeepEnable();
 }
 
 void Trainer::OnBtnUnitLevelUp() {
   DLOG_F(INFO, "Trigger {}", __FUNCTION__);
-  DCHECK(yrtr::IsWithinGameLoopThread());
+  DCHECK(IsWithinGameLoopThread());
   CHECK_MEMAPI_OR_REPORT();
   CHECK_REPORT(IsGaming());
   ForeachSelectingObject([](yrpp::ObjectClass* unit) {
@@ -680,11 +701,12 @@ void Trainer::OnBtnUnitLevelUp() {
       techno->Veterancy.SetElite(true);
     }
   });
+  BeepEnable();
 }
 
 void Trainer::OnBtnUnitSpeedUp() {
   DLOG_F(INFO, "Trigger {}", __FUNCTION__);
-  DCHECK(yrtr::IsWithinGameLoopThread());
+  DCHECK(IsWithinGameLoopThread());
   CHECK_MEMAPI_OR_REPORT();
   CHECK_REPORT(IsGaming());
   ForeachSelectingObject([](yrpp::ObjectClass* obj) {
@@ -699,20 +721,22 @@ void Trainer::OnBtnUnitSpeedUp() {
       infantry->SpeedMultiplier = 2.0;
     }
   });
+  BeepEnable();
   // FUTURE: how to speed up aircrafts?
 }
 
 void Trainer::OnBtnIAMWinner() {
   DLOG_F(INFO, "Trigger {}", __FUNCTION__);
-  DCHECK(yrtr::IsWithinGameLoopThread());
+  DCHECK(IsWithinGameLoopThread());
   CHECK_MEMAPI_OR_REPORT();
   CHECK_REPORT(IsGaming());
   CHECK_REPORT(mem_api_->WriteMemory(0x00A83D49, static_cast<uint8_t>(1)));
+  BeepEnable();
 }
 
 void Trainer::OnBtnThisIsMine() {
   DLOG_F(INFO, "Trigger {}", __FUNCTION__);
-  DCHECK(yrtr::IsWithinGameLoopThread());
+  DCHECK(IsWithinGameLoopThread());
   CHECK_MEMAPI_OR_REPORT();
   CHECK_REPORT(IsGaming());
   ForeachSelectingObject([](yrpp::ObjectClass* obj) {
@@ -722,11 +746,12 @@ void Trainer::OnBtnThisIsMine() {
       techno->SetOwningHouse(yrpp::HouseClass::CurrentPlayer);
     }
   });
+  BeepEnable();
 }
 
 void Trainer::OnCkboxGod(bool activate) {
   DLOG_F(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
-  DCHECK(yrtr::IsWithinGameLoopThread());
+  DCHECK(IsWithinGameLoopThread());
   CHECK_MEMAPI_OR_REPORT();
   if (activate) {
     // Suppress damage.
@@ -745,7 +770,7 @@ void Trainer::OnCkboxGod(bool activate) {
 
 void Trainer::OnCkboxInstBuild(bool activate) {
   DLOG_F(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
-  DCHECK(yrtr::IsWithinGameLoopThread());
+  DCHECK(IsWithinGameLoopThread());
   CHECK_MEMAPI_OR_REPORT();
   activate_inst_building_ = activate;
   UpdateCheckboxState(FnLabel::kInstBuild, activate);
@@ -753,7 +778,7 @@ void Trainer::OnCkboxInstBuild(bool activate) {
 
 void Trainer::OnCkboxUnlimitSuperWeapon(bool activate) {
   DLOG_F(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
-  DCHECK(yrtr::IsWithinGameLoopThread());
+  DCHECK(IsWithinGameLoopThread());
   CHECK_MEMAPI_OR_REPORT();
   activate_inst_superweapon_ = activate;
   UpdateCheckboxState(FnLabel::kUnlimitSuperWeapon, activate);
@@ -761,7 +786,7 @@ void Trainer::OnCkboxUnlimitSuperWeapon(bool activate) {
 
 void Trainer::OnCkboxInstFire(bool activate) {
   DLOG_F(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
-  DCHECK(yrtr::IsWithinGameLoopThread());
+  DCHECK(IsWithinGameLoopThread());
   CHECK_MEMAPI_OR_REPORT();
   activate_inst_turn_turret_ = activate;
   if (activate) {
@@ -775,7 +800,7 @@ void Trainer::OnCkboxInstFire(bool activate) {
 
 void Trainer::OnCkboxInstTurn(bool activate) {
   DLOG_F(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
-  DCHECK(yrtr::IsWithinGameLoopThread());
+  DCHECK(IsWithinGameLoopThread());
   CHECK_MEMAPI_OR_REPORT();
   activate_inst_turn_body_ = activate;
   UpdateCheckboxState(FnLabel::kInstTurn, activate);
@@ -783,7 +808,7 @@ void Trainer::OnCkboxInstTurn(bool activate) {
 
 void Trainer::OnCkboxRangeToYourBase(bool activate) {
   DLOG_F(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
-  DCHECK(yrtr::IsWithinGameLoopThread());
+  DCHECK(IsWithinGameLoopThread());
   CHECK_MEMAPI_OR_REPORT();
   if (activate) {
     // Skip reload timer.
@@ -802,7 +827,7 @@ void Trainer::OnCkboxRangeToYourBase(bool activate) {
 
 void Trainer::OnCkboxFireToYourBase(bool activate) {
   DLOG_F(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
-  DCHECK(yrtr::IsWithinGameLoopThread());
+  DCHECK(IsWithinGameLoopThread());
   CHECK_MEMAPI_OR_REPORT();
   if (activate) {
     CHECK_REPORT(mem_api_->HookJump(kHpFireToYourBase, InjectFireToYourBase));
@@ -814,7 +839,7 @@ void Trainer::OnCkboxFireToYourBase(bool activate) {
 
 void Trainer::OnCkboxFreezeGapGenerator(bool activate) {
   DLOG_F(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
-  DCHECK(yrtr::IsWithinGameLoopThread());
+  DCHECK(IsWithinGameLoopThread());
   CHECK_MEMAPI_OR_REPORT();
   if (activate) {
     CHECK_REPORT(
@@ -827,7 +852,7 @@ void Trainer::OnCkboxFreezeGapGenerator(bool activate) {
 
 void Trainer::OnCkboxSellTheWorld(bool activate) {
   DLOG_F(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
-  DCHECK(yrtr::IsWithinGameLoopThread());
+  DCHECK(IsWithinGameLoopThread());
   CHECK_MEMAPI_OR_REPORT();
   if (activate) {
     // Enable sell cursor.
@@ -848,7 +873,7 @@ void Trainer::OnCkboxSellTheWorld(bool activate) {
 
 void Trainer::OnCkboxBuildEveryWhere(bool activate) {
   DLOG_F(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
-  DCHECK(yrtr::IsWithinGameLoopThread());
+  DCHECK(IsWithinGameLoopThread());
   CHECK_MEMAPI_OR_REPORT();
   if (activate) {
     CHECK_REPORT(mem_api_->HookJump(kHpBuildEveryWhereGround,
@@ -864,7 +889,7 @@ void Trainer::OnCkboxBuildEveryWhere(bool activate) {
 
 void Trainer::OnCkboxAutoRepair(bool activate) {
   DLOG_F(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
-  DCHECK(yrtr::IsWithinGameLoopThread());
+  DCHECK(IsWithinGameLoopThread());
   CHECK_MEMAPI_OR_REPORT();
   if (activate) {
     ForeachProtectedHouse([this](yrpp::HouseClass* house) {
@@ -893,7 +918,7 @@ void Trainer::OnCkboxAutoRepair(bool activate) {
 
 void Trainer::OnCkboxSocialismTheBest(bool activate) {
   DLOG_F(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
-  DCHECK(yrtr::IsWithinGameLoopThread());
+  DCHECK(IsWithinGameLoopThread());
   CHECK_MEMAPI_OR_REPORT();
   // TODO
   if (activate) {
@@ -904,7 +929,7 @@ void Trainer::OnCkboxSocialismTheBest(bool activate) {
 
 void Trainer::OnCkboxMakeGarrisonedMine(bool activate) {
   DLOG_F(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
-  DCHECK(yrtr::IsWithinGameLoopThread());
+  DCHECK(IsWithinGameLoopThread());
   CHECK_MEMAPI_OR_REPORT();
   if (activate) {
     CHECK_REPORT(mem_api_->HookJump(kHpGarrisonedMine, InjectGarrisonedMine));
@@ -916,7 +941,7 @@ void Trainer::OnCkboxMakeGarrisonedMine(bool activate) {
 
 void Trainer::OnCkboxInvadeMode(bool activate) {
   DLOG_F(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
-  DCHECK(yrtr::IsWithinGameLoopThread());
+  DCHECK(IsWithinGameLoopThread());
   CHECK_MEMAPI_OR_REPORT();
   if (activate) {
     CHECK_REPORT(
@@ -929,7 +954,7 @@ void Trainer::OnCkboxInvadeMode(bool activate) {
 
 void Trainer::OnCkboxUnlimitTech(bool activate) {
   DLOG_F(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
-  DCHECK(yrtr::IsWithinGameLoopThread());
+  DCHECK(IsWithinGameLoopThread());
   CHECK_MEMAPI_OR_REPORT();
   if (activate) {
     CHECK_REPORT(mem_api_->HookJump(kHpUnlimitTech, InjectUnlimitTech));
@@ -941,7 +966,7 @@ void Trainer::OnCkboxUnlimitTech(bool activate) {
 
 void Trainer::OnCkboxUnlimitFirePower(bool activate) {
   DLOG_F(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
-  DCHECK(yrtr::IsWithinGameLoopThread());
+  DCHECK(IsWithinGameLoopThread());
   CHECK_MEMAPI_OR_REPORT();
   if (activate) {
     CHECK_REPORT(mem_api_->HookJump(kHpFastReload, InjectFastReload));
@@ -955,7 +980,7 @@ void Trainer::OnCkboxUnlimitFirePower(bool activate) {
 
 void Trainer::OnCkboxInstChrono(bool activate) {
   DLOG_F(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
-  DCHECK(yrtr::IsWithinGameLoopThread());
+  DCHECK(IsWithinGameLoopThread());
   CHECK_MEMAPI_OR_REPORT();
   if (activate) {
     CHECK_REPORT(mem_api_->HookJump(kHpInstChronoMove, InjectInstChronoMove));
@@ -970,7 +995,7 @@ void Trainer::OnCkboxInstChrono(bool activate) {
 
 void Trainer::OnCkboxSpySpy(bool activate) {
   DLOG_F(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
-  DCHECK(yrtr::IsWithinGameLoopThread());
+  DCHECK(IsWithinGameLoopThread());
   CHECK_MEMAPI_OR_REPORT();
   if (activate) {
     CHECK_REPORT(mem_api_->HookJump(kHpSpySpy, InjectSpySpy));
@@ -982,7 +1007,7 @@ void Trainer::OnCkboxSpySpy(bool activate) {
 
 void Trainer::OnCkboxAdjustGameSpeed(bool activate) {
   DLOG_F(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
-  DCHECK(yrtr::IsWithinGameLoopThread());
+  DCHECK(IsWithinGameLoopThread());
   CHECK_MEMAPI_OR_REPORT();
   if (activate) {
     CHECK_REPORT(mem_api_->WriteMemory(0x00A8EDDC, static_cast<uint8_t>(1)));
@@ -1029,24 +1054,6 @@ bool Trainer::SetEnableCheckbox(FnLabel label, bool enable) {
   state_.ckbox_states[label].enable = enable;
   return state_.ckbox_states[label].activate;
 }
-
-namespace {
-static void BeepEnable() {
-  std::thread t([]() {
-    Beep(600, 100);
-    Beep(1000, 100);
-  });
-  t.detach();
-}
-
-static void BeepDisable() {
-  std::thread t([]() {
-    Beep(1000, 100);
-    Beep(600, 100);
-  });
-  t.detach();
-}
-}  // namespace
 
 void Trainer::UpdateCheckboxState(FnLabel label, bool activate) {
   if (activate) {

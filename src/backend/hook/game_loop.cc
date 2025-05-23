@@ -47,7 +47,7 @@ static void PreCreateWindow(HINSTANCE hInstance) {
   // Search configuration file at the same directory with the dll.
   CHECK(Config::Load(fs::canonical(fs::path(dll_path)).parent_path()));
   trainer = std::make_unique<Trainer>();
-  server = std::make_unique<Server>(*trainer.get(), Config::instance()->port());
+  server = std::make_unique<Server>(trainer.get(), Config::instance()->port());
 }
 
 static void __declspec(naked) __cdecl InjectCreateWindow() {
@@ -117,7 +117,7 @@ static void __declspec(naked) __cdecl InjectExitGame() {
 }  // namespace
 
 void HookCreateWindow() {
-  DLOG_F(INFO, "[SCARLET-HOOK] {}", __func__);
+  DLOG_F(INFO, "[YRTR-HOOK] {}", __func__);
   MemoryAPI::instance()->HookJump(kHpCreateWindow, InjectCreateWindow);
 }
 
@@ -127,12 +127,12 @@ void DestroyWindowOnce() {
 }
 
 void HookUpdate() {
-  DLOG_F(INFO, "[SCARLET-HOOK] {}", __func__);
+  DLOG_F(INFO, "[YRTR-HOOK] {}", __func__);
   MemoryAPI::instance()->HookJump(kHpUpdate, InjectUpdate);
 }
 
 void HookExitGame() {
-  DLOG_F(INFO, "[SCARLET-HOOK] {}", __func__);
+  DLOG_F(INFO, "[YRTR-HOOK] {}", __func__);
   MemoryAPI::instance()->HookJump(kHpExitGame, InjectExitGame);
 }
 

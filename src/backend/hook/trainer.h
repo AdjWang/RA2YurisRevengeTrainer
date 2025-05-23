@@ -1,13 +1,13 @@
 #pragma once
 #include <cstdint>
 
+#include "backend/hook/memory_api.h"
 #include "base/macro.h"
 __YRTR_BEGIN_THIRD_PARTY_HEADERS
 #include "absl/container/inlined_vector.h"
 #include "absl/container/flat_hash_map.h"
 #include "absl/synchronization/mutex.h"
 __YRTR_END_THIRD_PARTY_HEADERS
-#include "backend/hook/memory_api.h"
 #include "protocol/model.h"
 
 namespace yrpp {
@@ -21,7 +21,24 @@ namespace backend {
 namespace hook {
 // MVC -- controller.
 
-class Trainer {
+// Export for testing.
+void BeepEnable();
+void BeepDisable();
+void InitStates(State& state);
+
+// For testing.
+class ITrainer {
+ public:
+  virtual ~ITrainer() {}
+  virtual State state() const = 0;
+  virtual void Update(double delta) = 0;
+  virtual void OnInputEvent(FnLabel label, uint32_t val) = 0;
+  virtual void OnButtonEvent(FnLabel label) = 0;
+  virtual void OnCheckboxEvent(FnLabel label, bool activate) = 0;
+  virtual void OnProtectedListEvent(SideMap&& side_map) = 0;
+};
+
+class Trainer : public ITrainer {
  public:
   static bool is_active_disable_gagap() { return activate_disable_gagap_; }
   static bool ShouldProtect(yrpp::AbstractClass* obj);
@@ -31,16 +48,16 @@ class Trainer {
   Trainer(Trainer&&) = delete;
   Trainer& operator=(Trainer&&) = delete;
 
-  State state() const {
+  State state() const final {
     absl::MutexLock lk(&state_mu_);
     return state_;
   }
 
-  void Update(double delta);
-  void OnInputEvent(FnLabel label, uint32_t val);
-  void OnButtonEvent(FnLabel label);
-  void OnCheckboxEvent(FnLabel label, bool activate);
-  void OnProtectedListEvent(SideMap&& side_map);
+  void Update(double delta) final;
+  void OnInputEvent(FnLabel label, uint32_t val) final;
+  void OnButtonEvent(FnLabel label) final;
+  void OnCheckboxEvent(FnLabel label, bool activate) final;
+  void OnProtectedListEvent(SideMap&& side_map) final;
 
  private:
   // Update from state before use.

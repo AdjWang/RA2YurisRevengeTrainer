@@ -31,7 +31,7 @@ static void __cdecl BuiltinLogging(const char* fmt, ...) {
 }  // namespace
 
 void HookLogging() {
-  DLOG_F(INFO, "[SCARLET-HOOK] {}", __func__);
+  DLOG_F(INFO, "[YRTR-HOOK] {}", __func__);
   MemoryAPI::instance()->HookJump(kHpBuiltinLogging, BuiltinLogging);
 }
 

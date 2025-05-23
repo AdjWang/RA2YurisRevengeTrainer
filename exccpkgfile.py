@@ -19,7 +19,7 @@ class Config(exccpkg.Config):
         self.project_dir = project_dir
         self.deps_dir = self.project_dir / "deps"
         self.download_dir = self.deps_dir / "download"
-        self.cmake_build_type = "Debug"
+        self.cmake_build_type = "Release"
         self.install_dir = self.deps_dir / "out" / self.cmake_build_type
         self.generator = "Ninja"
 
@@ -134,16 +134,6 @@ class Glfw(exccpkg.Package):
         return CMakeCommon.build(cfg, src_dir, """-DGLFW_BUILD_EXAMPLES=OFF
                                                   -DGLFW_BUILD_TESTS=OFF
                                                   -DGLFW_BUILD_DOCS=OFF""")
-
-
-class GoogleTest(exccpkg.Package):
-    def __init__(self) -> None:
-        super().__init__(self.download, CMakeCommon.build, CMakeCommon.install)
-
-    @staticmethod
-    def download(cfg: Config) -> Path:
-        url = "https://github.com/google/googletest/archive/refs/tags/v1.15.2.tar.gz"
-        return CMakeCommon.download(cfg, url, "googletest-1.15.2", ".tar.gz")
 
 
 class Gsl(exccpkg.Package):
@@ -311,7 +301,6 @@ def resolve(cfg: Config) -> None:
         CppHttplib(),
         Freetype(),
         Glfw(),
-        GoogleTest(),
         Gsl(),
         Imgui(),
         NlohmannJson(),

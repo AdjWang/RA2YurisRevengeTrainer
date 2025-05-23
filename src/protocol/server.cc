@@ -7,18 +7,27 @@ using json = nlohmann::json;
 
 namespace yrtr {
 
-Server::Server(backend::hook::Trainer& trainer, uint16_t port)
-    : trainer_(trainer) {
+Server::Server(backend::hook::ITrainer* trainer, uint16_t port)
+    : trainer_(trainer),
+      thread_pool_(/*n*/ 1) {
   game_loop_ch_.SetThreadId(GetGameLoopThreadId());
-  svr_.listen("localhost", port);
+  thread_pool_.enqueue([&]() { SetupNetThreadOnce(); });
   svr_.Get(std::string(kApiGetState),
            std::bind_front(&Server::OnGetState, this));
   svr_.Post(std::string(kApiPostEvent),
             std::bind_front(&Server::OnPostEvent, this));
+  svr_.new_task_queue = [this]() { return &thread_pool_; };
+  listener_ = std::thread([this, port]() {
+    LOG_F(INFO, "Server listen on port={}", port);
+    svr_.listen("localhost", port);
+  });
 }
 
 void Server::Stop() {
+  // Seems thread-safe.
   svr_.stop();
+  thread_pool_.shutdown();
+  listener_.join();
 }
 
 void Server::Update() {
@@ -29,7 +38,7 @@ void Server::Update() {
 void Server::OnGetState(const httplib::Request& /*req*/,
                         httplib::Response& res) {
   DCHECK(yrtr::IsWithinNetThread());
-  State state = trainer_.state();
+  State state = trainer_->state();
   std::string data = json(state).dump();
   res.set_content(data, "application/json");
 }
@@ -59,21 +68,21 @@ void Server::OnPostEvent(const httplib::Request& req, httplib::Response& res) {
 void Server::OnPostInputEvent(Event<uint32_t>&& event) {
   DCHECK(yrtr::IsWithinNetThread());
   game_loop_ch_.ExecuteOrScheduleTask([this, event = std::move(event)]() {
-    trainer_.OnInputEvent(event.label, event.val);
+    trainer_->OnInputEvent(event.label, event.val);
   });
 }
 
 void Server::OnPostButtonEvent(Event<int>&& event) {
   DCHECK(yrtr::IsWithinNetThread());
   game_loop_ch_.ExecuteOrScheduleTask([this, event = std::move(event)]() {
-    trainer_.OnButtonEvent(event.label);
+    trainer_->OnButtonEvent(event.label);
   });
 }
 
 void Server::OnPostCheckboxEvent(Event<bool>&& event) {
   DCHECK(yrtr::IsWithinNetThread());
   game_loop_ch_.ExecuteOrScheduleTask([this, event = std::move(event)]() {
-    trainer_.OnCheckboxEvent(event.label, event.val);
+    trainer_->OnCheckboxEvent(event.label, event.val);
   });
 }
 
@@ -81,7 +90,7 @@ void Server::OnPostProtectedListEvent(Event<SideMap>&& event) {
   DCHECK(yrtr::IsWithinNetThread());
   game_loop_ch_.ExecuteOrScheduleTask(
       [this, event = std::move(event)]() mutable {
-        trainer_.OnProtectedListEvent(std::move(event.val));
+        trainer_->OnProtectedListEvent(std::move(event.val));
       });
 }
 

@@ -1,6 +1,5 @@
 #include "base/windows_shit.h"
 #define EAT_SHIT_FIRST  // prevent linter move windows shit down
-#include "MinHook.h"
 #include "Syringe/Syringe.h"
 #include "base/logging.h"
 #include "backend/hook/game_loop.h"

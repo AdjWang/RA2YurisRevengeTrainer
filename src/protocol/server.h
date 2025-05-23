@@ -1,4 +1,5 @@
 #pragma once
+#include <thread>
 
 #include "backend/hook/trainer.h"
 #include "base/macro.h"
@@ -11,13 +12,15 @@ namespace yrtr {
 
 class Server {
  public:
-  Server(backend::hook::Trainer& trainer, uint16_t port);
+  Server(backend::hook::ITrainer* trainer, uint16_t port);
   void Stop();
   void Update();
 
  private:
-  backend::hook::Trainer& trainer_;
+  backend::hook::ITrainer* trainer_;
   httplib::Server svr_;
+  httplib::ThreadPool thread_pool_;
+  std::thread listener_;
   yrtr::TaskQueue game_loop_ch_;
 
   void OnGetState(const httplib::Request& req, httplib::Response& res);

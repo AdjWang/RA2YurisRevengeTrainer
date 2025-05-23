@@ -20,7 +20,8 @@ else()
   set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 endif()
 
-add_compile_options(/Zc:__cplusplus /MP /utf-8 /EHsc $<$<CONFIG:Release>:/Gy>)
+# Abseil log reports: warning C4127: conditional expression is constant
+add_compile_options(/Zc:__cplusplus /MP /utf-8 /EHsc $<$<CONFIG:Release>:/Gy> /wd4127)
 add_compile_definitions(
   NOMINMAX  # Disable min/max macros in minwindef.h. They are sucks!
   _SILENCE_ALL_CXX23_DEPRECATION_WARNINGS
@@ -89,7 +90,6 @@ target_link_libraries(yrtr_base
   PUBLIC absl::inlined_vector
   PUBLIC absl::log
   PUBLIC absl::synchronization
-  PRIVATE tomlplusplus::tomlplusplus
 )
 
 add_library(yrtr_frontend STATIC
@@ -141,10 +141,10 @@ target_include_directories(yrtr_backend
   PUBLIC $<BUILD_INTERFACE:${YRTR_SOURCE_DIR}>
   PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
-target_compile_options(yrtr_backend PRIVATE /W4 $<$<CONFIG:Debug>:/WX>)
+# warning C4740: flow in or out of inline asm code suppresses global optimization
+target_compile_options(yrtr_backend PRIVATE /W4 $<$<CONFIG:Debug>:/WX> /wd4740)
 target_link_libraries(yrtr_backend
   PRIVATE yrtr_base
-  PRIVATE comctl32
   PRIVATE tomlplusplus::tomlplusplus
 )
 
@@ -153,28 +153,11 @@ target_compile_options(ra2_trainer_backend PRIVATE /W4 $<$<CONFIG:Debug>:/WX>)
 target_link_libraries(ra2_trainer_backend PRIVATE yrtr_backend)
 
 if (YRTR_BUILD_TEST)
-  find_package(GTest REQUIRED)
-
-  # add_executable(test_gui_window WIN32
-  #   ${YRTR_SOURCE_DIR}/gui/test_window.cc
-  #   ${YRTR_SOURCE_DIR}/memory_api.cc
-  # )
-  # target_link_libraries(test_gui_window PRIVATE yrtr_base libimgui)
-
-  # add_executable(test_toolhub_unit ${YRTR_SOURCE_DIR}/test_toolhub_unit.cc)
-  # target_compile_options(test_toolhub_unit PRIVATE /W4 $<$<CONFIG:Debug>:/WX>)
-  # target_link_libraries(test_toolhub_unit
-  #   PRIVATE GTest::gmock_main
-  #   PRIVATE yrtr_base
-  # )
-  
-  # add_executable(test_toolhub_gui WIN32 ${YRTR_SOURCE_DIR}/test_toolhub_gui.cc)
-  # target_compile_options(test_toolhub_gui PRIVATE /W4 $<$<CONFIG:Debug>:/WX>)
-  # target_link_libraries(test_toolhub_gui
-  #   PRIVATE GTest::gmock_main
-  #   PRIVATE yrtr_base
-  #   PRIVATE libimgui
-  # )
+  add_executable(test_server
+    ${YRTR_SOURCE_DIR}/backend/bin/test_server.cc
+    ${YRTR_SOURCE_DIR}/backend/hook/mock_trainer.cc
+  )
+  target_link_libraries(test_server PRIVATE yrtr_base yrtr_backend)
 
   add_executable(test_json ${YRTR_SOURCE_DIR}/protocol/test_json.cc)
   target_link_libraries(test_json PRIVATE yrtr_base)

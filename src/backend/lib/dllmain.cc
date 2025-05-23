@@ -11,7 +11,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason,
                     LPVOID lpvReserved) {
   switch (fdwReason) {
     case DLL_PROCESS_ATTACH: {
-      OutputDebugStringA("[SCARLET] Process attach");
+      OutputDebugStringA("[YRTR] Process attach");
       yrtr::logging::InitLogging(yrtr::logging::LogSink::kDbgView);
       char dll_path[MAX_PATH] = {0};
       DWORD nSize = GetModuleFileNameA(hinstDLL, dll_path, _countof(dll_path));
@@ -36,7 +36,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason,
     case DLL_THREAD_DETACH:
       break;
     case DLL_PROCESS_DETACH: {
-      OutputDebugStringA("[SCARLET] Process detach");
+      OutputDebugStringA("[YRTR] Process detach");
       if (lpvReserved != nullptr) {
         break;
       }
