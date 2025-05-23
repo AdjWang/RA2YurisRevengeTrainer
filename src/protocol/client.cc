@@ -105,11 +105,11 @@ void Client::SendGetState() {
     if (res->status == 200) {
       ParseState(res->body);
     } else {
-      LOG_F(INFO, "Failed to get state with code={}", res->status);
+      LOG_F(ERROR, "Failed to get state with code={}", res->status);
     }
   } else {
-    LOG_F(ERROR, "Failed to get state with error={}",
-          httplib::to_string(res.error()));
+    DLOG_F(ERROR, "Failed to get state with error={}",
+           httplib::to_string(res.error()));
   }
 }
 

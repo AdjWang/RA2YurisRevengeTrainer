@@ -157,7 +157,11 @@ if (YRTR_BUILD_TEST)
     ${YRTR_SOURCE_DIR}/backend/bin/test_server.cc
     ${YRTR_SOURCE_DIR}/backend/hook/mock_trainer.cc
   )
-  target_link_libraries(test_server PRIVATE yrtr_base yrtr_backend)
+  target_link_libraries(test_server
+    PRIVATE yrtr_base
+    PRIVATE yrtr_backend
+    PRIVATE absl::failure_signal_handler
+  )
 
   add_executable(test_json ${YRTR_SOURCE_DIR}/protocol/test_json.cc)
   target_link_libraries(test_json PRIVATE yrtr_base)

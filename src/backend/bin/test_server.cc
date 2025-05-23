@@ -5,11 +5,14 @@
 namespace fs = std::filesystem;
 #include <memory>
 
+#include "base/windows_shit.h"
+#define EAT_SHIT_FIRST  // prevent linter move windows shit down
 #include "backend/config.h"
 #include "backend/hook/mock_trainer.h"
 #include "base/logging.h"
 #include "base/macro.h"
 __YRTR_BEGIN_THIRD_PARTY_HEADERS
+#include "absl/debugging/failure_signal_handler.h"
 #include "absl/debugging/symbolize.h"
 __YRTR_END_THIRD_PARTY_HEADERS
 #include "base/thread.h"
@@ -21,6 +24,9 @@ static std::unique_ptr<Server> server;
 
 static void Init(const char* exe_path) {
   absl::InitializeSymbolizer(exe_path);
+  absl::FailureSignalHandlerOptions options;
+  options.call_previous_handler = true;
+  absl::InstallFailureSignalHandler(options);
   logging::InitLogging();
   // Setup thread id.
   SetupGameLoopThreadOnce();
@@ -52,7 +58,8 @@ static void SignalHandlerToStopServer(int signal) {
 }
 
 int main(int argc, char* argv[]) {
-  signal(SIGINT, SignalHandlerToStopServer);
+  // Win32 does not support SIGINT, what can I say...
+  signal(SIGABRT, SignalHandlerToStopServer);
   // Simulate game loop.
   yrtr::Init(argv[0]);
   while (!should_stop) {
