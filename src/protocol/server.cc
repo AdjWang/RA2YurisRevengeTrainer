@@ -12,12 +12,9 @@ Server::Server(backend::hook::ITrainer* trainer, uint16_t port)
   game_loop_ch_.SetThreadId(GetGameLoopThreadId());
   trainer_->set_on_state_updated(
       std::bind_front(&Server::OnStateUpdated, this));
-  // This tool is used in LAN, 50ms should be enough. Large timeout queues too
-  // many jobs in sending queue when the backend is not running, making the gui
-  // actions, like close window, acts lagging.
-  svr_.set_open_handshake_timeout(50);
-  svr_.set_close_handshake_timeout(50);
-  svr_.set_pong_timeout(200);
+  svr_.set_open_handshake_timeout(kConnTimeoutMilliseconds);
+  svr_.set_close_handshake_timeout(kConnTimeoutMilliseconds);
+  svr_.set_pong_timeout(kConnTimeoutMilliseconds * 4);
   svr_.set_access_channels(websocketpp::log::alevel::all);
   svr_.clear_access_channels(websocketpp::log::alevel::frame_payload);
   svr_.init_asio();

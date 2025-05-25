@@ -29,7 +29,10 @@ class Client {
   using WebsocketClient = websocketpp::client<websocketpp::config::asio_client>;
   // Limit maximum pending state getting requests.
   static constexpr int kMaxGetState = 1;
-  static constexpr int kReconnectIntervalSeconds = 1;
+  // This tool is used in LAN, 50ms should be enough. Large timeout queues too
+  // many jobs in sending queue when the backend is not running, making the gui
+  // actions, like close window, acts lagging.
+  static constexpr int kConnTimeoutMilliseconds = 50;
   const std::string uri_;
   frontend::Gui& gui_;
   std::thread evloop_;

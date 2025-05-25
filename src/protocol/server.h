@@ -19,6 +19,10 @@ class Server {
 
  private:
   using WebsocketServer = websocketpp::server<websocketpp::config::asio>;
+  // This tool is used in LAN, 50ms should be enough. Large timeout queues too
+  // many jobs in sending queue when the backend is not running, making the gui
+  // actions, like close window, acts lagging.
+  static constexpr int kConnTimeoutMilliseconds = 50;
   backend::hook::ITrainer* trainer_;
   std::thread evloop_;
   WebsocketServer svr_;

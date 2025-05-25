@@ -33,12 +33,9 @@ Client::Client(frontend::Gui& gui, uint16_t port)
       get_state_count_(0),
       stop_(false) {
   render_loop_ch_.SetThreadId(GetRendererThreadId());
-  // This tool is used in LAN, 50ms should be enough. Large timeout queues too
-  // many jobs in sending queue when the backend is not running, making the gui
-  // actions, like close window, acts lagging.
-  cli_.set_open_handshake_timeout(50);
-  cli_.set_close_handshake_timeout(50);
-  cli_.set_pong_timeout(200);
+  cli_.set_open_handshake_timeout(kConnTimeoutMilliseconds);
+  cli_.set_close_handshake_timeout(kConnTimeoutMilliseconds);
+  cli_.set_pong_timeout(kConnTimeoutMilliseconds * 4);
   cli_.set_access_channels(websocketpp::log::alevel::all);
   cli_.clear_access_channels(websocketpp::log::alevel::frame_payload);
   cli_.init_asio();
