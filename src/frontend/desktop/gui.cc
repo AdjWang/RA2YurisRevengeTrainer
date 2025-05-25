@@ -71,13 +71,13 @@ Gui::Gui(Lang lang) : lang_(lang) {}
 Gui::~Gui() {}
 
 void Gui::UpdateState(const State& state) {
-  DCHECK(yrtr::IsWithinRendererThread());
+  DCHECK(IsWithinRendererThread());
   // This should be the only point writing to state.
   state_ = state;
 }
 
 void Gui::Render() {
-  DCHECK(yrtr::IsWithinRendererThread());
+  DCHECK(IsWithinRendererThread());
   PushStyle();
   RenderClientArea();
   PopStyle();
@@ -222,7 +222,7 @@ void Gui::RenderTabFilters() {
 }
 
 void Gui::Trigger(FnLabel label) const {
-  DCHECK(yrtr::IsWithinRendererThread());
+  DCHECK(IsWithinRendererThread());
   if (label == FnLabel::kInvalid) {
     HLOG_F(WARNING, "Invalid label");
     return;

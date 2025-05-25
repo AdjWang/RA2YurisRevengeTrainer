@@ -506,13 +506,12 @@ BOOL WINAPI DllMain(HINSTANCE /*hinstDLL*/, DWORD fdwReason,
       hook_patch_iat(GetModuleHandle(NULL), FALSE, "kernel32.dll",
                      "GetProcAddress", (PROC)HookGetProcAddress);
       yrtr::logging::InitLogging(yrtr::logging::LogSink::kDbgView);
-      // TODO: add hotreload for debugging
-      // Try to load scarlet.
-      HMODULE scarlet = LoadLibraryA("scarlet.dll");
-      if (scarlet == NULL) {
+      // Try to load module.
+      HMODULE module = LoadLibraryA("ra2_trainer_backend.dll");
+      if (module == NULL) {
         DWORD err = GetLastError();
         std::string message = std::system_category().message(err);
-        LOG_F(ERROR, "Failed to load scarlet, err=[{}]{}", err, message);
+        LOG_F(ERROR, "Failed to load module, err=[{}]{}", err, message);
       }
       break;
     }

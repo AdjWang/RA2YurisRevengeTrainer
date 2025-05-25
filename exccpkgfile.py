@@ -325,7 +325,7 @@ def resolve(cfg: Config) -> None:
     tools.mkdirp(cfg.deps_dir)
     tools.mkdirp(cfg.install_dir)
     deps = [
-        # AbseilCpp(),
+        AbseilCpp(),
         Boost("align"),
         Boost("asio"),
         Boost("assert"),
@@ -343,16 +343,16 @@ def resolve(cfg: Config) -> None:
         Boost("static_assert"),
         Boost("throw_exception"),
         Boost("type_traits"),
-        # Freetype(),
-        # Glfw(),
-        # Gsl(),
-        # Imgui(),
-        # NlohmannJson(),
-        # Plutosvg(),
-        # Syringe(),
-        # Toml(),
-        # Websocketpp(),
-        # YRpp(),
+        Freetype(),
+        Glfw(),
+        Gsl(),
+        Imgui(),
+        NlohmannJson(),
+        Plutosvg(),
+        Syringe(),
+        Toml(),
+        Websocketpp(),
+        YRpp(),
     ]
     for dep in deps:
         dep.resolve(cfg)
