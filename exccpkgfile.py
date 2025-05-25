@@ -1,4 +1,5 @@
 from collections import defaultdict
+from functools import partial
 import logging
 from multiprocessing import cpu_count
 import os
@@ -11,7 +12,6 @@ except ImportError:
 
 from exccpkg import exccpkg, tools
 
-
 class Config(exccpkg.Config):
     def __init__(self, upstream_cfg: Self | None = None) -> None:
         super().__init__(upstream_cfg)
@@ -19,7 +19,7 @@ class Config(exccpkg.Config):
         self.project_dir = project_dir
         self.deps_dir = self.project_dir / "deps"
         self.download_dir = self.deps_dir / "download"
-        self.cmake_build_type = "Release"
+        self.cmake_build_type = "Debug"
         self.install_dir = self.deps_dir / "out" / self.cmake_build_type
         self.generator = "Ninja"
 
@@ -94,14 +94,32 @@ class AbseilCpp(exccpkg.Package):
         return CMakeCommon.build(cfg, src_dir, "-DABSL_MSVC_STATIC_RUNTIME=ON")
 
 
-class CppHttplib(exccpkg.Package):
-    def __init__(self) -> None:
-        super().__init__(self.download, CMakeCommon.build, CMakeCommon.install)
+class Boost(exccpkg.Package):
+    def __init__(self, pkg_name: str) -> None:
+        super().__init__(partial(Boost.download, self), Boost.build, Boost.install)
+        self.pkg_name = pkg_name
+        self.boost_ver = "1.86.0"
+
+    def download(self, cfg: Config) -> Path:
+        download_dir = cfg.deps_dir / f"boost-{self.boost_ver}-{self.pkg_name}"
+        if not download_dir.exists():
+            tools.run_cmd(f"git clone https://github.com/boostorg/{self.pkg_name}.git {download_dir}")
+            cwd = os.getcwd()
+            os.chdir(download_dir)
+            tools.run_cmd(f"git checkout boost-{self.boost_ver}")
+            os.chdir(cwd)
+        return download_dir
 
     @staticmethod
-    def download(cfg: Config) -> Path:
-        url = "https://github.com/yhirose/cpp-httplib/archive/refs/tags/v0.20.1.tar.gz"
-        return CMakeCommon.download(cfg, url, "cpp-httplib-0.20.1", ".tar.gz")
+    def build(cfg: Config, src_dir: Path) -> Path:
+        return src_dir
+    
+    @staticmethod
+    def install(cfg: Config, build_dir: Path) -> None:
+        proj_dir = build_dir
+        tools.mkdirp(cfg.install_dir / "include/boost")
+        shutil.copytree(proj_dir / "include/boost", cfg.install_dir / "include/boost",
+                        dirs_exist_ok=True)
 
 
 class Freetype(exccpkg.Package):
@@ -255,6 +273,16 @@ class Toml(exccpkg.Package):
         return CMakeCommon.build(cfg, src_dir, "-DBUILD_EXAMPLES=OFF")
 
 
+class Websocketpp(exccpkg.Package):
+    def __init__(self) -> None:
+        super().__init__(self.download, CMakeCommon.build, CMakeCommon.install)
+
+    @staticmethod
+    def download(cfg: Config) -> Path:
+        url = "https://github.com/zaphoyd/websocketpp/archive/refs/tags/0.8.2.tar.gz"
+        return CMakeCommon.download(cfg, url, "websocketpp-0.8.2", ".tar.gz")
+
+
 class YRpp(exccpkg.Package):
     def __init__(self) -> None:
         super().__init__(self.download, self.build, self.install)
@@ -297,17 +325,34 @@ def resolve(cfg: Config) -> None:
     tools.mkdirp(cfg.deps_dir)
     tools.mkdirp(cfg.install_dir)
     deps = [
-        AbseilCpp(),
-        CppHttplib(),
-        Freetype(),
-        Glfw(),
-        Gsl(),
-        Imgui(),
-        NlohmannJson(),
-        Plutosvg(),
-        Syringe(),
-        Toml(),
-        YRpp(),
+        # AbseilCpp(),
+        Boost("align"),
+        Boost("asio"),
+        Boost("assert"),
+        Boost("config"),
+        Boost("core"),
+        Boost("date_time"),
+        Boost("mpl"),
+        Boost("numeric_conversion"),
+        Boost("predef"),
+        Boost("smart_ptr"),
+        Boost("system"),
+        Boost("utility"),
+        Boost("winapi"),
+        Boost("preprocessor"),
+        Boost("static_assert"),
+        Boost("throw_exception"),
+        Boost("type_traits"),
+        # Freetype(),
+        # Glfw(),
+        # Gsl(),
+        # Imgui(),
+        # NlohmannJson(),
+        # Plutosvg(),
+        # Syringe(),
+        # Toml(),
+        # Websocketpp(),
+        # YRpp(),
     ]
     for dep in deps:
         dep.resolve(cfg)

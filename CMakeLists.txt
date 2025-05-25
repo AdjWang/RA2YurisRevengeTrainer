@@ -33,10 +33,10 @@ add_link_options($<$<CONFIG:Release>:/OPT:REF> $<$<CONFIG:Release>:/INCREMENTAL:
 find_package(absl REQUIRED)
 find_package(Freetype REQUIRED)
 find_package(glfw3 REQUIRED)
-find_package(httplib REQUIRED)
 find_package(Microsoft.GSL REQUIRED)
 find_package(plutosvg REQUIRED)
 find_package(tomlplusplus REQUIRED)
+find_package(websocketpp REQUIRED)
 
 set(IMGUI_PROJ_DIR ${YRTR_DEPS_DIR}/imgui-1.91.9b-docking)
 set(IMGUI_INCLUDES ${IMGUI_PROJ_DIR}
@@ -137,6 +137,7 @@ add_library(yrtr_backend STATIC
 )
 target_include_directories(yrtr_backend
   PUBLIC $<BUILD_INTERFACE:${YRTR_DEPS_OUTPUT_DIR}/include>
+  PUBLIC $<BUILD_INTERFACE:${YRTR_DEPS_OUTPUT_DIR}/include/boost>
   PUBLIC $<BUILD_INTERFACE:${YRTR_DEPS_OUTPUT_DIR}/include/YRpp>
   PUBLIC $<BUILD_INTERFACE:${YRTR_SOURCE_DIR}>
   PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>

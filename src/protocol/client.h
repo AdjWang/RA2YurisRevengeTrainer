@@ -1,11 +1,13 @@
 #pragma once
 #include <atomic>
+#include <thread>
 
 #include "base/macro.h"
 #include "base/task_queue.h"
 #include "frontend/desktop/gui.h"
-#include "httplib.h"
 #include "protocol/model.h"
+#include "websocketpp/client.hpp"
+#include "websocketpp/config/asio_no_tls_client.hpp"
 
 namespace yrtr {
 
@@ -24,14 +26,22 @@ class Client {
   void GetState();
 
  private:
+  using WebsocketClient = websocketpp::client<websocketpp::config::asio_client>;
   // Limit maximum pending state getting requests.
   static constexpr int kMaxGetState = 1;
+  static constexpr int kReconnectIntervalSeconds = 1;
+  const std::string uri_;
   frontend::Gui& gui_;
-  httplib::Client cli_;
-  httplib::ThreadPool thread_pool_;
-  yrtr::TaskQueue render_loop_ch_;
+  std::thread evloop_;
+  WebsocketClient cli_;
+  WebsocketClient::connection_ptr conn_;
+  TaskQueue render_loop_ch_;
   std::atomic<int> get_state_count_;
+  std::atomic<bool> stop_;
 
+  WebsocketClient::connection_ptr GetOrCreateConn();
+  void OnWebsocketMessage(WebsocketClient& cli, websocketpp::connection_hdl hdl,
+                          WebsocketClient::message_ptr msg);
   void SendGetState();
   void ParseState(const std::string& data);
   void SendPostInput(FnLabel label, uint32_t val);

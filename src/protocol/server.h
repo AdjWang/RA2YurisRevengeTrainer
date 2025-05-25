@@ -4,9 +4,9 @@
 #include "backend/hook/trainer.h"
 #include "base/macro.h"
 #include "base/task_queue.h"
-#define CPPHTTPLIB_THREAD_POOL_COUNT 1
-#include "httplib.h"
 #include "protocol/model.h"
+#include "websocketpp/config/asio_no_tls.hpp"
+#include "websocketpp/server.hpp"
 
 namespace yrtr {
 
@@ -17,14 +17,16 @@ class Server {
   void Update();
 
  private:
+  using WebsocketServer = websocketpp::server<websocketpp::config::asio>;
   backend::hook::ITrainer* trainer_;
-  httplib::Server svr_;
-  httplib::ThreadPool thread_pool_;
-  std::thread listener_;
-  yrtr::TaskQueue game_loop_ch_;
+  std::thread evloop_;
+  WebsocketServer svr_;
+  TaskQueue game_loop_ch_;
 
-  void OnGetState(const httplib::Request& req, httplib::Response& res);
-  void OnPostEvent(const httplib::Request& req, httplib::Response& res);
+  // void OnGetState(const httplib::Request& req, httplib::Response& res);
+  // void OnPostEvent(const httplib::Request& req, httplib::Response& res);
+  void OnWebsocketMessage(WebsocketServer& svr, websocketpp::connection_hdl hdl,
+                          WebsocketServer::message_ptr msg);
   void OnPostInputEvent(Event<uint32_t>&& event);
   void OnPostButtonEvent(Event<int>&& event);
   void OnPostCheckboxEvent(Event<bool>&& event);
