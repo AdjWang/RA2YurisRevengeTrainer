@@ -1,4 +1,5 @@
 #pragma once
+#include <set>
 #include <thread>
 
 #include "backend/hook/trainer.h"
@@ -21,12 +22,18 @@ class Server {
   backend::hook::ITrainer* trainer_;
   std::thread evloop_;
   WebsocketServer svr_;
+  // Record connection to propagate state.
+  std::set<websocketpp::connection_hdl,
+           std::owner_less<websocketpp::connection_hdl>>
+      conns_;
   TaskQueue game_loop_ch_;
 
-  // void OnGetState(const httplib::Request& req, httplib::Response& res);
-  // void OnPostEvent(const httplib::Request& req, httplib::Response& res);
-  void OnWebsocketMessage(WebsocketServer& svr, websocketpp::connection_hdl hdl,
-                          WebsocketServer::message_ptr msg);
+  void OnOpenConn(websocketpp::connection_hdl hdl);
+  void OnCloseConn(websocketpp::connection_hdl hdl);
+  void OnMessage(WebsocketServer& svr, websocketpp::connection_hdl hdl,
+                 WebsocketServer::message_ptr msg);
+  void OnStateUpdated(State state);
+  void SendState(State&& state, websocketpp::connection_hdl hdl);
   void OnPostInputEvent(Event<uint32_t>&& event);
   void OnPostButtonEvent(Event<int>&& event);
   void OnPostCheckboxEvent(Event<bool>&& event);

@@ -140,6 +140,31 @@ struct Event {
   NLOHMANN_DEFINE_TYPE_INTRUSIVE(Event, type, label, val);
 };
 
+inline std::string MakeGetStateEvent() {
+  Event<State> event{
+      .type = "get_state",
+      .label = FnLabel::kInvalid,
+      .val = State{},
+  };
+  return json(event).dump();
+}
+
+inline std::string MakeGetStateEvent(State&& state) {
+  Event<State> event{
+      .type = "get_state",
+      .label = FnLabel::kInvalid,
+      .val = std::move(state),
+  };
+  return json(event).dump();
+}
+
+inline Event<State> ParseGetStateEvent(const json& data) {
+  auto event = data.get<Event<State>>();
+  DCHECK_EQ(event.type, "get_state");
+  DCHECK_EQ(static_cast<int>(event.label), static_cast<int>(FnLabel::kInvalid));
+  return event;
+}
+
 inline std::string MakeInputEvent(FnLabel label, uint32_t val) {
   Event<uint32_t> event{
       .type = "input",

@@ -9,7 +9,6 @@
 #include <string>
 #include <system_error>
 
-#include "MinHook.h"
 #include "base/logging.h"
 
 namespace {

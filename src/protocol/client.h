@@ -40,15 +40,15 @@ class Client {
   std::atomic<bool> stop_;
 
   WebsocketClient::connection_ptr GetOrCreateConn();
-  void OnWebsocketMessage(WebsocketClient& cli, websocketpp::connection_hdl hdl,
-                          WebsocketClient::message_ptr msg);
+  void OnMessage(WebsocketClient& cli, websocketpp::connection_hdl hdl,
+                 WebsocketClient::message_ptr msg);
   void SendGetState();
-  void ParseState(const std::string& data);
+  void OnGetStateEvent(Event<State>&& event);
   void SendPostInput(FnLabel label, uint32_t val);
   void SendPostButton(FnLabel label);
   void SendPostCheckbox(FnLabel label, bool activate);
   void SendPostProtectedList(SideMap&& side_map);
-  void SendPostData(std::string_view path, std::string&& data);
+  void SendData(std::string_view path, std::string&& data);
 
   DISALLOW_COPY_AND_ASSIGN(Client);
 };

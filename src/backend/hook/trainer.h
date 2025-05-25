@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <functional>
 
 #include "backend/hook/memory_api.h"
 #include "base/macro.h"
@@ -31,6 +32,7 @@ class ITrainer {
  public:
   virtual ~ITrainer() {}
   virtual State state() const = 0;
+  virtual void set_on_state_updated(std::function<void(State)> cb) = 0;
   virtual void Update(double delta) = 0;
   virtual void OnInputEvent(FnLabel label, uint32_t val) = 0;
   virtual void OnButtonEvent(FnLabel label) = 0;
@@ -53,6 +55,10 @@ class Trainer : public ITrainer {
     return state_;
   }
 
+  void set_on_state_updated(std::function<void(State)> cb) final {
+    on_state_updated_ = std::move(cb);
+  }
+
   void Update(double delta) final;
   void OnInputEvent(FnLabel label, uint32_t val) final;
   void OnButtonEvent(FnLabel label) final;
@@ -66,6 +72,7 @@ class Trainer : public ITrainer {
 
   mutable absl::Mutex state_mu_;
   State state_ ABSL_GUARDED_BY(state_mu_);
+  std::function<void(State)> on_state_updated_;
 
   std::unique_ptr<MemoryAPI> mem_api_;
 

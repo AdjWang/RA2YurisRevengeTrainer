@@ -23,6 +23,10 @@ class MockTrainer : public ITrainer {
     return state_;
   }
 
+  void set_on_state_updated(std::function<void(State)> cb) final {
+    on_state_updated_ = std::move(cb);
+  }
+
   void Update(double delta) final;
   void OnInputEvent(FnLabel label, uint32_t val) final;
   void OnButtonEvent(FnLabel label) final;
@@ -35,6 +39,7 @@ class MockTrainer : public ITrainer {
 
   mutable absl::Mutex state_mu_;
   State state_ ABSL_GUARDED_BY(state_mu_);
+  std::function<void(State)> on_state_updated_;
 
   void UpdateCheckboxState(FnLabel label, bool activate);
 

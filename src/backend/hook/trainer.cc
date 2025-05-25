@@ -492,7 +492,8 @@ Trainer::Trainer()
     : activate_inst_building_(false),
       activate_inst_superweapon_(false),
       activate_inst_turn_turret_(false),
-      activate_inst_turn_body_(false) {
+      activate_inst_turn_body_(false),
+      on_state_updated_(nullptr) {
   mem_api_ = std::make_unique<MemoryAPI>();
   absl::MutexLock lk(&state_mu_);
   InitStates(state_);
