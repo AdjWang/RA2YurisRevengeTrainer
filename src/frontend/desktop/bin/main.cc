@@ -147,7 +147,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, PSTR, int) {
   }
   Client client(gui, Config::instance()->port());
 
-  Timer::SetTimer(Client::kTimerIdUpdateState, 0.2 /*second*/,
+  Timer::SetTimer(Client::kTimerIdUpdateState, 0.3 /*second*/,
                   std::bind_front(&Client::GetState, &client));
 
   glfwSetWindowUserPointer(window, &gui_ctx);
@@ -156,6 +156,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, PSTR, int) {
   glEnable(GL_BLEND);
   glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
   while (!glfwWindowShouldClose(window)) {
+    glfwPollEvents();
     Timer::Update();
     client.Update();
 
@@ -168,7 +169,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, PSTR, int) {
     gui_ctx.Render();
 
     glfwSwapBuffers(window);
-    glfwWaitEventsTimeout(0.2);
   }
   // Stop before window destroied to catch bugs immediately instead of leaving a
   // zombie background process without visible window.

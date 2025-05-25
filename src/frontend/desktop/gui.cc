@@ -138,7 +138,7 @@ void Gui::RenderTabAssists() {
   }
   const CheckboxStateMap& ckbox_states = state_.ckbox_states;
   for (auto& [label, handler] : ckbox_cbs_) {
-    bool enable = false;
+    bool enable = true;
     bool activate = false;
     auto it = ckbox_states.find(label);
     if (it != ckbox_states.end()) {

@@ -75,7 +75,7 @@ void Server::OnMessage(WebsocketServer& /*svr*/,
     json raw_data = json::parse(payload);
     std::string type = raw_data.at("type");
     if (type == "get_state") {
-      SendState(trainer_->state(), hdl);
+      OnGetStateEvent(hdl);
     } else if (type == "input") {
       OnPostInputEvent(ParseInputEvent(raw_data));
     } else if (type == "button") {
@@ -96,6 +96,7 @@ void Server::OnStateUpdated(State state) {
   DCHECK(IsWithinGameLoopThread());
   boost::asio::dispatch(svr_.get_io_service(), [this, state = state]() {
     DCHECK(IsWithinNetThread());
+    // Broadcast state to clients.
     for (auto conn : conns_) {
       State state_copy = state;
       SendState(std::move(state_copy), conn);
@@ -103,8 +104,26 @@ void Server::OnStateUpdated(State state) {
   });
 }
 
+void Server::OnGetStateEvent(websocketpp::connection_hdl hdl) {
+  DCHECK(IsWithinNetThread());
+  game_loop_ch_.ExecuteOrScheduleTask([this, hdl = hdl]() {
+    DCHECK(IsWithinGameLoopThread());
+    State state = trainer_->state();
+    boost::asio::dispatch(
+        svr_.get_io_service(),
+        [this, hdl = hdl, state = std::move(state)]() mutable {
+          DCHECK(IsWithinNetThread());
+          SendState(std::move(state), hdl);
+        });
+  });
+}
+
 void Server::SendState(State&& state, websocketpp::connection_hdl hdl) {
   DCHECK(IsWithinNetThread());
+  if (hdl.expired()) [[unlikely]] {
+    conns_.erase(hdl);
+    return;
+  }
   std::string data = MakeGetStateEvent(std::move(state));
   websocketpp::lib::error_code ec;
   svr_.send(hdl, data, websocketpp::frame::opcode::value::text, ec);

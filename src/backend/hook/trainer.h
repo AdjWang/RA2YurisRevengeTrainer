@@ -7,8 +7,8 @@
 __YRTR_BEGIN_THIRD_PARTY_HEADERS
 #include "absl/container/inlined_vector.h"
 #include "absl/container/flat_hash_map.h"
-#include "absl/synchronization/mutex.h"
 __YRTR_END_THIRD_PARTY_HEADERS
+#include "base/thread.h"
 #include "protocol/model.h"
 
 namespace yrpp {
@@ -51,7 +51,7 @@ class Trainer : public ITrainer {
   Trainer& operator=(Trainer&&) = delete;
 
   State state() const final {
-    absl::MutexLock lk(&state_mu_);
+    DCHECK(IsWithinGameLoopThread());
     return state_;
   }
 
@@ -70,9 +70,9 @@ class Trainer : public ITrainer {
   static SideMap protected_houses_;
   static bool activate_disable_gagap_;
 
-  mutable absl::Mutex state_mu_;
-  State state_ ABSL_GUARDED_BY(state_mu_);
+  State state_;
   std::function<void(State)> on_state_updated_;
+  bool state_dirty_;
 
   std::unique_ptr<MemoryAPI> mem_api_;
 
@@ -87,6 +87,7 @@ class Trainer : public ITrainer {
       std::function<void(yrpp::ObjectClass*)> cb);
   static void ForeachProtectedHouse(std::function<void(yrpp::HouseClass*)> cb);
 
+  void PropagateStateIfDirty();
   void OnInputCredit(uint32_t val);
   void OnBtnFastBuild();
   void OnBtnDeleteUnit();

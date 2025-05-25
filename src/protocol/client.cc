@@ -155,15 +155,17 @@ void Client::OnMessage(WebsocketClient& /*cli*/,
                        websocketpp::connection_hdl hdl,
                        WebsocketClient::message_ptr msg) {
   DCHECK(IsWithinNetThread());
+  std::string payload = msg->get_payload();
   try {
-    json raw_data = json::parse(msg->get_payload());
+    json raw_data = json::parse(payload);
     std::string type = raw_data.at("type");
     if (type == "get_state") {
       OnGetStateEvent(ParseGetStateEvent(raw_data));
+    } else {
+      LOG_F(ERROR, "Unknown event type={} from data={}", type, payload);
     }
   } catch (const std::exception& e) {
-    LOG_F(ERROR, "Failed to parse json data={} error={}", msg->get_payload(),
-          e.what());
+    LOG_F(ERROR, "Failed to parse json data={} error={}", payload, e.what());
   }
 }
 

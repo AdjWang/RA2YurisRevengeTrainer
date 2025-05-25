@@ -33,6 +33,7 @@ class Server {
   void OnMessage(WebsocketServer& svr, websocketpp::connection_hdl hdl,
                  WebsocketServer::message_ptr msg);
   void OnStateUpdated(State state);
+  void OnGetStateEvent(websocketpp::connection_hdl hdl);
   void SendState(State&& state, websocketpp::connection_hdl hdl);
   void OnPostInputEvent(Event<uint32_t>&& event);
   void OnPostButtonEvent(Event<int>&& event);

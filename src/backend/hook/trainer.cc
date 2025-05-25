@@ -17,7 +17,6 @@ __YRTR_BEGIN_THIRD_PARTY_HEADERS
 __YRTR_END_THIRD_PARTY_HEADERS
 #include "backend/hook/hook_point.h"
 #include "base/logging.h"
-#include "base/thread.h"
 
 namespace yrtr {
 namespace backend {
@@ -493,9 +492,9 @@ Trainer::Trainer()
       activate_inst_superweapon_(false),
       activate_inst_turn_turret_(false),
       activate_inst_turn_body_(false),
-      on_state_updated_(nullptr) {
+      on_state_updated_(nullptr),
+      state_dirty_(true) {
   mem_api_ = std::make_unique<MemoryAPI>();
-  absl::MutexLock lk(&state_mu_);
   InitStates(state_);
 }
 
@@ -544,11 +543,12 @@ void Trainer::Update(double /*delta*/) {
             .name = std::string(obj_house->PlainName, namelen),
         });
   });
-  {
-    absl::MutexLock lk(&state_mu_);
-    state_.selecting_houses.swap(selecting_houses);
-    protected_houses_ = state_.protected_houses;
+  if (!AreEqual(state_.selecting_houses, selecting_houses)) {
+    state_.selecting_houses = std::move(selecting_houses);
+    state_dirty_ = true;
   }
+  protected_houses_ = state_.protected_houses;
+  PropagateStateIfDirty();
 }
 
 void Trainer::OnInputEvent(FnLabel label, uint32_t val) {
@@ -560,6 +560,7 @@ void Trainer::OnInputEvent(FnLabel label, uint32_t val) {
   UNREFERENCED_PARAMETER(label);
 #endif
   OnInputCredit(val);
+  PropagateStateIfDirty();
 }
 
 void Trainer::OnButtonEvent(FnLabel label) {
@@ -576,6 +577,7 @@ void Trainer::OnButtonEvent(FnLabel label) {
     default:
       LOG_F(ERROR, "Unknown button event={}", StrFnLabel(label));
   }
+  PropagateStateIfDirty();
 }
 
 void Trainer::OnCheckboxEvent(FnLabel label, bool activate) {
@@ -603,12 +605,28 @@ void Trainer::OnCheckboxEvent(FnLabel label, bool activate) {
     default:
       LOG_F(ERROR, "Unknown checkbox event={}", StrFnLabel(label));
   }
+  PropagateStateIfDirty();
 }
 
 void Trainer::OnProtectedListEvent(SideMap&& side_map) {
   DCHECK(IsWithinGameLoopThread());
-  absl::MutexLock lk(&state_mu_);
-  state_.protected_houses = std::move(side_map);
+  if (!AreEqual(state_.protected_houses, side_map)) {
+    state_.protected_houses = std::move(side_map);
+    state_dirty_ = true;
+  }
+  PropagateStateIfDirty();
+}
+
+void Trainer::PropagateStateIfDirty() {
+  DCHECK(IsWithinGameLoopThread());
+  if (!state_dirty_) {
+    return;
+  }
+  state_dirty_ = false;
+  if (on_state_updated_ == nullptr) {
+    return;
+  }
+  on_state_updated_(state_);
 }
 
 void Trainer::OnInputCredit(uint32_t val) {
@@ -1051,19 +1069,25 @@ void Trainer::ForeachProtectedHouse(std::function<void(yrpp::HouseClass*)> cb) {
 }
 
 bool Trainer::SetEnableCheckbox(FnLabel label, bool enable) {
-  absl::MutexLock lk(&state_mu_);
-  state_.ckbox_states[label].enable = enable;
+  DCHECK(IsWithinGameLoopThread());
+  if (state_.ckbox_states[label].enable != enable) {
+    state_.ckbox_states[label].enable = enable;
+    state_dirty_ = true;
+  }
   return state_.ckbox_states[label].activate;
 }
 
 void Trainer::UpdateCheckboxState(FnLabel label, bool activate) {
+  DCHECK(IsWithinGameLoopThread());
   if (activate) {
     BeepEnable();
   } else {
     BeepDisable();
   }
-  absl::MutexLock lk(&state_mu_);
-  state_.ckbox_states[label].activate = activate;
+  if (state_.ckbox_states[label].activate != activate) {
+    state_.ckbox_states[label].activate = activate;
+    state_dirty_ = true;
+  }
 }
 
 namespace {

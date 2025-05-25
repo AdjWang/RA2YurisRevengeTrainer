@@ -3,9 +3,6 @@
 
 #include "backend/hook/trainer.h"
 #include "base/macro.h"
-__YRTR_BEGIN_THIRD_PARTY_HEADERS
-#include "absl/synchronization/mutex.h"
-__YRTR_END_THIRD_PARTY_HEADERS
 #include "protocol/model.h"
 
 namespace yrtr {
@@ -19,7 +16,7 @@ class MockTrainer : public ITrainer {
   MockTrainer& operator=(MockTrainer&&) = delete;
 
   State state() const final {
-    absl::MutexLock lk(&state_mu_);
+    DCHECK(IsWithinGameLoopThread());
     return state_;
   }
 
@@ -37,10 +34,11 @@ class MockTrainer : public ITrainer {
   // Update from state before use.
   static SideMap protected_houses_;
 
-  mutable absl::Mutex state_mu_;
-  State state_ ABSL_GUARDED_BY(state_mu_);
+  State state_;
   std::function<void(State)> on_state_updated_;
+  bool state_dirty_;
 
+  void PropagateStateIfDirty();
   void UpdateCheckboxState(FnLabel label, bool activate);
 
   DISALLOW_COPY_AND_ASSIGN(MockTrainer);
