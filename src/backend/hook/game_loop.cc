@@ -6,6 +6,7 @@
 __YRTR_BEGIN_THIRD_PARTY_HEADERS
 #include "GameOptionsClass.h"
 #include "TacticalClass.h"
+#include "Unsorted.h"
 #include "WWMouseClass.h"
 __YRTR_END_THIRD_PARTY_HEADERS
 #include "backend/config.h"
@@ -36,8 +37,8 @@ static void PreCreateWindow(HINSTANCE hInstance) {
   // Setup thread id.
   SetupGameLoopThreadOnce();
   // Load configurations.
-  char dll_path[MAX_PATH] = {0};
-  DWORD nSize = GetModuleFileNameA(hInstance, dll_path, _countof(dll_path));
+  char exe_path[MAX_PATH] = {0};
+  DWORD nSize = GetModuleFileNameA(hInstance, exe_path, _countof(exe_path));
   if (nSize == 0) {
     DWORD err = GetLastError();
     std::string message = std::system_category().message(err);
@@ -45,27 +46,19 @@ static void PreCreateWindow(HINSTANCE hInstance) {
     UNREACHABLE();
   }
   // Search configuration file at the same directory with the dll.
-  CHECK(Config::Load(fs::canonical(fs::path(dll_path)).parent_path()));
+  CHECK(Config::Load(fs::canonical(fs::path(exe_path)).parent_path()));
   trainer = std::make_unique<Trainer>();
   server = std::make_unique<Server>(trainer.get(), Config::instance()->port());
 }
 
-static void __declspec(naked) __cdecl InjectCreateWindow() {
-  static const uint32_t jmp_back = GetJumpBack(kHpCreateWindow);
-  static HINSTANCE hInstance;  // from WinMain
-  __asm {
-    mov [hInstance], ecx
-    pushad
-  }
+static void WINAPI InjectInitCommonControls() {
+  // https://devblogs.microsoft.com/oldnewthing/20040614-00/?p=38903
+  HINSTANCE hInstance = reinterpret_cast<HINSTANCE>(kImageBase);
   PreCreateWindow(hInstance);
-  __asm {
-    popad
-    sub esp, 0x38
-    push ebx
-    push ebp
-    jmp [jmp_back]
-  }
+  // Original code.
+  InitCommonControls();
 }
+
 static void Update() {
   DCHECK(IsWithinGameLoopThread());
   static std::chrono::system_clock::time_point last_ts =
@@ -81,18 +74,18 @@ static void Update() {
   DCHECK_NOTNULL(server);
   server->Update();
 }
-static void __declspec(naked) __cdecl InjectUpdate() {
-  static const uint32_t jmp_back = GetJumpBack(kHpUpdate);
-  __asm {
-    pushad
+
+static DWORD WINAPI InjectTimeGetTime() {
+  static uint32_t last_frame = 0;
+  if (yrpp::Game::IsActive) {
+    uint32_t current_frame = yrpp::Unsorted::CurrentFrame;
+    if (current_frame > last_frame) {
+      last_frame = current_frame;
+      Update();
+    }
   }
-  Update();
-  __asm {
-    popad
-    mov eax, 0x00647260 // LoopOnce
-    call eax
-    jmp [jmp_back]
-  }
+  // Original code.
+  return timeGetTime();
 }
 
 static void ExitGame() {
@@ -103,22 +96,19 @@ static void ExitGame() {
   HWND hWnd = *(reinterpret_cast<HWND*>(0x00B73550));
   CallWindowProc(ra2WndProc, hWnd, WM_DESTROY, NULL, NULL);
 }
-static void __declspec(naked) __cdecl InjectExitGame() {
-  static const uint32_t jmp_back = GetJumpBack(kHpExitGame);
-  __asm {
-    pushad
+static void WINAPI InjectPostMessageA(HWND hWnd, UINT Msg, WPARAM wParam,
+                                      LPARAM lParam) {
+  if (Msg == WM_DESTROY) [[unlikely]] {
+    ExitGame();
   }
-  ExitGame();
-  __asm {
-    popad
-    jmp [jmp_back]
-  }
+  PostMessageA(hWnd, Msg, wParam, lParam);
 }
 }  // namespace
 
 void HookCreateWindow() {
   DLOG_F(INFO, "[YRTR-HOOK] {}", __func__);
-  MemoryAPI::instance()->HookJump(kHpCreateWindow, InjectCreateWindow);
+  MemoryAPI::instance()->WriteMemory(
+      kHpCreateWindow.first, reinterpret_cast<void*>(InjectInitCommonControls));
 }
 
 void DestroyWindowOnce() {
@@ -128,12 +118,14 @@ void DestroyWindowOnce() {
 
 void HookUpdate() {
   DLOG_F(INFO, "[YRTR-HOOK] {}", __func__);
-  MemoryAPI::instance()->HookJump(kHpUpdate, InjectUpdate);
+  MemoryAPI::instance()->WriteMemory(
+      kHpUpdate.first, reinterpret_cast<void*>(InjectTimeGetTime));
 }
 
 void HookExitGame() {
   DLOG_F(INFO, "[YRTR-HOOK] {}", __func__);
-  MemoryAPI::instance()->HookJump(kHpExitGame, InjectExitGame);
+  MemoryAPI::instance()->WriteMemory(
+      kHpExitGame.first, reinterpret_cast<void*>(InjectPostMessageA));
 }
 
 }  // namespace hook

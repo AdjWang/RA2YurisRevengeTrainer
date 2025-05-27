@@ -9,3 +9,6 @@
 #include <tlhelp32.h>
 #include <winternl.h>
 #endif
+
+#include <CommCtrl.h>
+#include <timeapi.h>

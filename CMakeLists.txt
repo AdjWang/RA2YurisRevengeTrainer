@@ -147,6 +147,8 @@ target_compile_options(yrtr_backend PRIVATE /W4 $<$<CONFIG:Debug>:/WX> /wd4740)
 target_link_libraries(yrtr_backend
   PRIVATE yrtr_base
   PRIVATE tomlplusplus::tomlplusplus
+  PRIVATE comctl32
+  PRIVATE winmm
 )
 
 add_library(ra2_trainer_backend SHARED ${YRTR_SOURCE_DIR}/backend/lib/dllmain.cc)

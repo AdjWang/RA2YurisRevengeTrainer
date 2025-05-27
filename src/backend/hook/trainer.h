@@ -133,7 +133,7 @@ class Trainer : public ITrainer {
   bool SetEnableCheckbox(FnLabel label, bool enable);
   void FinishBuilding() const;
   void FinishSuperweapon() const;
-  void TurnUnit() const;
+  void RotateUnit() const;
   bool IsGaming() const;
   bool WriteCredit(uint32_t credit) const;
   bool UnlimitRadar() const;

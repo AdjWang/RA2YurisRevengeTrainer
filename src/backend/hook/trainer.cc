@@ -14,6 +14,7 @@ __YRTR_BEGIN_THIRD_PARTY_HEADERS
 #include "SpawnManagerClass.h"
 #include "SuperClass.h"
 #include "TechnoClass.h"
+#include "Unsorted.h"
 __YRTR_END_THIRD_PARTY_HEADERS
 #include "backend/hook/hook_point.h"
 #include "base/logging.h"
@@ -528,7 +529,7 @@ void Trainer::Update(double /*delta*/) {
     FinishSuperweapon();
   }
   if (activate_inst_turn_turret_ || activate_inst_turn_body_) {
-    TurnUnit();
+    RotateUnit();
   }
   // Update selecting houses to view.
   SideMap selecting_houses;
@@ -1135,7 +1136,7 @@ void Trainer::FinishSuperweapon() const {
   });
 }
 
-void Trainer::TurnUnit() const {
+void Trainer::RotateUnit() const {
   for (int i = 0; i < yrpp::TechnoClass::Array->Count; i++) {
     yrpp::TechnoClass* obj = yrpp::TechnoClass::Array->GetItem(i);
     if (activate_inst_turn_turret_ && obj->HasTurret()) {
@@ -1148,7 +1149,7 @@ void Trainer::TurnUnit() const {
 }
 
 bool Trainer::IsGaming() const {
-  return yrpp::HouseClass::CurrentPlayer != nullptr;
+  return yrpp::Game::IsActive;
 }
 
 bool Trainer::WriteCredit(uint32_t credit) const {
