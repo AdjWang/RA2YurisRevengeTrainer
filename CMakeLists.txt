@@ -128,6 +128,7 @@ add_custom_command(TARGET ra2_trainer POST_BUILD
 
 add_library(yrtr_backend STATIC
   ${YRTR_SOURCE_DIR}/backend/config.cc
+  ${YRTR_SOURCE_DIR}/backend/game/beacon.cc
   ${YRTR_SOURCE_DIR}/backend/hook/game_loop.cc
   ${YRTR_SOURCE_DIR}/backend/hook/hook.cc
   ${YRTR_SOURCE_DIR}/backend/hook/logging.cc
