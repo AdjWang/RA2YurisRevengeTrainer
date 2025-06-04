@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <functional>
 
+#include "backend/config.h"
 #include "backend/hook/memory_api.h"
 #include "base/macro.h"
 __YRTR_BEGIN_THIRD_PARTY_HEADERS
@@ -13,6 +14,7 @@ __YRTR_END_THIRD_PARTY_HEADERS
 
 namespace yrpp {
 class AbstractClass;
+class BuildingTypeClass;
 class HouseClass;
 class ObjectClass;
 }  // namespace yrpp
@@ -45,8 +47,9 @@ class Trainer : public ITrainer {
   static bool is_active_disable_gagap() { return activate_disable_gagap_; }
   static bool ShouldProtect(yrpp::AbstractClass* obj);
   static bool ShouldProtect(yrpp::HouseClass* house);
+  static bool ShouldEnableTech(yrpp::BuildingTypeClass* tech);
 
-  Trainer();
+  Trainer(Config* cfg);
   Trainer(Trainer&&) = delete;
   Trainer& operator=(Trainer&&) = delete;
 
@@ -70,6 +73,7 @@ class Trainer : public ITrainer {
   static SideMap protected_houses_;
   static bool activate_disable_gagap_;
 
+  Config* cfg_;
   State state_;
   std::function<void(State)> on_state_updated_;
   bool state_dirty_;

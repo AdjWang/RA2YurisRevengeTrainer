@@ -1,0 +1,168 @@
+Aircraft [1]-ORCA-Intruder-入侵者战机
+Aircraft [2]-HORNET-Hornet-大黄蜂
+Aircraft [7]-BEAG-Black Eagle-黑鹰战机
+Building [0]-GAPOWR-Allied Power Plant-盟军发电厂
+Building [1]-GAREFN-Allied Ore Refinery-盟军矿厂
+Building [2]-GACNST-Allied Construction Yard-盟军建造场
+Building [3]-GAPILE-Allied Barracks-盟军兵营
+Building [4]-GASAND-Sandbags-沙墙
+Building [5]-GADEPT-Allied Service Depot-盟军维修厂
+Building [6]-GATECH-Allied Battle Lab-盟军作战实验室
+Building [7]-GAWEAP-Allied War Factory-盟军战车工厂
+Building [8]-CALAB-Einstein's Lab-爱因斯坦实验室
+Building [9]-NAPOWR-Soviet Tesla Reactor-磁能反应炉
+Building [10]-NATECH-Soviet Battle Lab-苏军作战实验室
+Building [11]-NAHAND-Soviet Barracks-苏军兵营
+Building [12]-GAWALL-Allied Wall-盟军围墙
+Building [13]-NARADR-Soviet Radar Tower-苏军雷达
+Building [14]-NAWEAP-Soviet War Factory-苏军战车工厂
+Building [15]-NAREFN-Soviet Ore Refinery-苏军矿厂
+Building [16]-NAWALL-Soviet Wall-苏军围墙
+Building [18]-NAPSIS-Psychic Sensor-心灵感应器
+Building [20]-NALASR-Soviet Sentry Gun-哨戒炮
+Building [21]-NASAM-Allied Patriot Missile-爱国者飞弹
+Building [22]-CASYDN02-Sydney Kangaroo Burger-悉尼袋鼠堡
+Building [23]-GAYARD-Allied Shipyard-盟军船厂
+Building [24]-NAIRON-Soviet Iron Curtain Device-铁幕装置
+Building [25]-NACNST-Soviet Construction Yard-苏军建造场
+Building [26]-NADEPT-Soviet Service Depot-苏军维修厂
+Building [27]-GACSPH-Allied Chrono Sphere-超时空传送仪
+Building [29]-GAWEAT-Allied Weather Controller-天气控制器
+Building [30]-CABHUT-Bridge repair hut-桥梁维修小屋
+Building [47]-CAHOSP-Old Civilian Hospital-市民医院
+Building [53]-TESLA-Soviet Tesla Coil-磁暴线圈
+Building [54]-NAMISL-Soviet Nuclear Missile Silo-核弹发射井
+Building [55]-ATESLA-Allied Prism Cannon-光棱塔
+Building [56]-CAMACH-Tech Machine Shop-科技机器商店
+Building [58]-CASYDN03-Sydney Opera House-悉尼歌剧院
+Building [59]-AMMOCRAT-Ammo Crates-弹药箱
+Building [61]-NAYARD-Soviet Shipyard-苏军造船厂
+Building [62]-GASPYSAT-Allied SpySat Uplink-间谍卫星
+Building [63]-GAGAP-Allied Gap Generator-裂缝产生器
+Building [64]-GTGCAN-Allied Grand Cannon-巨炮
+Building [65]-NANRCT-Soviet Nuclear Reactor-核子反应堆
+Building [66]-GAPILL-Allied Pill Box-机枪碉堡
+Building [67]-NAFLAK-Soviet Flak Cannon-防空炮
+Building [68]-CAOUTP-Tech Outpost-科技前哨站
+Building [69]-CATHOSP-Tech Hospital-科技医院
+Building [70]-CAAIRP-Tech Airport-科技机场
+Building [71]-CAOILD-Tech Oil Derrick-科技钻油厂
+Building [72]-NACLON-Cloning Vats-复制中心
+Building [73]-GAOREP-Allied Ore Processor-矿石精炼器
+Building [79]-CANEWY04-Statue of Liberty-自由女神像
+Building [80]-CANEWY05-ZZZ World Trade Center-世贸中心
+Building [82]-CATECH01-Communications-通讯中心
+Building [85]-CAWASH01-White House-白宫
+Building [92]-CAMISC01-Barrels-油桶1
+Building [93]-CAMISC02-Barrel-油桶2
+Building [104]-CAPARS01-Paris Tower-埃菲尔铁塔
+Building [105]-GAAIRC-Allied Airforce Command Headquarters-盟军空指部
+Building [107]-CAFRMB-Farm Outhouse-移动式厕所
+Building [135]-AMRADR-Allied American Airforce Command Headquarters-美国空指部
+Building [137]-CAGARD01-Guard Shack-警卫哨
+Building [143]-MAYAN-Mayan Prism Pyramid-玛雅金字塔
+Building [147]-CAMEX01-Mayan Prism Pyramid-玛雅金字塔
+Building [160]-CARUS03-Russain Kremlin Palace-克里姆林宫
+Building [179]-CAPARS11-Paris Arc de Triumphe-巴黎凯旋门
+Building [181]-CAFARM06-Lighthouse-灯塔
+Building [183]-NAPSYB-Psychic Beacon-心灵信标
+Building [184]-NAPSYA-Psychic Amplifier-心灵增幅器
+Building [186]-CACOLO01-Air Force Academy Chapel Colorado-空军学院礼拜堂
+Building [289]-CAMSC13-Derelict Tank-废弃猛犸坦克
+Building [313]-CASLAB-Tech Secret Lab-秘密科技实验室
+Building [320]-CATRAN03-TRANS FORTRESS-尤里要塞
+Building [369]-CAPOWR-Tech Civilian Power Plant-科技电厂
+Building [398]-CABUNK03-Concrete Bunker 03-科技混凝土碉堡
+Building [399]-CABUNK04-Concrete Bunker 04-科技混凝土碉堡
+Building [402]-YACNST-YACNST-尤里建造场
+Building [403]-YAPOWR-YAPOWR-生化反应室
+Building [404]-YAREFN-YAREFN-奴隶矿场
+Building [405]-YABRCK-YABRCK-尤里兵营
+Building [406]-YATECH-YATECH-尤里作战实验室
+Building [407]-YAWEAP-YAWEAP-尤里战车工厂
+Building [408]-NABNKR-NABNKR-战斗碉堡
+Building [409]-YAGGUN-YAGGUN-盖特机炮
+Building [410]-YAPSYT-YAPSYT-心灵控制塔
+Building [411]-NATBNK-NATBNK-坦克碉堡
+Building [412]-GAFWLL-GAFWLL-尤里围墙
+Building [413]-YAYARD-YAYARD-尤里船坞
+Infantry [0]-E1-GI-美国大兵
+Infantry [1]-E2-Conscript-动员兵
+Infantry [2]-SHK-Shock Trooper-磁暴步兵
+Infantry [3]-ENGINEER-Engineer-工程师
+Infantry [4]-JUMPJET-Rocketeer-火箭飞行兵
+Infantry [5]-GHOST-SEAL-海豹部队
+Infantry [6]-YURI-Yuri-尤里
+Infantry [7]-IVAN-Crazy Ivan-疯狂伊文
+Infantry [8]-DESO-Desolater-辐射工兵
+Infantry [9]-DOG-Attack Dog-苏联警犬
+Infantry [13]-CTECH-Technician-技师
+Infantry [15]-CLEG-Chrono Legionnaire-超时空军团兵
+Infantry [16]-SPY-Spy-间谍
+Infantry [17]-CCOMAND-Chrono Commando-超时空突击队
+Infantry [18]-PTROOP-Psi-Corp Trooper-尤里复制人
+Infantry [19]-CIVAN-Chrono Ivan-超时空伊文
+Infantry [20]-YURIPR-Yuri Prime-尤里改
+Infantry [21]-SNIPE-Sniper-狙击手
+Infantry [22]-COW-Animal Cow-奶牛
+Infantry [23]-ALL-Animal Alligator-鳄鱼
+Infantry [24]-TANY-Tanya-谭雅
+Infantry [25]-FLAKT-Flak Trooper-防空步兵
+Infantry [26]-TERROR-Terrorist-恐怖分子
+Infantry [27]-SENGINEER-Soviet Engineer-苏军工程师
+Infantry [28]-ADOG-Allied Attack Dog-盟军警犬
+Infantry [29]-VLADIMIR-Vladimir-弗拉基米尔
+Infantry [30]-PENTGEN-General Pentagon-五角大楼将军
+Infantry [31]-PRES-President-总统
+Infantry [32]-SSRV-Secret Service-秘密保镖
+Infantry [43]-POLARB-Animal Polar Bear-北极熊
+Infantry [44]-JOSH-Animal Monkey-猴子
+Infantry [51]-CLNT-Cowboy-Westwood之星
+Infantry [52]-ARND-Hero-终结者
+Infantry [53]-STLN-Bodybuilder-兰博
+Infantry [54]-CAML-Animal Camel-骆驼
+Infantry [55]-EINS-Albert Einstein-爱因斯坦
+Infantry [56]-MUMY-Evil Mummy-木乃伊
+Infantry [57]-RMNV-Romanov-罗曼诺夫
+Infantry [58]-LUNR-Lunar Infantry-登月飞行兵
+Infantry [59]-DNOA-Animal T-Rex-暴龙
+Infantry [60]-DNOB-Animal Bront-恐龙
+Infantry [62]-WWLF-Werewolf-狼人
+Infantry [65]-BRUTE-BRUTE-狂兽人
+Unit [0]-AMCV-Allied Construction Vehicle-盟军移动基地车
+Unit [1]-HARV-War Miner-武装采矿车
+Unit [2]-APOC-Apocalypse-灾厄坦克
+Unit [3]-HTNK-Rhino Heavy Tank-犀牛坦克
+Unit [4]-SAPC-Armored Transport-野牛运输艇
+Unit [9]-MTNK-Grizzly Battle Tank-灰熊坦克
+Unit [10]-HORV-War Miner-武装采矿车
+Unit [13]-CARRIER-Aircraft Carrier-航空母舰
+Unit [14]-V3-V3 Launcher-V3导弹车
+Unit [15]-ZEP-Kirov Airship-基洛夫空艇
+Unit [16]-DRON-Terror Drone-恐怖机器人
+Unit [17]-HTK-Flak Track-防空履带车
+Unit [18]-DEST-Destroyer-驱逐舰
+Unit [19]-SUB-Typhoon Attack Sub-台风攻击潜艇
+Unit [20]-AEGIS-Aegis Cruiser-神盾巡洋舰
+Unit [21]-LCRF-Landing Craft-旅行者运输艇
+Unit [22]-DRED-Dreadnought-无畏级导弹舰
+Unit [23]-SHAD-BlackHawk Transport-黑鹰直升机
+Unit [24]-SQD-Giant Squid-巨型乌贼
+Unit [25]-DLPH-Dolphin-海豚
+Unit [26]-SMCV-Soviet Construction Vehicle-苏军移动基地车
+Unit [27]-TNKD-Tank Destroyer-坦克杀手
+Unit [28]-HOWI-Howitzer-西风火炮
+Unit [29]-TTNK-Tesla Tank-磁暴坦克
+Unit [30]-HIND-Hind Transport-飞碟
+Unit [31]-LTNK-Light Tank-轻坦克
+Unit [32]-CMON-Chrono Miner(noback)-超时空采矿车
+Unit [33]-CMIN-Chrono Miner-超时空采矿车
+Unit [34]-SREF-Prism Tank-光棱坦克
+Unit [36]-HYD-Sea Scorpion-海蝎
+Unit [37]-MGTK-Mirage Tank-幻影坦克
+Unit [38]-FV-IFV-多功能步兵车
+Unit [40]-VLAD-Vladimir's Dreadnought-弗拉基米尔指挥舰
+Unit [41]-DTRUCK-Demolitions Truck-自爆卡车
+Unit [52]-CRUISE-Cruise Ship-游轮
+Unit [73]-YDUM-YDUM
+Unit [83]-PCV-PCV-尤里移动基地车

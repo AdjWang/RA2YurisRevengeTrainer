@@ -3,6 +3,7 @@
 #include "base/macro.h"
 __YRTR_BEGIN_THIRD_PARTY_HEADERS
 #include "AbstractTypeClass.h"
+#include "BuildingTypeClass.h"
 #include "FactoryClass.h"
 #include "GeneralDefinitions.h"
 #include "Helpers/Cast.h"
@@ -18,6 +19,7 @@ __YRTR_BEGIN_THIRD_PARTY_HEADERS
 __YRTR_END_THIRD_PARTY_HEADERS
 #include "backend/game/beacon.h"
 #include "backend/hook/hook_point.h"
+#include "backend/tech.h"
 #include "base/logging.h"
 
 namespace yrtr {
@@ -358,8 +360,17 @@ static void __declspec(naked) __cdecl InjectGarrisonedMine() {
 }
 
 static void __declspec(naked) __cdecl InjectUnlimitTech() {
+  static yrpp::BuildingTypeClass* tech;
+  static int should_enable;
   __asm {
-    mov eax, 1
+    mov eax, [esp + 0x4]
+    mov [tech], eax
+    pushad
+  }
+  should_enable = static_cast<int>(Trainer::ShouldEnableTech(tech));
+  __asm {
+    popad
+    mov eax, [should_enable]
     ret 0x0C
   }
 }
@@ -489,15 +500,17 @@ static void __declspec(naked) __cdecl InjectSpySpy() {
     return;                                                  \
   }
 
-Trainer::Trainer()
-    : activate_inst_building_(false),
+Trainer::Trainer(Config* cfg)
+    : cfg_(cfg),
+      activate_inst_building_(false),
       activate_inst_superweapon_(false),
       activate_inst_turn_turret_(false),
       activate_inst_turn_body_(false),
-      // TODO: read from config file.
-      activate_auto_clean_beacon_(true),
+      activate_auto_clean_beacon_(false),
       on_state_updated_(nullptr),
       state_dirty_(true) {
+  DCHECK_NOTNULL(cfg_);
+  activate_auto_clean_beacon_ = cfg_->auto_clean_beacon();
   mem_api_ = std::make_unique<MemoryAPI>();
   InitStates(state_);
 }
@@ -520,6 +533,18 @@ bool Trainer::ShouldProtect(yrpp::HouseClass* house) {
     result |= house == protected_house;
   });
   return result;
+}
+
+bool Trainer::ShouldEnableTech(yrpp::BuildingTypeClass* tech) {
+  std::string_view key(tech->ID);
+  Tech tech_key = GetTech(key);
+  if (tech_key == Tech::kUnknown) {
+    return false;
+  }
+  DCHECK_NOTNULL(Config::instance());
+  const TechList& tech_list = Config::instance()->tech_list();
+  DCHECK_LT_F(static_cast<uint32_t>(tech_key), tech_list.size(), "key={}", key);
+  return tech_list[static_cast<uint32_t>(tech_key)];
 }
 
 void Trainer::Update(double /*delta*/) {

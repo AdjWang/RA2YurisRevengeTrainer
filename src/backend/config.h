@@ -6,6 +6,7 @@ namespace fs = std::filesystem;
 #include <string>
 #include <string_view>
 
+#include "backend/tech.h"
 #include "base/macro.h"
 __YRTR_BEGIN_THIRD_PARTY_HEADERS
 #include "absl/container/flat_hash_set.h"
@@ -24,11 +25,10 @@ class Config {
 
   Config(const fs::path& cfg_path);
 
-  uint16_t port() const {
-    // TODO
-    return 35271;
-  }
+  uint16_t port() const { return port_; }
   const fs::path& hotreload_dir() const { return hotreload_dir_; }
+  bool auto_clean_beacon() const { return auto_clean_beacon_; }
+  const TechList& tech_list() const { return tech_list_; }
 
   // Inputs a relative path, return absolute path relative to configuration file
   // directory.
@@ -42,9 +42,13 @@ class Config {
   const fs::path cfg_dir_;
   const fs::path cfg_path_;
 
+  uint16_t port_;
   fs::path hotreload_dir_;
+  bool auto_clean_beacon_;
+  TechList tech_list_;
 
   void LoadGlobal(const toml::table& global);
+  void LoadTechList(const toml::table& tech_tb);
 
   DISALLOW_COPY_AND_ASSIGN(Config);
 };

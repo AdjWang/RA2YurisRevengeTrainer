@@ -47,7 +47,7 @@ static void PreCreateWindow(HINSTANCE hInstance) {
   }
   // Search configuration file at the same directory with the dll.
   CHECK(Config::Load(fs::canonical(fs::path(exe_path)).parent_path()));
-  trainer = std::make_unique<Trainer>();
+  trainer = std::make_unique<Trainer>(Config::instance());
   server = std::make_unique<Server>(trainer.get(), Config::instance()->port());
 }
 

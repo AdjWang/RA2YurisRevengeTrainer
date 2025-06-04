@@ -4,6 +4,7 @@
 
 #include "base/logging.h"
 #include "formatter/std.h"
+#include "gsl/narrow"
 
 namespace yrtr {
 namespace backend {
@@ -25,7 +26,11 @@ template <class T>
 T CheckLoad(const toml::table& tb, std::string_view key) {
   auto raw_val = tb.get_as<T>(key);
   CHECK_NOTNULL(raw_val);
-  return raw_val->get();
+  if constexpr (std::is_integral_v<std::remove_pointer_t<decltype(raw_val)>>) {
+    return *raw_val;
+  } else {
+    return raw_val->get();
+  }
 }
 }  // namespace
 
@@ -46,6 +51,12 @@ bool Config::Load(const fs::path& cfg_dir) {
     HLOG_F(ERROR, "Failed to load table [ra2_trainer]");
     return false;
   }
+  if (toml::table* tech_tb = cfg["tech"].as_table()) {
+    inst_->LoadTechList(*tech_tb);
+  } else {
+    HLOG_F(ERROR, "Failed to load table [tech]");
+    return false;
+  }
   return true;
 }
 
@@ -64,6 +75,7 @@ fs::path Config::GetAbsolutePath(const fs::path& relpath) const {
 }
 
 void Config::LoadGlobal(const toml::table& global) {
+  port_ = gsl::narrow_cast<uint16_t>(CheckLoad<int64_t>(global, "port"));
   hotreload_dir_ =
       cfg_dir_ / TryLoad<std::string>(global, "hotreload_directory")
                      .value_or(std::string(kDefaultHotreloadDir));
@@ -74,6 +86,19 @@ void Config::LoadGlobal(const toml::table& global) {
     HLOG_F(WARNING, "Failed to find hotreload_dir={}", hotreload_dir_);
   }
 #endif
+  auto_clean_beacon_ = CheckLoad<bool>(global, "auto_clean_beacon");
+}
+
+void Config::LoadTechList(const toml::table& tech_tb) {
+  for (auto [k, v] : tech_tb) {
+    std::string_view key = k.str();
+    Tech tech = GetTech(key);
+    CHECK(tech != Tech::kUnknown && tech != Tech::kCount);
+    auto raw_val = v.as<bool>();
+    CHECK_NOTNULL(raw_val);
+    bool enable = raw_val->get();
+    tech_list_[static_cast<int>(tech)] = enable;
+  }
 }
 
 }  // namespace backend

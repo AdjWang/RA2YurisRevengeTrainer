@@ -1,3 +1,343 @@
 [ra2_trainer]
 # Optional, only used for debugging.
 hotreload_directory = "ra2_trainer_hotreload"
+port = 35271
+auto_clean_beacon = true
+
+[tech]
+# Intruder-入侵者战机
+ORCA = true
+# Hornet-大黄蜂
+HORNET = true
+# Black Eagle-黑鹰战机
+BEAG = true
+# Allied Power Plant-盟军发电厂
+GAPOWR = true
+# Allied Ore Refinery-盟军矿厂
+GAREFN = true
+# Allied Construction Yard-盟军建造场
+GACNST = true
+# Allied Barracks-盟军兵营
+GAPILE = true
+# Sandbags-沙墙
+GASAND = true
+# Allied Service Depot-盟军维修厂
+GADEPT = true
+# Allied Battle Lab-盟军作战实验室
+GATECH = true
+# Allied War Factory-盟军战车工厂
+GAWEAP = true
+# Einstein's Lab-爱因斯坦实验室
+CALAB = true
+# Soviet Tesla Reactor-磁能反应炉
+NAPOWR = true
+# Soviet Battle Lab-苏军作战实验室
+NATECH = true
+# Soviet Barracks-苏军兵营
+NAHAND = true
+# Allied Wall-盟军围墙
+GAWALL = true
+# Soviet Radar Tower-苏军雷达
+NARADR = true
+# Soviet War Factory-苏军战车工厂
+NAWEAP = true
+# Soviet Ore Refinery-苏军矿厂
+NAREFN = true
+# Soviet Wall-苏军围墙
+NAWALL = true
+# Psychic Sensor-心灵感应器
+NAPSIS = true
+# Soviet Sentry Gun-哨戒炮
+NALASR = true
+# Allied Patriot Missile-爱国者飞弹
+NASAM = true
+# Sydney Kangaroo Burger-悉尼袋鼠堡
+CASYDN02 = true
+# Allied Shipyard-盟军船厂
+GAYARD = true
+# Soviet Iron Curtain Device-铁幕装置
+NAIRON = true
+# Soviet Construction Yard-苏军建造场
+NACNST = true
+# Soviet Service Depot-苏军维修厂
+NADEPT = true
+# Allied Chrono Sphere-超时空传送仪
+GACSPH = true
+# Allied Weather Controller-天气控制器
+GAWEAT = true
+# Bridge repair hut-桥梁维修小屋
+CABHUT = true
+# Old Civilian Hospital-市民医院
+CAHOSP = true
+# Soviet Tesla Coil-磁暴线圈
+TESLA = true
+# Soviet Nuclear Missile Silo-核弹发射井
+NAMISL = true
+# Allied Prism Cannon-光棱塔
+ATESLA = true
+# Tech Machine Shop-科技机器商店
+CAMACH = true
+# Sydney Opera House-悉尼歌剧院
+CASYDN03 = true
+# Ammo Crates-弹药箱
+AMMOCRAT = true
+# Soviet Shipyard-苏军造船厂
+NAYARD = true
+# Allied SpySat Uplink-间谍卫星
+GASPYSAT = true
+# Allied Gap Generator-裂缝产生器
+GAGAP = true
+# Allied Grand Cannon-巨炮
+GTGCAN = true
+# Soviet Nuclear Reactor-核子反应堆
+NANRCT = true
+# Allied Pill Box-机枪碉堡
+GAPILL = true
+# Soviet Flak Cannon-防空炮
+NAFLAK = true
+# Tech Outpost-科技前哨站
+CAOUTP = true
+# Tech Hospital-科技医院
+CATHOSP = true
+# Tech Airport-科技机场
+CAAIRP = true
+# Tech Oil Derrick-科技钻油厂
+CAOILD = true
+# Cloning Vats-复制中心
+NACLON = true
+# Allied Ore Processor-矿石精炼器
+GAOREP = true
+# Statue of Liberty-自由女神像
+CANEWY04 = true
+# ZZZ World Trade Center-世贸中心
+CANEWY05 = true
+# Communications-通讯中心
+CATECH01 = true
+# White House-白宫
+CAWASH01 = true
+# Barrels-油桶1
+CAMISC01 = true
+# Barrel-油桶2
+CAMISC02 = true
+# Paris Tower-埃菲尔铁塔
+CAPARS01 = true
+# Allied Airforce Command Headquarters-盟军空指部
+GAAIRC = true
+# Farm Outhouse-移动式厕所
+CAFRMB = true
+# Allied American Airforce Command Headquarters-美国空指部
+AMRADR = true
+# Guard Shack-警卫哨
+CAGARD01 = true
+# Mayan Prism Pyramid-玛雅金字塔
+MAYAN = true
+# Mayan Prism Pyramid-玛雅金字塔
+CAMEX01 = true
+# Russain Kremlin Palace-克里姆林宫
+CARUS03 = true
+# Paris Arc de Triumphe-巴黎凯旋门
+CAPARS11 = true
+# Lighthouse-灯塔
+CAFARM06 = true
+# Psychic Beacon-心灵信标
+NAPSYB = true
+# Psychic Amplifier-心灵增幅器
+NAPSYA = true
+# Air Force Academy Chapel Colorado-空军学院礼拜堂
+CACOLO01 = true
+# Derelict Tank-废弃猛犸坦克
+CAMSC13 = true
+# Tech Secret Lab-秘密科技实验室
+CASLAB = true
+# TRANS FORTRESS-尤里要塞
+CATRAN03 = true
+# Tech Civilian Power Plant-科技电厂
+CAPOWR = true
+# Concrete Bunker 03-科技混凝土碉堡
+CABUNK03 = true
+# Concrete Bunker 04-科技混凝土碉堡
+CABUNK04 = true
+# YACNST-尤里建造场
+YACNST = true
+# YAPOWR-生化反应室
+YAPOWR = true
+# YAREFN-奴隶矿场
+YAREFN = true
+# YABRCK-尤里兵营
+YABRCK = true
+# YATECH-尤里作战实验室
+YATECH = true
+# YAWEAP-尤里战车工厂
+YAWEAP = true
+# NABNKR-战斗碉堡
+NABNKR = true
+# YAGGUN-盖特机炮
+YAGGUN = true
+# YAPSYT-心灵控制塔
+YAPSYT = true
+# NATBNK-坦克碉堡
+NATBNK = true
+# GAFWLL-尤里围墙
+GAFWLL = true
+# YAYARD-尤里船坞
+YAYARD = true
+# GI-美国大兵
+E1 = true
+# Conscript-动员兵
+E2 = true
+# Shock Trooper-磁暴步兵
+SHK = true
+# Engineer-工程师
+ENGINEER = true
+# Rocketeer-火箭飞行兵
+JUMPJET = true
+# SEAL-海豹部队
+GHOST = true
+# Yuri-尤里
+YURI = true
+# Crazy Ivan-疯狂伊文
+IVAN = true
+# Desolater-辐射工兵
+DESO = true
+# Attack Dog-苏联警犬
+DOG = true
+# Technician-技师
+CTECH = true
+# Chrono Legionnaire-超时空军团兵
+CLEG = true
+# Spy-间谍
+SPY = true
+# Chrono Commando-超时空突击队
+CCOMAND = true
+# Psi-Corp Trooper-尤里复制人
+PTROOP = true
+# Chrono Ivan-超时空伊文
+CIVAN = true
+# Yuri Prime-尤里改
+YURIPR = true
+# Sniper-狙击手
+SNIPE = true
+# Animal Cow-奶牛
+COW = true
+# Animal Alligator-鳄鱼
+ALL = true
+# Tanya-谭雅
+TANY = true
+# Flak Trooper-防空步兵
+FLAKT = true
+# Terrorist-恐怖分子
+TERROR = true
+# Soviet Engineer-苏军工程师
+SENGINEER = true
+# Allied Attack Dog-盟军警犬
+ADOG = true
+# Vladimir-弗拉基米尔
+VLADIMIR = true
+# General Pentagon-五角大楼将军
+PENTGEN = true
+# President-总统
+PRES = true
+# Secret Service-秘密保镖
+SSRV = true
+# Animal Polar Bear-北极熊
+POLARB = true
+# Animal Monkey-猴子
+JOSH = true
+# Cowboy-Westwood之星
+CLNT = true
+# Hero-终结者
+ARND = true
+# Bodybuilder-兰博
+STLN = true
+# Animal Camel-骆驼
+CAML = true
+# Albert Einstein-爱因斯坦
+EINS = true
+# Evil Mummy-木乃伊
+MUMY = true
+# Romanov-罗曼诺夫
+RMNV = true
+# Lunar Infantry-登月飞行兵
+LUNR = true
+# Animal T-Rex-暴龙
+DNOA = true
+# Animal Bront-恐龙
+DNOB = true
+# Werewolf-狼人
+WWLF = true
+# BRUTE-狂兽人
+BRUTE = true
+# Allied Construction Vehicle-盟军移动基地车
+AMCV = true
+# War Miner-武装采矿车
+HARV = true
+# Apocalypse-灾厄坦克
+APOC = true
+# Rhino Heavy Tank-犀牛坦克
+HTNK = true
+# Armored Transport-野牛运输艇
+SAPC = true
+# Grizzly Battle Tank-灰熊坦克
+MTNK = true
+# War Miner-武装采矿车
+HORV = true
+# Aircraft Carrier-航空母舰
+CARRIER = true
+# V3 Launcher-V3导弹车
+V3 = true
+# Kirov Airship-基洛夫空艇
+ZEP = true
+# Terror Drone-恐怖机器人
+DRON = true
+# Flak Track-防空履带车
+HTK = true
+# Destroyer-驱逐舰
+DEST = true
+# Typhoon Attack Sub-台风攻击潜艇
+SUB = true
+# Aegis Cruiser-神盾巡洋舰
+AEGIS = true
+# Landing Craft-旅行者运输艇
+LCRF = true
+# Dreadnought-无畏级导弹舰
+DRED = true
+# BlackHawk Transport-黑鹰直升机
+SHAD = true
+# Giant Squid-巨型乌贼
+SQD = true
+# Dolphin-海豚
+DLPH = true
+# Soviet Construction Vehicle-苏军移动基地车
+SMCV = true
+# Tank Destroyer-坦克杀手
+TNKD = true
+# Howitzer-西风火炮
+HOWI = true
+# Tesla Tank-磁暴坦克
+TTNK = true
+# Hind Transport-飞碟
+HIND = true
+# Light Tank-轻坦克
+LTNK = true
+# Chrono Miner(noback)-超时空采矿车
+CMON = true
+# Chrono Miner-超时空采矿车
+CMIN = true
+# Prism Tank-光棱坦克
+SREF = true
+# Sea Scorpion-海蝎
+HYD = true
+# Mirage Tank-幻影坦克
+MGTK = true
+# IFV-多功能步兵车
+FV = true
+# Vladimir's Dreadnought-弗拉基米尔指挥舰
+VLAD = true
+# Demolitions Truck-自爆卡车
+DTRUCK = true
+# Cruise Ship-游轮
+CRUISE = true
+# YDUM
+YDUM = true
+# PCV-尤里移动基地车
+PCV = true
