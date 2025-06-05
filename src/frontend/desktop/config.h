@@ -44,7 +44,7 @@ class Config {
       case FnLabel::kSellTheWorld:        return GLFW_KEY_A;
       case FnLabel::kBuildEveryWhere:     return GLFW_KEY_D;
       case FnLabel::kAutoRepair:          return GLFW_KEY_F;
-      case FnLabel::kSocialismTheBest:    return GLFW_KEY_H;
+      case FnLabel::kSocialismMajesty:    return GLFW_KEY_H;
       case FnLabel::kMakeGarrisonedMine:  return GLFW_KEY_L;
       case FnLabel::kInvadeMode:          return GLFW_KEY_Z;
       case FnLabel::kUnlimitTech:         return GLFW_KEY_X;

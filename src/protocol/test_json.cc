@@ -16,7 +16,7 @@ static void InitStates(State& state) {
   state.ckbox_states.emplace(FnLabel::kSellTheWorld,       CheckboxState{.enable=true, .activate=false});
   state.ckbox_states.emplace(FnLabel::kBuildEveryWhere,    CheckboxState{.enable=true, .activate=false});
   state.ckbox_states.emplace(FnLabel::kAutoRepair,         CheckboxState{.enable=true, .activate=false});
-  state.ckbox_states.emplace(FnLabel::kSocialismTheBest,   CheckboxState{.enable=true, .activate=false});
+  state.ckbox_states.emplace(FnLabel::kSocialismMajesty,   CheckboxState{.enable=true, .activate=false});
   state.ckbox_states.emplace(FnLabel::kMakeGarrisonedMine, CheckboxState{.enable=true, .activate=false});
   state.ckbox_states.emplace(FnLabel::kInvadeMode,         CheckboxState{.enable=true, .activate=false});
   state.ckbox_states.emplace(FnLabel::kUnlimitTech,        CheckboxState{.enable=true, .activate=false});

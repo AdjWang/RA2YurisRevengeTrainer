@@ -58,6 +58,8 @@ void InitLogging(LogSink log_sink) {
     perror("Invalid log sink.");
     abort();
   }
+  // BUG: crash in DllMain
+  // absl::InitializeLog();
 }
 
 absl::LogSink* GetLogSink() {

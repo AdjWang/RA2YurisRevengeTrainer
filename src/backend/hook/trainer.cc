@@ -56,7 +56,7 @@ void InitStates(State& state) {
   state.ckbox_states.emplace(FnLabel::kSellTheWorld,       CheckboxState{.enable=true, .activate=false});
   state.ckbox_states.emplace(FnLabel::kBuildEveryWhere,    CheckboxState{.enable=true, .activate=false});
   state.ckbox_states.emplace(FnLabel::kAutoRepair,         CheckboxState{.enable=true, .activate=false});
-  state.ckbox_states.emplace(FnLabel::kSocialismTheBest,   CheckboxState{.enable=true, .activate=false});
+  state.ckbox_states.emplace(FnLabel::kSocialismMajesty,   CheckboxState{.enable=true, .activate=false});
   state.ckbox_states.emplace(FnLabel::kMakeGarrisonedMine, CheckboxState{.enable=true, .activate=false});
   state.ckbox_states.emplace(FnLabel::kInvadeMode,         CheckboxState{.enable=true, .activate=false});
   state.ckbox_states.emplace(FnLabel::kUnlimitTech,        CheckboxState{.enable=true, .activate=false});
@@ -345,6 +345,61 @@ static void __declspec(naked) __cdecl InjectCapturedMine() {
   }
 }
 
+static void __declspec(naked) __cdecl InjectSocialismMajestyCome() {
+  static const uint32_t jmp_back = GetJumpBack(kHpSocialismMajestyCome);
+  static const uint32_t jmp_return = 0x004692D5;
+  static yrpp::TechnoClass* attacker;
+  static yrpp::TechnoClass* target;
+  __asm {
+    mov eax, [esi + 0xB0]
+    mov [attacker], eax
+    mov eax, [esi + 0x10C]
+    mov [target], eax
+    pushad
+  }
+  if (Trainer::ShouldProtect(target)) {
+    attacker->SetOwningHouse(yrpp::HouseClass::CurrentPlayer);
+    __asm {
+      popad
+      mov al, 1
+      jmp [jmp_return]
+    }
+  } else {
+    // Original code.
+    __asm {
+      popad
+      mov ecx, [esi + 0xB0]
+      jmp [jmp_back]
+    }
+  }
+}
+
+static void __declspec(naked) __cdecl InjectSocialismMajestyBack() {
+  static const uint32_t jmp_back = GetJumpBack(kHpSocialismMajestyBack);
+  static const uint32_t jmp_return = 0x00472000;
+  static yrpp::TechnoClass* attacker;
+  __asm {
+    mov eax, [ecx + 0xB0]
+    mov [attacker], eax
+    sub esp, 0x18
+    push esi
+    mov esi, [esp + 0x20]
+    pushad
+  }
+  if (attacker != nullptr && Trainer::ShouldProtect(attacker)) {
+    __asm {
+      popad
+      jmp [jmp_return]
+    }
+  } else {
+    // Original code.
+    __asm {
+      popad
+      jmp [jmp_back]
+    }
+  }
+}
+
 static void __declspec(naked) __cdecl InjectGarrisonedMine() {
   static const uint32_t jmp_back = GetJumpBack(kHpGarrisonedMine);
   static yrpp::HouseClass* player;
@@ -517,7 +572,7 @@ Trainer::Trainer(Config* cfg)
 
 bool Trainer::ShouldProtect(yrpp::AbstractClass* obj) {
   DCHECK(IsWithinGameLoopThread());
-  DCHECK_NOTNULL(obj);
+  CHECK_NOTNULL(obj);
   bool result = false;
   ForeachProtectedHouse([&](yrpp::HouseClass* house) {
     result |= house == obj->GetOwningHouse();
@@ -527,7 +582,7 @@ bool Trainer::ShouldProtect(yrpp::AbstractClass* obj) {
 
 bool Trainer::ShouldProtect(yrpp::HouseClass* house) {
   DCHECK(IsWithinGameLoopThread());
-  DCHECK_NOTNULL(house);
+  CHECK_NOTNULL(house);
   bool result = false;
   ForeachProtectedHouse([&](yrpp::HouseClass* protected_house) {
     result |= house == protected_house;
@@ -567,7 +622,7 @@ void Trainer::Update(double /*delta*/) {
   SideMap selecting_houses;
   ForeachSelectingObject([&](yrpp::ObjectClass* obj) {
     yrpp::HouseClass* obj_house = obj->GetOwningHouse();
-    DCHECK_NOTNULL(obj_house);
+    CHECK_NOTNULL(obj_house);
     size_t namelen = strnlen_s(obj_house->PlainName, 21);
     selecting_houses.emplace(
         obj_house->UniqueID,
@@ -627,7 +682,7 @@ void Trainer::OnCheckboxEvent(FnLabel label, bool activate) {
     case FnLabel::kSellTheWorld:        OnCkboxSellTheWorld(activate);        break;
     case FnLabel::kBuildEveryWhere:     OnCkboxBuildEveryWhere(activate);     break;
     case FnLabel::kAutoRepair:          OnCkboxAutoRepair(activate);          break;
-    case FnLabel::kSocialismTheBest:    OnCkboxSocialismTheBest(activate);    break;
+    case FnLabel::kSocialismMajesty:    OnCkboxSocialismMajesty(activate);    break;
     case FnLabel::kMakeGarrisonedMine:  OnCkboxMakeGarrisonedMine(activate);  break;
     case FnLabel::kInvadeMode:          OnCkboxInvadeMode(activate);          break;
     case FnLabel::kUnlimitTech:         OnCkboxUnlimitTech(activate);         break;
@@ -711,12 +766,12 @@ void Trainer::OnBtnGiveMeABomb() {
   CHECK_MEMAPI_OR_REPORT();
   CHECK_REPORT(IsGaming());
   yrpp::HouseClass* house = yrpp::HouseClass::CurrentPlayer;
-  DCHECK_NOTNULL(house);
+  CHECK_NOTNULL(house);
   if (house->Supers.Count == 0) {
     return;
   }
   yrpp::SuperClass* super0 = house->Supers.GetItem(0);
-  DCHECK_NOTNULL(super0);
+  CHECK_NOTNULL(super0);
   if (super0->CameoChargeState != -1) {
     // Break if the game enables super weapons, which conflicts with nuke from
     // crate.
@@ -736,7 +791,7 @@ void Trainer::OnBtnGiveMeABomb() {
     // Not found target type.
     return;
   }
-  DCHECK_NOTNULL(nuke_inst);
+  CHECK_NOTNULL(nuke_inst);
   nuke_inst->Grant(/*oneTime*/ true, /*announce*/ false, /*onHold*/ false);
   yrpp::SidebarClass::Instance->AddCameo(yrpp::AbstractType::Special, index);
   BeepEnable();
@@ -968,15 +1023,20 @@ void Trainer::OnCkboxAutoRepair(bool activate) {
   UpdateCheckboxState(FnLabel::kAutoRepair, activate);
 }
 
-void Trainer::OnCkboxSocialismTheBest(bool activate) {
+void Trainer::OnCkboxSocialismMajesty(bool activate) {
   DLOG_F(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
   DCHECK(IsWithinGameLoopThread());
   CHECK_MEMAPI_OR_REPORT();
-  // TODO
   if (activate) {
+    CHECK_REPORT(mem_api_->HookJump(kHpSocialismMajestyCome,
+                                    InjectSocialismMajestyCome));
+    CHECK_REPORT(mem_api_->HookJump(kHpSocialismMajestyBack,
+                                    InjectSocialismMajestyBack));
   } else {
+    CHECK_REPORT(mem_api_->RestoreHook(kHpSocialismMajestyCome));
+    CHECK_REPORT(mem_api_->RestoreHook(kHpSocialismMajestyBack));
   }
-  UpdateCheckboxState(FnLabel::kSocialismTheBest, activate);
+  UpdateCheckboxState(FnLabel::kSocialismMajesty, activate);
 }
 
 void Trainer::OnCkboxMakeGarrisonedMine(bool activate) {
@@ -1084,7 +1144,7 @@ void Trainer::ForeachSelectingObject(
     std::function<void(yrpp::ObjectClass*)> cb) {
   for (int i = 0; i < yrpp::ObjectClass::CurrentObjects->Count; i++) {
     yrpp::ObjectClass* obj = yrpp::ObjectClass::CurrentObjects->GetItem(i);
-    DCHECK_NOTNULL(obj);
+    CHECK_NOTNULL(obj);
     cb(obj);
   }
 }
@@ -1160,7 +1220,7 @@ void Trainer::FinishSuperweapon() const {
   ForeachProtectedHouse([](yrpp::HouseClass* house) {
     for (int i = 0; i < house->Supers.Count; i++) {
       yrpp::SuperClass* super = house->Supers.GetItem(i);
-      DCHECK_NOTNULL(super);
+      CHECK_NOTNULL(super);
       if (super->CameoChargeState != -1) {
         super->IsCharged = true;
       }

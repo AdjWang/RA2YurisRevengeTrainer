@@ -9,6 +9,7 @@
 #include "absl/log/absl_vlog_is_on.h"
 #include "absl/log/check.h"
 #include "absl/log/globals.h"
+#include "absl/log/initialize.h"
 #include "absl/log/internal/globals.h"
 #include "absl/log/internal/log_impl.h"
 #include "absl/log/log_sink.h"

@@ -103,7 +103,7 @@ constexpr const char8_t* GetFnStrZh(FnLabel label) {
     case FnLabel::kSellTheWorld:        return u8"卖卖卖";
     case FnLabel::kBuildEveryWhere:     return u8"随意建筑";
     case FnLabel::kAutoRepair:          return u8"自动修理";
-    case FnLabel::kSocialismTheBest:    return u8"社会主义万岁";
+    case FnLabel::kSocialismMajesty:    return u8"社会主义万岁";
     case FnLabel::kMakeGarrisonedMine:  return u8"全是我的-房屋驻军";
     case FnLabel::kInvadeMode:          return u8"侵略模式";
     case FnLabel::kUnlimitTech:         return u8"全科技";
@@ -137,7 +137,7 @@ constexpr const char8_t* GetFnStrEn(FnLabel label) {
     case FnLabel::kSellTheWorld:        return u8"Sell the world";
     case FnLabel::kBuildEveryWhere:     return u8"Build everywhere";
     case FnLabel::kAutoRepair:          return u8"Auto repair";
-    case FnLabel::kSocialismTheBest:    return u8"Socialism the best";
+    case FnLabel::kSocialismMajesty:    return u8"Socialism the best";
     case FnLabel::kMakeGarrisonedMine:  return u8"Make garrisoned mine";
     case FnLabel::kInvadeMode:          return u8"Invade mode";
     case FnLabel::kUnlimitTech:         return u8"Unlimit technology";

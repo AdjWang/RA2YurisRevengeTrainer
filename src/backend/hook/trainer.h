@@ -119,7 +119,7 @@ class Trainer : public ITrainer {
   void OnCkboxBuildEveryWhere(bool activate);
   void OnCkboxAutoRepair(bool activate);
   // void OnCkboxEnermyRevertRepair(bool activate);
-  void OnCkboxSocialismTheBest(bool activate);
+  void OnCkboxSocialismMajesty(bool activate);
   // void OnCkboxMakeAttackedMine(bool activate);
   // void OnCkboxMakeCapturedMine(bool activate);
   void OnCkboxMakeGarrisonedMine(bool activate);

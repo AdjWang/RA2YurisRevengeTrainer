@@ -68,6 +68,7 @@ target_compile_definitions(wsock32 PRIVATE _WINSOCK_DEPRECATED_NO_WARNINGS)
 target_compile_options(wsock32 PRIVATE /W4 $<$<CONFIG:Debug>:/WX>)
 target_link_libraries(wsock32
   PRIVATE absl::log
+  PRIVATE absl::log_initialize
   PRIVATE mswsock
   PRIVATE ws2_32
 )
@@ -89,6 +90,7 @@ target_link_libraries(yrtr_base
   PUBLIC absl::flat_hash_set
   PUBLIC absl::inlined_vector
   PUBLIC absl::log
+  PUBLIC absl::log_initialize
   PUBLIC absl::synchronization
 )
 
@@ -154,7 +156,10 @@ target_link_libraries(yrtr_backend
 
 add_library(ra2_trainer_backend SHARED ${YRTR_SOURCE_DIR}/backend/lib/dllmain.cc)
 target_compile_options(ra2_trainer_backend PRIVATE /W4 $<$<CONFIG:Debug>:/WX>)
-target_link_libraries(ra2_trainer_backend PRIVATE yrtr_backend)
+target_link_libraries(ra2_trainer_backend
+  PRIVATE yrtr_backend
+  PRIVATE absl::failure_signal_handler
+)
 
 if (YRTR_BUILD_TEST)
   add_executable(test_server

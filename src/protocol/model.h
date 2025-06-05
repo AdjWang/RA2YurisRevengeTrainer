@@ -39,7 +39,7 @@ enum class FnLabel {
   kSellTheWorld,
   kBuildEveryWhere,
   kAutoRepair,
-  kSocialismTheBest,
+  kSocialismMajesty,
   kMakeGarrisonedMine,
   kInvadeMode,
   kUnlimitTech,
@@ -75,7 +75,7 @@ constexpr std::string_view StrFnLabel(FnLabel label) {
     case FnLabel::kSellTheWorld:        return "SellTheWorld";
     case FnLabel::kBuildEveryWhere:     return "BuildEveryWhere";
     case FnLabel::kAutoRepair:          return "AutoRepair";
-    case FnLabel::kSocialismTheBest:    return "SocialismTheBest";
+    case FnLabel::kSocialismMajesty:    return "SocialismMajesty";
     case FnLabel::kMakeGarrisonedMine:  return "MakeGarrisonedMine";
     case FnLabel::kInvadeMode:          return "InvadeMode";
     case FnLabel::kUnlimitTech:         return "UnlimitTech";
