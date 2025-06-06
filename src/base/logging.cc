@@ -11,12 +11,14 @@ namespace logging {
 WindowsDebuggerLogSink WindowsDebuggerLogSink::kLogSink;
 
 void WindowsDebuggerLogSink::Send(const absl::LogEntry& entry) {
-  if (entry.log_severity() < absl::StderrThreshold() &&
-      absl::log_internal::IsInitialized()) {
+  if (entry.log_severity() < absl::StderrThreshold()) {
     return;
   }
   mu_.lock();
   ::OutputDebugStringA(entry.text_message_with_prefix_and_newline_c_str());
+  if (!entry.stacktrace().empty()) [[unlikely]] {
+    ::OutputDebugStringA(entry.stacktrace().data());
+  }
   mu_.unlock();
 }
 #endif
@@ -28,11 +30,10 @@ void StderrLogSink::Send(const absl::LogEntry& entry) {
     return;
   }
   mu_.lock();
-  if (!entry.stacktrace().empty()) {
+  absl::log_internal::WriteToStderr(
+      entry.text_message_with_prefix_and_newline(), entry.log_severity());
+  if (!entry.stacktrace().empty()) [[unlikely]] {
     absl::log_internal::WriteToStderr(entry.stacktrace(), entry.log_severity());
-  } else {
-    absl::log_internal::WriteToStderr(
-        entry.text_message_with_prefix_and_newline(), entry.log_severity());
   }
   mu_.unlock();
 }

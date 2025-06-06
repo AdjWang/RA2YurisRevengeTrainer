@@ -7,7 +7,6 @@
 #include <mutex>
 
 #include "absl/log/absl_vlog_is_on.h"
-#include "absl/log/check.h"
 #include "absl/log/globals.h"
 #include "absl/log/initialize.h"
 #include "absl/log/internal/globals.h"
@@ -115,14 +114,21 @@ extern absl::LogSink* GetLogSink();
 #define EXABSL_LOG_INTERNAL_LOG_IF_IMPL(severity, condition)  \
   ABSL_LOG_INTERNAL_CONDITION##severity(STATELESS, condition) \
       ABSL_LOGGING_INTERNAL_LOG##severity                     \
-          .ToSinkOnly(yrtr::logging::GetLogSink())         \
+          .ToSinkOnly(yrtr::logging::GetLogSink())            \
+          .InternalStream()
+
+#define EXABSL_LOG_INTERNAL_PLOG_IF_IMPL(severity, condition) \
+  ABSL_LOG_INTERNAL_CONDITION##severity(STATELESS, condition) \
+      ABSL_LOGGING_INTERNAL_LOG##severity                     \
+          .ToSinkOnly(yrtr::logging::GetLogSink())            \
+          .WithPerror()                                       \
           .InternalStream()
 
 #ifndef NDEBUG
 #define EXABSL_LOG_INTERNAL_DLOG_IF_IMPL(severity, condition) \
   ABSL_LOG_INTERNAL_CONDITION##severity(STATELESS, condition) \
       ABSL_LOGGING_INTERNAL_DLOG##severity                    \
-          .ToSinkOnly(yrtr::logging::GetLogSink())         \
+          .ToSinkOnly(yrtr::logging::GetLogSink())            \
           .InternalStream()
 #else
 #define EXABSL_LOG_INTERNAL_DLOG_IF_IMPL(severity, condition)            \
@@ -134,6 +140,9 @@ extern absl::LogSink* GetLogSink();
 
 #define LOG_IF(severity, condition) \
   EXABSL_LOG_INTERNAL_LOG_IF_IMPL(_##severity, condition)
+
+#define PLOG_IF(severity, condition) \
+  EXABSL_LOG_INTERNAL_PLOG_IF_IMPL(_##severity, condition)
 
 // LOG()
 //
@@ -219,6 +228,24 @@ extern absl::LogSink* GetLogSink();
 #define HDLOG(lvl)
 #define HDLOG_F(lvl, f, ...)
 #endif
+
+#define CHECK(cond) LOG_IF(FATAL, !(cond)) << "Check failed: " #cond
+#define CHECK_EQ(a, b) LOG_IF(FATAL,  ((a)!=(b))) << std::format("Check failed: " #a "={} EQ " #b "={} ", (a), (b))
+#define CHECK_NE(a, b) LOG_IF(FATAL,  ((a)==(b))) << std::format("Check failed: " #a "={} NE " #b "={} ", (a), (b))
+#define CHECK_GE(a, b) LOG_IF(FATAL, !((a)>=(b))) << std::format("Check failed: " #a "={} GE " #b "={} ", (a), (b))
+#define CHECK_GT(a, b) LOG_IF(FATAL, !((a)> (b))) << std::format("Check failed: " #a "={} GT " #b "={} ", (a), (b))
+#define CHECK_LE(a, b) LOG_IF(FATAL, !((a)<=(b))) << std::format("Check failed: " #a "={} LE " #b "={} ", (a), (b))
+#define CHECK_LT(a, b) LOG_IF(FATAL, !((a)< (b))) << std::format("Check failed: " #a "={} LT " #b "={} ", (a), (b))
+
+#define DCHECK(cond) LOG_IF(FATAL, !(cond)) << "Check failed: " #cond
+#define DCHECK_EQ(a, b) LOG_IF(FATAL,  ((a)!=(b))) << std::format("Check failed: " #a "={} EQ " #b "={} ", (a), (b))
+#define DCHECK_NE(a, b) LOG_IF(FATAL,  ((a)==(b))) << std::format("Check failed: " #a "={} NE " #b "={} ", (a), (b))
+#define DCHECK_GE(a, b) LOG_IF(FATAL, !((a)>=(b))) << std::format("Check failed: " #a "={} GE " #b "={} ", (a), (b))
+#define DCHECK_GT(a, b) LOG_IF(FATAL, !((a)> (b))) << std::format("Check failed: " #a "={} GT " #b "={} ", (a), (b))
+#define DCHECK_LE(a, b) LOG_IF(FATAL, !((a)<=(b))) << std::format("Check failed: " #a "={} LE " #b "={} ", (a), (b))
+#define DCHECK_LT(a, b) LOG_IF(FATAL, !((a)< (b))) << std::format("Check failed: " #a "={} LT " #b "={} ", (a), (b))
+
+#define PCHECK(cond) PLOG_IF(FATAL, !(cond)) << "Check failed: " #cond
 
 #define CHECK_F(cond, f, ...) LOG_IF(FATAL, !(cond)) << "Check failed: " #cond " " << std::format(f, ##__VA_ARGS__)
 #define CHECK_EQ_F(a, b, f, ...) LOG_IF(FATAL,  ((a)!=(b))) << std::format("Check failed: " #a "={} EQ " #b "={} ", (a), (b)) << std::format(f, ##__VA_ARGS__)

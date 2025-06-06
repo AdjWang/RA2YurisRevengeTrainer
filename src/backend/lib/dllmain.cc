@@ -1,5 +1,6 @@
 #include <filesystem>
 namespace fs = std::filesystem;
+#include <format>
 
 #include "base/windows_shit.h"
 #define EAT_SHIT_FIRST  // prevent linter move windows shit down
@@ -27,7 +28,9 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason,
                     LPVOID lpvReserved) {
   switch (fdwReason) {
     case DLL_PROCESS_ATTACH: {
-      OutputDebugStringA("[YRTR] Process attach");
+      OutputDebugStringA(std::format("[YRTR] Process attach base={:08X}",
+                                     reinterpret_cast<uint32_t>(hinstDLL))
+                             .c_str());
       yrtr::logging::InitLogging(yrtr::logging::LogSink::kDbgView);
       std::string dll_path = GetModule(hinstDLL);
       if (!dll_path.empty()) {
