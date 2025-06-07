@@ -114,7 +114,9 @@ inline bool AreEqual(const SideMap& lhs, const SideMap& rhs) {
                     [](auto a, auto b) { return a.first == b.first; });
 }
 
+// Deprecated in websocket.
 static constexpr std::string_view kApiGetState = "/state";
+// Deprecated in websocket.
 static constexpr std::string_view kApiPostEvent = "/event";
 
 // Stored in backend.

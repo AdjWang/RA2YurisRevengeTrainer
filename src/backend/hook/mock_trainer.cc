@@ -20,6 +20,10 @@ void MockTrainer::Update(double /*delta*/) {
                                     .uniq_id = 123,
                                     .name = "mock player 123",
                                 });
+  selecting_houses.emplace(456, SideDesc{
+                                    .uniq_id = 456,
+                                    .name = "mock player 456",
+                                });
   if (!AreEqual(state_.selecting_houses, selecting_houses)) {
     state_.selecting_houses = std::move(selecting_houses);
     state_dirty_ = true;
