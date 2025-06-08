@@ -10,26 +10,33 @@ namespace yrtr {
 namespace backend {
 
 bool WriteCheckboxStateToToml(const CheckboxStateMap& state_map,
-                              const fs::path& filepath) {
-  toml::table tbl;
+                             const fs::path& filepath) {
+  toml::table root_tbl;
+  toml::table checkbox_tbl;
   for (const auto& [label, state] : state_map) {
-    tbl.insert(StrFnLabel(label), state.activate);
+    checkbox_tbl.insert(StrFnLabel(label), state.activate);
   }
+  root_tbl.insert("checkbox", std::move(checkbox_tbl));
   std::ofstream file(filepath);
   if (!file.is_open()) {
     return false;
   }
   DLOG_F(INFO, "Write record to file={}", filepath);
-  file << tbl;
+  file << root_tbl;
   return file.good();
 }
 
 bool ReadCheckboxStateFromToml(const fs::path& filepath,
-                               CheckboxStateMap& state_map) {
+                              CheckboxStateMap& state_map) {
   try {
-    auto tbl = toml::parse_file(filepath.string());
+    auto root_tbl = toml::parse_file(filepath.string());
     DLOG_F(INFO, "Load record from file={}", filepath);
-    for (const auto& [key, value] : tbl) {
+    auto* checkbox_tbl = root_tbl["checkbox"].as_table();
+    if (!checkbox_tbl) {
+      LOG_F(WARNING, "Missing [checkbox] section in file={}", filepath);
+      return false;
+    }
+    for (const auto& [key, value] : *checkbox_tbl) {
       FnLabel label = StrToFnLabel(key.str());
       if (label == FnLabel::kInvalid) {
         // Skip unknown keys
