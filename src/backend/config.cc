@@ -87,6 +87,7 @@ void Config::LoadGlobal(const toml::table& global) {
   }
 #endif
   auto_clean_beacon_ = CheckLoad<bool>(global, "auto_clean_beacon");
+  auto_record_ = CheckLoad<bool>(global, "auto_record");
 }
 
 void Config::LoadTechList(const toml::table& tech_tb) {

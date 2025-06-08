@@ -122,14 +122,9 @@ add_executable(ra2_trainer WIN32 ${YRTR_SOURCE_DIR}/frontend/desktop/bin/main.cc
 target_compile_options(ra2_trainer PRIVATE /W4 $<$<CONFIG:Debug>:/WX>)
 target_link_libraries(ra2_trainer PRIVATE yrtr_frontend glfw)
 
-# TODO: not working
-add_custom_command(TARGET ra2_trainer POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy
-  ${CMAKE_CURRENT_SOURCE_DIR}/scripts/ra2_trainer.toml
-  ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE})
-
 add_library(yrtr_backend STATIC
   ${YRTR_SOURCE_DIR}/backend/config.cc
+  ${YRTR_SOURCE_DIR}/backend/record.cc
   ${YRTR_SOURCE_DIR}/backend/game/beacon.cc
   ${YRTR_SOURCE_DIR}/backend/hook/game_loop.cc
   ${YRTR_SOURCE_DIR}/backend/hook/hook.cc
@@ -159,6 +154,15 @@ target_compile_options(ra2_trainer_backend PRIVATE /W4 $<$<CONFIG:Debug>:/WX>)
 target_link_libraries(ra2_trainer_backend
   PRIVATE yrtr_backend
   PRIVATE absl::failure_signal_handler
+)
+
+add_custom_command(TARGET ra2_trainer_backend POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy
+  ${CMAKE_CURRENT_SOURCE_DIR}/scripts/ra2_trainer.toml
+  ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}
+  COMMAND ${CMAKE_COMMAND} -E copy
+  ${CMAKE_CURRENT_SOURCE_DIR}/scripts/ra2_trainer_backend.toml
+  ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}
 )
 
 if (YRTR_BUILD_TEST)

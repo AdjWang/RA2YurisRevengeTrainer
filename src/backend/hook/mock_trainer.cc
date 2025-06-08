@@ -1,5 +1,6 @@
 #include "backend/hook/mock_trainer.h"
 
+#include "backend/record.h"
 #include "base/logging.h"
 #include "base/thread.h"
 
@@ -8,8 +9,19 @@ namespace backend {
 namespace hook {
 SideMap MockTrainer::protected_houses_;
 
-MockTrainer::MockTrainer() : state_dirty_(true) {
+MockTrainer::MockTrainer(Config* cfg)
+    : cfg_(cfg),
+      state_dirty_(true) {
   InitStates(state_);
+  if (cfg_->auto_record()) {
+    ReadCheckboxStateFromToml(cfg_->record_path(), /*out*/ state_.ckbox_states);
+  }
+}
+
+MockTrainer::~MockTrainer() {
+  if (cfg_->auto_record()) {
+    WriteCheckboxStateToToml(state_.ckbox_states, cfg_->record_path());
+  }
 }
 
 void MockTrainer::Update(double /*delta*/) {

@@ -11,9 +11,10 @@ namespace hook {
 
 class MockTrainer : public ITrainer {
  public:
-  MockTrainer();
+  MockTrainer(Config* cfg);
   MockTrainer(MockTrainer&&) = delete;
   MockTrainer& operator=(MockTrainer&&) = delete;
+  ~MockTrainer();
 
   State state() const final {
     DCHECK(IsWithinGameLoopThread());
@@ -34,6 +35,7 @@ class MockTrainer : public ITrainer {
   // Update from state before use.
   static SideMap protected_houses_;
 
+  Config* cfg_;
   State state_;
   std::function<void(State)> on_state_updated_;
   bool state_dirty_;

@@ -28,6 +28,8 @@ class Config {
   uint16_t port() const { return port_; }
   const fs::path& hotreload_dir() const { return hotreload_dir_; }
   bool auto_clean_beacon() const { return auto_clean_beacon_; }
+  bool auto_record() const { return auto_record_; }
+  fs::path record_path() const { return cfg_dir_ / kDefaultRecordFilename; }
   const TechList& tech_list() const { return tech_list_; }
 
   // Inputs a relative path, return absolute path relative to configuration file
@@ -38,6 +40,8 @@ class Config {
   static std::unique_ptr<Config> inst_;
   static constexpr std::string_view kDefaultHotreloadDir =
       "ra2_trainer_hotreload";
+  static constexpr std::string_view kDefaultRecordFilename =
+      "ra2_trainer_record.toml";
 
   const fs::path cfg_dir_;
   const fs::path cfg_path_;
@@ -45,6 +49,7 @@ class Config {
   uint16_t port_;
   fs::path hotreload_dir_;
   bool auto_clean_beacon_;
+  bool auto_record_;
   TechList tech_list_;
 
   void LoadGlobal(const toml::table& global);

@@ -52,6 +52,7 @@ class Trainer : public ITrainer {
   Trainer(Config* cfg);
   Trainer(Trainer&&) = delete;
   Trainer& operator=(Trainer&&) = delete;
+  ~Trainer();
 
   State state() const final {
     DCHECK(IsWithinGameLoopThread());
@@ -102,35 +103,25 @@ class Trainer : public ITrainer {
   void OnBtnUnitSpeedUp();
   void OnBtnIAMWinner();
   void OnBtnThisIsMine();
-  // void OnBtnIAMGhost();
 
   void OnCkboxGod(bool activate);
   void OnCkboxInstBuild(bool activate);
   void OnCkboxUnlimitSuperWeapon(bool activate);
-  // void OnCkboxUnlimitRadar(bool activate);
   void OnCkboxInstFire(bool activate);
   void OnCkboxInstTurn(bool activate);
   void OnCkboxRangeToYourBase(bool activate);
   void OnCkboxFireToYourBase(bool activate);
   void OnCkboxFreezeGapGenerator(bool activate);
-  // void OnCkboxFreezeUnit(bool activate);
   void OnCkboxSellTheWorld(bool activate);
-  // void OnCkboxUnlimitPower(bool activate);
   void OnCkboxBuildEveryWhere(bool activate);
   void OnCkboxAutoRepair(bool activate);
-  // void OnCkboxEnermyRevertRepair(bool activate);
   void OnCkboxSocialismMajesty(bool activate);
-  // void OnCkboxMakeAttackedMine(bool activate);
-  // void OnCkboxMakeCapturedMine(bool activate);
   void OnCkboxMakeGarrisonedMine(bool activate);
   void OnCkboxInvadeMode(bool activate);
   void OnCkboxUnlimitTech(bool activate);
-  // void OnCkboxFastReload(bool activate);
   void OnCkboxUnlimitFirePower(bool activate);
   void OnCkboxInstChrono(bool activate);
   void OnCkboxSpySpy(bool activate);
-  // void OnCkboxInfantrySlip(bool activate);
-  // void OnCkboxUnitLeveledUp(bool activate);
   void OnCkboxAdjustGameSpeed(bool activate);
 
   void UpdateCheckboxState(FnLabel label, bool activate);

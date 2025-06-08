@@ -31,7 +31,8 @@ static void Init(const char* exe_path) {
   // Setup thread id.
   SetupGameLoopThreadOnce();
   CHECK(backend::Config::Load(fs::canonical(fs::path(exe_path)).parent_path()));
-  trainer = std::make_unique<backend::hook::MockTrainer>();
+  trainer =
+      std::make_unique<backend::hook::MockTrainer>(backend::Config::instance());
   server = std::make_unique<Server>(trainer.get(),
                                     backend::Config::instance()->port());
 }
@@ -66,5 +67,6 @@ int main(int argc, char* argv[]) {
     yrtr::Update();
     std::this_thread::sleep_for(std::chrono::milliseconds(15));
   }
+  LOG_F(INFO, "Exit test server");
   yrtr::OnExit();
 }

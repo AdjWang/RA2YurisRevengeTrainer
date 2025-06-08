@@ -19,6 +19,7 @@ __YRTR_BEGIN_THIRD_PARTY_HEADERS
 __YRTR_END_THIRD_PARTY_HEADERS
 #include "backend/game/beacon.h"
 #include "backend/hook/hook_point.h"
+#include "backend/record.h"
 #include "backend/tech.h"
 #include "base/logging.h"
 
@@ -67,15 +68,6 @@ void InitStates(State& state) {
 }
 
 namespace {
-// TODO
-// static void ResetStates(State& state) {
-//   for (CheckboxState& ckbox_state : std::views::values(state.ckbox_states)) {
-//     ckbox_state.activate = false;
-//     ckbox_state.enable = true;
-//   }
-//   state.ckbox_states[FnLabel::kFireToYourBase].enable = false;
-// }
-
 static yrpp::HouseClass* FindHouseById(UniqId id) {
   for (int i = 0; i < yrpp::HouseClass::Array->Count; i++) {
     yrpp::HouseClass* obj = yrpp::HouseClass::Array->GetItem(i);
@@ -568,6 +560,15 @@ Trainer::Trainer(Config* cfg)
   activate_auto_clean_beacon_ = cfg_->auto_clean_beacon();
   mem_api_ = std::make_unique<MemoryAPI>();
   InitStates(state_);
+  if (cfg_->auto_record()) {
+    ReadCheckboxStateFromToml(cfg_->record_path(), /*out*/ state_.ckbox_states);
+  }
+}
+
+Trainer::~Trainer() {
+  if (cfg_->auto_record()) {
+    WriteCheckboxStateToToml(state_.ckbox_states, cfg_->record_path());
+  }
 }
 
 bool Trainer::ShouldProtect(yrpp::AbstractClass* obj) {

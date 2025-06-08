@@ -3,6 +3,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "base/logging.h"
 #include "base/macro.h"
 __YRTR_BEGIN_THIRD_PARTY_HEADERS
 #include "absl/container/btree_map.h"
@@ -86,6 +87,40 @@ constexpr std::string_view StrFnLabel(FnLabel label) {
     case FnLabel::kCount:               return "Count";
     default:                            return "unknown";
   }
+}
+
+static constexpr FnLabel StrToFnLabel(std::string_view str) {
+  // Button
+  if (str == "kApply")              return FnLabel::kApply;
+  if (str == "kFastBuild")          return FnLabel::kFastBuild;
+  if (str == "kDeleteUnit")         return FnLabel::kDeleteUnit;
+  if (str == "kClearShroud")        return FnLabel::kClearShroud;
+  if (str == "kGiveMeABomb")        return FnLabel::kGiveMeABomb;
+  if (str == "kUnitLevelUp")        return FnLabel::kUnitLevelUp;
+  if (str == "kUnitSpeedUp")        return FnLabel::kUnitSpeedUp;
+  if (str == "kIAMWinner")          return FnLabel::kIAMWinner;
+  if (str == "kThisIsMine")         return FnLabel::kThisIsMine;
+  // Checkbox
+  if (str == "kGod")                return FnLabel::kGod;
+  if (str == "kInstBuild")          return FnLabel::kInstBuild;
+  if (str == "kUnlimitSuperWeapon") return FnLabel::kUnlimitSuperWeapon;
+  if (str == "kInstFire")           return FnLabel::kInstFire;
+  if (str == "kInstTurn")           return FnLabel::kInstTurn;
+  if (str == "kRangeToYourBase")    return FnLabel::kRangeToYourBase;
+  if (str == "kFireToYourBase")     return FnLabel::kFireToYourBase;
+  if (str == "kFreezeGapGenerator") return FnLabel::kFreezeGapGenerator;
+  if (str == "kSellTheWorld")       return FnLabel::kSellTheWorld;
+  if (str == "kBuildEveryWhere")    return FnLabel::kBuildEveryWhere;
+  if (str == "kAutoRepair")         return FnLabel::kAutoRepair;
+  if (str == "kSocialismMajesty")   return FnLabel::kSocialismMajesty;
+  if (str == "kMakeGarrisonedMine") return FnLabel::kMakeGarrisonedMine;
+  if (str == "kInvadeMode")         return FnLabel::kInvadeMode;
+  if (str == "kUnlimitTech")        return FnLabel::kUnlimitTech;
+  if (str == "kUnlimitFirePower")   return FnLabel::kUnlimitFirePower;
+  if (str == "kInstChrono")         return FnLabel::kInstChrono;
+  if (str == "kSpySpy")             return FnLabel::kSpySpy;
+  if (str == "kAdjustGameSpeed")    return FnLabel::kAdjustGameSpeed;
+  return FnLabel::kInvalid;
 }
 
 struct CheckboxState {
