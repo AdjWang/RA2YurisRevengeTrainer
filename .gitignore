@@ -3,3 +3,5 @@ build/
 deps/
 !deps/dglad/
 !deps/glad/
+src/frontend/web/dist/
+src/frontend/web/node_modules/

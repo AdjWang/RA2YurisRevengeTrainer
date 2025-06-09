@@ -26,7 +26,10 @@ Server::Server(backend::hook::ITrainer* trainer, uint16_t port)
                                   WebsocketServer::message_ptr msg) {
     OnMessage(svr_, hdl, msg);
   });
-  svr_.listen(port);
+  svr_.set_http_handler([this](websocketpp::connection_hdl hdl){
+    OnHttpRequest(svr_, hdl);
+  });
+  svr_.listen("0.0.0.0", std::to_string(port));
   svr_.start_accept();
   evloop_ = std::thread([this]() {
     SetupNetThreadOnce();
@@ -87,6 +90,30 @@ void Server::OnMessage(WebsocketServer& /*svr*/,
   } catch (const std::exception& e) {
     LOG_F(ERROR, "Failed to parse json data={} error={}", payload, e.what());
   }
+}
+
+void Server::OnHttpRequest(WebsocketServer& /*svr*/,
+                           websocketpp::connection_hdl hdl) {
+  std::string data = R"(
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Example</title>
+    </head>
+    <body>
+        <p>This is an example of a simple HTML page with one paragraph.</p>
+    </body>
+</html>
+  )";
+  websocketpp::lib::error_code ec;
+  WebsocketServer::connection_ptr conn = svr_.get_con_from_hdl(hdl, ec);
+  if (ec) {
+    LOG_F(ERROR, "Failed to send state data with error=[{}]{}", ec.value(),
+          ec.message());
+    return;
+  }
+  conn->set_body(data);
+  conn->set_status(websocketpp::http::status_code::ok);
 }
 
 void Server::OnStateUpdated(State state) {

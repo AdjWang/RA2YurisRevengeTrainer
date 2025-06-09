@@ -1,3 +1,10 @@
+import {
+  BtnFnLabelFirst, BtnFnLabelLast,
+  CheckboxFnLabelFirst, CheckboxFnLabelLast,
+  FnLabel, strFnLabel
+} from './protocol';
+import { YRTRClient } from './client';
+
 var client = undefined;
 var selectingHouseMap = new Map();
 var protectedHouseMap = new Map();
@@ -171,7 +178,7 @@ function onStateUpdate(state) {
 
 function initClient() {
   // TODO: set port
-  client = new YRTRClient('ws://localhost:35271', onStateUpdate);
+  client = new YRTRClient(`ws://${window.location.hostname}:35271`, onStateUpdate);
   // Connect to server
   client.connect();
   // Clean up on page unload

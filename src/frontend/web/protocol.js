@@ -1,3 +1,9 @@
+export {
+  BtnFnLabelFirst, BtnFnLabelLast,
+  CheckboxFnLabelFirst, CheckboxFnLabelLast,
+  FnLabel, strFnLabel
+};
+
 const BtnFnLabelFirst = 1;
 const BtnFnLabelLast = 8;
 const CheckboxFnLabelFirst = 9;

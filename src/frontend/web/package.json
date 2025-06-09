@@ -1,0 +1,15 @@
+{
+  "name": "yrtr",
+  "version": "1.0.0",
+  "description": "Web client for RA2 Yuri's Revenge trainer.",
+  "main": "main.js",
+  "scripts": {
+    "build": "vite build"
+  },
+  "author": "adjwang",
+  "license": "ISC",
+  "devDependencies": {
+    "vite": "^6.3.5",
+    "vite-plugin-singlefile": "^2.2.0"
+  }
+}

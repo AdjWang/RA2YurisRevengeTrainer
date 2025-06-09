@@ -1,4 +1,6 @@
-class YRTRClient {
+import { FnLabel } from "./protocol";
+
+export class YRTRClient {
   #onStateUpdate;
   #socket;
   #getStateCount;

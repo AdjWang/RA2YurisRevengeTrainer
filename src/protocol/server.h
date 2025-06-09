@@ -36,6 +36,7 @@ class Server {
   void OnCloseConn(websocketpp::connection_hdl hdl);
   void OnMessage(WebsocketServer& svr, websocketpp::connection_hdl hdl,
                  WebsocketServer::message_ptr msg);
+  void OnHttpRequest(WebsocketServer& svr, websocketpp::connection_hdl hdl);
   void OnStateUpdated(State state);
   void OnGetStateEvent(websocketpp::connection_hdl hdl);
   void SendState(State&& state, websocketpp::connection_hdl hdl);
