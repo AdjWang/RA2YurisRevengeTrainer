@@ -4,6 +4,7 @@
 #include "base/thread.h"
 #include "nlohmann/json.hpp"
 using json = nlohmann::json;
+#include "protocol/main_page.h"
 
 namespace yrtr {
 
@@ -94,17 +95,6 @@ void Server::OnMessage(WebsocketServer& /*svr*/,
 
 void Server::OnHttpRequest(WebsocketServer& /*svr*/,
                            websocketpp::connection_hdl hdl) {
-  std::string data = R"(
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Example</title>
-    </head>
-    <body>
-        <p>This is an example of a simple HTML page with one paragraph.</p>
-    </body>
-</html>
-  )";
   websocketpp::lib::error_code ec;
   WebsocketServer::connection_ptr conn = svr_.get_con_from_hdl(hdl, ec);
   if (ec) {
@@ -112,7 +102,7 @@ void Server::OnHttpRequest(WebsocketServer& /*svr*/,
           ec.message());
     return;
   }
-  conn->set_body(data);
+  conn->set_body(std::string(kMainPageHtml));
   conn->set_status(websocketpp::http::status_code::ok);
 }
 
