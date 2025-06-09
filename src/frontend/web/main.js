@@ -177,8 +177,8 @@ function onStateUpdate(state) {
 }
 
 function initClient() {
-  // TODO: set port
-  client = new YRTRClient(`ws://${window.location.hostname}:35271`, onStateUpdate);
+  client = new YRTRClient(`ws://${window.location.hostname}:${window.location.port}`,
+                          onStateUpdate);
   // Connect to server
   client.connect();
   // Clean up on page unload
