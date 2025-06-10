@@ -615,7 +615,7 @@ void Trainer::Update(double /*delta*/) {
   if (activate_inst_turn_turret_ || activate_inst_turn_body_) {
     RotateUnit();
   }
-  if (activate_auto_clean_beacon_ && game::Beacon::Instance != nullptr) {
+  if (activate_auto_clean_beacon_) {
     game::Beacon::Instance->AutoClean(
         yrpp::HouseClass::CurrentPlayer->ArrayIndex);
   }

@@ -3,13 +3,23 @@
 namespace yrtr {
 namespace game {
 
+bool Beacon::IsFull(int player_idx) const {
+  for (int i = 0; i < 3; i++) {
+    if (beacons[3 * player_idx + i] == nullptr) {
+      return false;
+    }
+  }
+  return true;
+}
+
 void Beacon::AutoClean(int player_idx) {
-  if (beacons[3 * player_idx + 2] != nullptr) {
-    Delete(player_idx, /*index*/ 0);
-    // Move forward.
-    beacons[3 * player_idx + 0] = beacons[3 * player_idx + 1];
-    beacons[3 * player_idx + 1] = beacons[3 * player_idx + 2];
-    beacons[3 * player_idx + 2] = nullptr;
+  if (IsFull(player_idx)) {
+    for (int i = 0; i < 3; i++) {
+      if (beacons[3 * player_idx + i] != nullptr) {
+        Delete(player_idx, i);
+        break;
+      }
+    }
   }
 }
 

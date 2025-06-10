@@ -15,14 +15,24 @@ namespace game {
 #pragma warning(disable : 4731)
 
 struct Beacon {
-  static constexpr yrpp::reference<Beacon*, 0x89C3B0u> Instance{};
+  static constexpr yrpp::reference<Beacon, 0x89C3B0u> Instance{};
   void* beacons[24];
 
-  void IsFull(int player_idx) { JMP_THIS(0x430F30); }
-  // Input index range is [0, 3), or input player_idx=-1 && index=-1 to get last
-  // empty entry.
+  // From VA:0x430F30
+  bool IsFull(int player_idx) const;
+  // Input index range is [-1, 3), if index == -1, automatically find the
+  // first slot to place.
+  void Place(int player_idx, int coord_x, int coord_y, int coord_z, int index) {
+    JMP_THIS(0x430BA0);
+  }
+  // Input index range is [0, 3), or input player_idx=-1 && index=-1 to get
+  // last empty entry.
   void Delete(int player_idx, int index) { JMP_THIS(0x4311C0); }
   void DeleteAll(int player_idx) { JMP_THIS(0x431410); }
+  void ShowText(const wchar_t* text, int player_idx, int index,
+                char is_sender) {
+    JMP_THIS(0x431450);
+  }
 
   void AutoClean(int player_idx);
 };
