@@ -44,7 +44,8 @@ const FnLabel = {
   kCount: 28
 };
 
-// Helper function to get string representation of FnLabel
+// Helper function to get string representation of FnLabel. Only for internal
+// use. To get localized name, use getGuiStr and getFnStr.
 function strFnLabel(label) {
   switch (label) {
     case FnLabel.kInvalid: return "Invalid";

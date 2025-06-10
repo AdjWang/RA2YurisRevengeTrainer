@@ -137,14 +137,14 @@ constexpr const char8_t* GetFnStrEn(FnLabel label) {
     case FnLabel::kSellTheWorld:        return u8"Sell the world";
     case FnLabel::kBuildEveryWhere:     return u8"Build everywhere";
     case FnLabel::kAutoRepair:          return u8"Auto repair";
-    case FnLabel::kSocialismMajesty:    return u8"Socialism the best";
+    case FnLabel::kSocialismMajesty:    return u8"Socialism majesty";
     case FnLabel::kMakeGarrisonedMine:  return u8"Make garrisoned mine";
     case FnLabel::kInvadeMode:          return u8"Invade mode";
     case FnLabel::kUnlimitTech:         return u8"Unlimit technology";
     case FnLabel::kUnlimitFirePower:    return u8"Unlimit gun power";
     case FnLabel::kInstChrono:          return u8"Instant chrono";
     case FnLabel::kSpySpy:              return u8"Spy spy";
-    case FnLabel::kAdjustGameSpeed:     return u8"Adjustable game speed";
+    case FnLabel::kAdjustGameSpeed:     return u8"Enable game speed adjustment";
     default:                            return u8"unknown";
   }
 }

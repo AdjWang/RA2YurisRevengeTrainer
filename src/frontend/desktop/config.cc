@@ -4,6 +4,7 @@
 
 #include "base/logging.h"
 #include "formatter/std.h"
+#include "gsl/narrow"
 
 namespace yrtr {
 namespace frontend {
@@ -96,6 +97,7 @@ void Config::LoadGlobal(const toml::table& global) {
   lang_ = CheckLoad<std::string>(global, "language");
   enable_dpi_awareness_ =
       TryLoad<bool>(global, "enable_dpi_awareness").value_or(false);
+  port_ = gsl::narrow_cast<uint16_t>(CheckLoad<int64_t>(global, "port"));
   font_path_ = TryLoad<std::string>(global, "font_path")
                    .value_or(std::string(kDefaultFontPath));
   fontex_path_ = CheckLoad<std::string>(global, "fontex_path");

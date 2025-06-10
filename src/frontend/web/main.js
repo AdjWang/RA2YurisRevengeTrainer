@@ -4,10 +4,12 @@ import {
   FnLabel, strFnLabel
 } from './protocol';
 import { YRTRClient } from './client';
+import { Localization } from './localization';
 
 var client = undefined;
 var selectingHouseMap = new Map();
 var protectedHouseMap = new Map();
+var localization = new Localization();
 
 function initTab() {
   document.querySelectorAll('.tab').forEach(tab => {
@@ -27,8 +29,8 @@ function initFilterList() {
   // Source list functionality
   const sourceList = document.getElementById('source-list');
   const destinationList = document.getElementById('destination-list');
-  const addAllBtn = document.getElementById('add-all-btn');
-  const clearAllBtn = document.getElementById('clear-all-btn');
+  const addAllBtn = document.getElementById('kAddAll');
+  const clearAllBtn = document.getElementById('kClearAll');
   // Add all items to destination list
   addAllBtn.addEventListener('click', () => {
     sourceList.querySelectorAll('.selectable').forEach(item => {
@@ -48,7 +50,7 @@ function initFilterList() {
 
 function initButton() {
   // Bind apply button with heading input.
-  const apply_btn = document.getElementById('apply-btn');
+  const apply_btn = document.getElementById('kApply');
   apply_btn.addEventListener('click', () => {
     const amount = document.getElementById('money-input').value;
     if (amount) {
@@ -62,20 +64,20 @@ function initButton() {
   for (let i = BtnFnLabelFirst; i <= BtnFnLabelLast; i++) {
     const btn = document.createElement('button');
     btn.id = `btn${i}`;
-    btn.textContent = strFnLabel(i);
+    btn.textContent = localization.getFnStr(`k${strFnLabel(i)}`);
     btn.addEventListener('click', () => onTriggerBtn(i, /*val*/ undefined));
     btnList.appendChild(btn);
   }
 }
 
-function createCheckbox(fnLabel, content, onChange) {
+function createCheckbox(id, onChange) {
   const group = document.createElement('div');
   group.className = 'checkbox-group';
   const label = document.createElement('label');
   label.className = 'checkbox-label';
   const input = document.createElement('input');
   input.type = 'checkbox';
-  input.id = `checkbox${fnLabel}`;
+  input.id = `checkbox${id}`;
   input.addEventListener('change', (e) => {
     const checked = input.checked;
     // Only allowed to chagnge state from this script.
@@ -83,7 +85,7 @@ function createCheckbox(fnLabel, content, onChange) {
     onChange(checked);
   });
   const text = document.createElement('span');
-  text.textContent = content;
+  text.textContent = localization.getFnStr(`k${strFnLabel(id)}`);
   label.appendChild(input);
   label.appendChild(text);
   group.appendChild(label);
@@ -93,7 +95,7 @@ function createCheckbox(fnLabel, content, onChange) {
 function initCheckbox() {
   let checkboxList = document.getElementById('checkbox-list');
   for (let i = CheckboxFnLabelFirst; i <= CheckboxFnLabelLast; i++) {
-    const checkbox = createCheckbox(i, strFnLabel(i), (checked) => {
+    const checkbox = createCheckbox(i, (checked) => {
       onTriggerCheckbox(i, checked);
     });
     checkboxList.appendChild(checkbox);
@@ -214,10 +216,38 @@ function onUpdateProtectedHouseList(houses) {
   client.sendProtectedList(sideMap);
 }
 
+function applyLocalization() {
+  const fn_labels = [
+    "kApply",
+  ];
+  const gui_labels = [
+    "kMoney",
+    "kAssist",
+    "kFilter",
+    "kSelectingHouseList",
+    "kProtectedHouseList",
+    "kAddAll",
+    "kClearAll",
+  ];
+  fn_labels.forEach(label => {
+    let element = document.getElementById(label);
+    if (element) {
+      element.textContent = localization.getFnStr(label);
+    }
+  });
+  gui_labels.forEach(label => {
+    let element = document.getElementById(label);
+    if (element) {
+      element.textContent = localization.getGuiStr(label);
+    }
+  });
+}
+
 document.addEventListener('DOMContentLoaded', function () {
   initTab();
   initFilterList();
   initButton();
   initCheckbox();
+  applyLocalization();
   initClient();
 });

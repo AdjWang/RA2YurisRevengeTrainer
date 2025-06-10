@@ -11,15 +11,15 @@
 <body>
   <div class="container">
     <div class="tab-bar">
-      <div class="tab active" data-tab="assist">Assist</div>
-      <div class="tab" data-tab="filter">Filter</div>
+      <div class="tab active" data-tab="assist" id="kAssist">Assist</div>
+      <div class="tab" data-tab="filter" id="kFilter">Filter</div>
     </div>
 
     <div id="assist" class="tab-content active">
       <div class="input-group">
-        <label for="money-input">Money</label>
+        <label for="money-input" id="kMoney">Money</label>
         <input type="number" id="money-input" placeholder="Enter amount">
-        <button id="apply-btn">Apply</button>
+        <button id="kApply">Apply</button>
       </div>
 
       <div id="btn-list">
@@ -35,8 +35,8 @@
       <div class="split-view">
         <div class="panel">
           <div class="panel-header">
-            <h3>Selecting House List</h3>
-            <button id="add-all-btn">Add All</button>
+            <h3 id="kSelectingHouseList">Selecting House List</h3>
+            <button id="kAddAll">Add All</button>
           </div>
           <div class="list-box" id="source-list">
             <!-- Add dynamically -->
@@ -45,8 +45,8 @@
 
         <div class="panel">
           <div class="panel-header">
-            <h3>Protected House List</h3>
-            <button id="clear-all-btn">Clear All</button>
+            <h3 id="kProtectedHouseList">Protected House List</h3>
+            <button id="kClearAll">Clear All</button>
           </div>
           <div class="list-box" id="destination-list">
             <!-- Add dynamically -->
@@ -58,6 +58,7 @@
 
   <script type="module" src="main.js"></script>
   <script type="module" src="client.js"></script>
+  <script type="module" src="localization.js"></script>
   <script type="module" src="protocol.js"></script>
 </body>
 

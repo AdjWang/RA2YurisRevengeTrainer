@@ -2,6 +2,7 @@
 # Available: zh, en
 language = "zh"
 enable_dpi_awareness = false
+port = 35271
 
 # font_path is optional, fontex_path is required.
 # If using fonts that separate characters and emojis, set both font_path and fontex_path.
