@@ -4,6 +4,7 @@
 #include "base/thread.h"
 #include "nlohmann/json.hpp"
 using json = nlohmann::json;
+// TODO: give this a macro to allow disable web page.
 #include "protocol/main_page.h"
 
 namespace yrtr {

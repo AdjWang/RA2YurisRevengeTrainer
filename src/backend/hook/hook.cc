@@ -6,36 +6,9 @@
 #include "backend/hook/logging.h"
 #include "backend/hook/memory_api.h"
 
-namespace yrtr {
-namespace backend {
-namespace hook {
-
-void InstallHooks() {
-  static std::once_flag install_once;
-  std::call_once(install_once, []() {
-    MemoryAPI::Init();
-    // HookLogging();
-    HookCreateWindow();
-    HookUpdate();
-    HookExitGame();
-  });
-}
-
-}  // namespace hook
-}  // namespace backend
-}  // namespace yrtr
-
-DEFINE_HOOK(0x006BB9D8, RA2WinMain, 5) {
-  UNREFERENCED_PARAMETER(R);
-  LOG_F(INFO, "WinMain");
-  yrtr::backend::hook::InstallHooks();
-  return 0;
-}
-
-
 #ifdef YRTR_DEBUG
 // https://github.com/Phobos-developers/Phobos/blob/6391e7def58c8dc3168438087612cfaa8267c98d/src/Phobos.Ext.cpp#L306
-bool DetachFromDebugger() {
+static bool DetachFromDebugger() {
   auto GetDebuggerProcessId = [](DWORD dwSelfProcessId) -> DWORD {
     DWORD dwParentProcessId = 0;
     HANDLE hSnapshot = CreateToolhelp32Snapshot(2, 0);
@@ -93,17 +66,42 @@ bool DetachFromDebugger() {
   return false;
 }
 
-DEFINE_HOOK(0x007CD810, DetachDebugger, 9) {
-  UNREFERENCED_PARAMETER(R);
-#ifdef YRTR_DEBUG
+static void DetachAresDebugger() {
   // For debugging ares.
   if (IsDebuggerPresent()) {
     DetachFromDebugger();
+    LOG_F(INFO, "Detach debugger succeed={}", !IsDebuggerPresent());
+    // // DEBUG
+    // MessageBox(NULL, "Debugger detatched", "Notice", MB_OK);
   }
-  LOG_F(INFO, "Detach debugger succeed={}", !IsDebuggerPresent());
+}
+
+DEFINE_HOOK(0x007CD810, DetachDebugger, 9) {
+  UNREFERENCED_PARAMETER(R);
+#ifdef YRTR_DEBUG
+  DetachAresDebugger();
 #endif
-  // // DEBUG
-  // MessageBox(NULL, "", "", MB_OK);
   return 0;
 }
 #endif
+
+void InstallHooks() {
+  using namespace yrtr::backend::hook;
+  static std::once_flag install_once;
+  std::call_once(install_once, []() {
+    MemoryAPI::Init();
+    // HookLogging();
+    HookUpdate();
+    HookExitGame();
+#ifdef YRTR_DEBUG
+    DetachAresDebugger();
+#endif
+  });
+}
+
+DEFINE_HOOK(0x006BB9D8, RA2WinMain, 5) {
+  UNREFERENCED_PARAMETER(R);
+  LOG_F(INFO, "WinMain");
+  InstallHooks();
+  return 0;
+}

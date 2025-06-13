@@ -22,6 +22,7 @@ namespace backend {
 namespace hook {
 
 namespace {
+static std::once_flag init_once;
 static std::unique_ptr<Trainer> trainer;
 static std::unique_ptr<Server> server;
 
@@ -33,7 +34,7 @@ static void DoDestroyWindow() {
 
 // int __thiscall CreateWindow_777C30(HINSTANCE hInstance, int xRight, int
 // yBottom)
-static void PreCreateWindow(HINSTANCE hInstance) {
+static void Init(HINSTANCE hInstance) {
   // Setup thread id.
   SetupGameLoopThreadOnce();
   // Load configurations.
@@ -51,15 +52,12 @@ static void PreCreateWindow(HINSTANCE hInstance) {
   server = std::make_unique<Server>(trainer.get(), Config::instance()->port());
 }
 
-static void WINAPI InjectInitCommonControls() {
-  // https://devblogs.microsoft.com/oldnewthing/20040614-00/?p=38903
-  HINSTANCE hInstance = reinterpret_cast<HINSTANCE>(kImageBase);
-  PreCreateWindow(hInstance);
-  // Original code.
-  InitCommonControls();
-}
-
 static void Update() {
+  std::call_once(init_once, [&]() {
+    // https://devblogs.microsoft.com/oldnewthing/20040614-00/?p=38903
+    HINSTANCE hInstance = reinterpret_cast<HINSTANCE>(kImageBase);
+    Init(hInstance);
+  });
   DCHECK(IsWithinGameLoopThread());
   static std::chrono::system_clock::time_point last_ts =
       std::chrono::system_clock::now();
@@ -104,12 +102,6 @@ static void WINAPI InjectPostMessageA(HWND hWnd, UINT Msg, WPARAM wParam,
   PostMessageA(hWnd, Msg, wParam, lParam);
 }
 }  // namespace
-
-void HookCreateWindow() {
-  DLOG_F(INFO, "[YRTR-HOOK] {}", __func__);
-  MemoryAPI::instance()->WriteMemory(
-      kHpCreateWindow.first, reinterpret_cast<void*>(InjectInitCommonControls));
-}
 
 void DestroyWindowOnce() {
   static std::once_flag destroy_flag;

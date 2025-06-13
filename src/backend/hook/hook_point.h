@@ -17,7 +17,6 @@ constexpr uint32_t GetJumpBack(HookPoint hp) {
 static constexpr uint32_t kImageBase = 0x00400000;
 
 static constexpr HookPoint kHpBuiltinLogging = {0x004068E0, 5};
-static constexpr HookPoint kHpCreateWindow = {0x007E102C, 5};
 static constexpr HookPoint kHpUpdate = {0x007E1530, 5};
 static constexpr HookPoint kHpExitGame = {0x007E14AC, 5};
 

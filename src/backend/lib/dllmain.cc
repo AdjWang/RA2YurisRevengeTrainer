@@ -43,7 +43,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason,
         std::string exe_path = GetModule(NULL);
         if (fs::path(exe_path).filename().string().find("game") !=
             std::string::npos) {
-          yrtr::backend::hook::InstallHooks();
+          InstallHooks();
         }
       } else {
         DWORD err = GetLastError();

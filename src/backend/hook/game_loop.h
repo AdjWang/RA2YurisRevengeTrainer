@@ -6,7 +6,6 @@ namespace yrtr {
 namespace backend {
 namespace hook {
 
-void HookCreateWindow();
 void DestroyWindowOnce();
 
 void HookUpdate();
