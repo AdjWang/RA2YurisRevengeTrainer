@@ -202,7 +202,7 @@ static void __declspec(naked) __cdecl InjectFireToYourBase() {
   static const uint32_t jmp_return = 0x00701399;
   static yrpp::TechnoClass* target;
   __asm {
-    mov [target], ecx
+    mov [target], esi
     pushad
   }
   if (Trainer::ShouldProtect(target)) {
@@ -574,6 +574,9 @@ Trainer::~Trainer() {
 bool Trainer::ShouldProtect(yrpp::AbstractClass* obj) {
   DCHECK(IsWithinGameLoopThread());
   CHECK_NOTNULL(obj);
+  if (obj->AbstractFlags == yrpp::AbstractFlags::None) {
+    return false;
+  }
   bool result = false;
   ForeachProtectedHouse([&](yrpp::HouseClass* house) {
     result |= house == obj->GetOwningHouse();
