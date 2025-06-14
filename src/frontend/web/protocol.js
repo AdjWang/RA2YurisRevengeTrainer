@@ -7,7 +7,7 @@ export {
 const BtnFnLabelFirst = 1;
 const BtnFnLabelLast = 8;
 const CheckboxFnLabelFirst = 9;
-const CheckboxFnLabelLast = 27;
+const CheckboxFnLabelLast = 28;
 // Enum mapping
 const FnLabel = {
   kInvalid: -1,
@@ -34,14 +34,15 @@ const FnLabel = {
   kBuildEveryWhere: 18,
   kAutoRepair: 19,
   kSocialismMajesty: 20,
-  kMakeGarrisonedMine: 21,
-  kInvadeMode: 22,
-  kUnlimitTech: 23,
-  kUnlimitFirePower: 24,
-  kInstChrono: 25,
-  kSpySpy: 26,
-  kAdjustGameSpeed: 27,
-  kCount: 28
+  kMakeCapturedMine: 21,
+  kMakeGarrisonedMine: 22,
+  kInvadeMode: 23,
+  kUnlimitTech: 24,
+  kUnlimitFirePower: 25,
+  kInstChrono: 26,
+  kSpySpy: 27,
+  kAdjustGameSpeed: 28,
+  kCount: 29
 };
 
 // Helper function to get string representation of FnLabel. Only for internal
@@ -72,6 +73,7 @@ function strFnLabel(label) {
     case FnLabel.kBuildEveryWhere: return "BuildEveryWhere";
     case FnLabel.kAutoRepair: return "AutoRepair";
     case FnLabel.kSocialismMajesty: return "SocialismMajesty";
+    case FnLabel.kMakeCapturedMine: return "MakeCapturedMine";
     case FnLabel.kMakeGarrisonedMine: return "MakeGarrisonedMine";
     case FnLabel.kInvadeMode: return "InvadeMode";
     case FnLabel.kUnlimitTech: return "UnlimitTech";

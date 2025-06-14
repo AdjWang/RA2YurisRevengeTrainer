@@ -85,6 +85,7 @@ Client::Client(frontend::Gui& gui, uint16_t port)
   BIND_CHECKBOX(BuildEveryWhere);
   BIND_CHECKBOX(AutoRepair);
   BIND_CHECKBOX(SocialismMajesty);
+  BIND_CHECKBOX(MakeCapturedMine);
   BIND_CHECKBOX(MakeGarrisonedMine);
   BIND_CHECKBOX(InvadeMode);
   BIND_CHECKBOX(UnlimitTech);

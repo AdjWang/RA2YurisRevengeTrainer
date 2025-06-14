@@ -94,12 +94,12 @@ void Gui::RenderClientArea() {
                 ImGuiWindowFlags_NoTitleBar |
                 ImGuiWindowFlags_AlwaysAutoResize);
   if (ImGui::BeginTabBar("Assist Tool Tabs")) {
-    if (ImGui::BeginTabItem(GetGuiStr(GuiLabel::kAssist))) {
-      RenderTabAssists();
-      ImGui::EndTabItem();
-    }
     if (ImGui::BeginTabItem(GetGuiStr(GuiLabel::kFilter))) {
       RenderTabFilters();
+      ImGui::EndTabItem();
+    }
+    if (ImGui::BeginTabItem(GetGuiStr(GuiLabel::kAssist))) {
+      RenderTabAssists();
       ImGui::EndTabItem();
     }
     ImGui::EndTabBar();

@@ -687,6 +687,7 @@ void Trainer::OnCheckboxEvent(FnLabel label, bool activate) {
     case FnLabel::kBuildEveryWhere:     OnCkboxBuildEveryWhere(activate);     break;
     case FnLabel::kAutoRepair:          OnCkboxAutoRepair(activate);          break;
     case FnLabel::kSocialismMajesty:    OnCkboxSocialismMajesty(activate);    break;
+    case FnLabel::kMakeCapturedMine:    OnCkboxMakeCapturedMine(activate);    break;
     case FnLabel::kMakeGarrisonedMine:  OnCkboxMakeGarrisonedMine(activate);  break;
     case FnLabel::kInvadeMode:          OnCkboxInvadeMode(activate);          break;
     case FnLabel::kUnlimitTech:         OnCkboxUnlimitTech(activate);         break;
@@ -869,12 +870,9 @@ void Trainer::OnCkboxGod(bool activate) {
     CHECK_REPORT(mem_api_->HookJump(kHpGodPlayer, InjectGodPlayer));
     // Suppress chrono legionnaire attacking.
     CHECK_REPORT(mem_api_->HookJump(kHpCanWrapTarget, InjectCanWrapTarget));
-    // Suppress building captured by engineers.
-    CHECK_REPORT(mem_api_->HookJump(kHpCapturedMine, InjectCapturedMine));
   } else {
     CHECK_REPORT(mem_api_->RestoreHook(kHpGodPlayer));
     CHECK_REPORT(mem_api_->RestoreHook(kHpCanWrapTarget));
-    CHECK_REPORT(mem_api_->RestoreHook(kHpCapturedMine));
   }
   UpdateCheckboxState(FnLabel::kGod, activate);
 }
@@ -1041,6 +1039,19 @@ void Trainer::OnCkboxSocialismMajesty(bool activate) {
     CHECK_REPORT(mem_api_->RestoreHook(kHpSocialismMajestyBack));
   }
   UpdateCheckboxState(FnLabel::kSocialismMajesty, activate);
+}
+
+void Trainer::OnCkboxMakeCapturedMine(bool activate) {
+  DLOG_F(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
+  DCHECK(IsWithinGameLoopThread());
+  CHECK_MEMAPI_OR_REPORT();
+  if (activate) {
+    // Suppress building captured by engineers.
+    CHECK_REPORT(mem_api_->HookJump(kHpCapturedMine, InjectCapturedMine));
+  } else {
+    CHECK_REPORT(mem_api_->RestoreHook(kHpCapturedMine));
+  }
+  UpdateCheckboxState(FnLabel::kMakeCapturedMine, activate);
 }
 
 void Trainer::OnCkboxMakeGarrisonedMine(bool activate) {

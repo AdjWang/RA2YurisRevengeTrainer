@@ -41,6 +41,7 @@ enum class FnLabel {
   kBuildEveryWhere,
   kAutoRepair,
   kSocialismMajesty,
+  kMakeCapturedMine,
   kMakeGarrisonedMine,
   kInvadeMode,
   kUnlimitTech,
@@ -77,6 +78,7 @@ constexpr std::string_view StrFnLabel(FnLabel label) {
     case FnLabel::kBuildEveryWhere:     return "BuildEveryWhere";
     case FnLabel::kAutoRepair:          return "AutoRepair";
     case FnLabel::kSocialismMajesty:    return "SocialismMajesty";
+    case FnLabel::kMakeCapturedMine:    return "MakeCapturedMine";
     case FnLabel::kMakeGarrisonedMine:  return "MakeGarrisonedMine";
     case FnLabel::kInvadeMode:          return "InvadeMode";
     case FnLabel::kUnlimitTech:         return "UnlimitTech";
@@ -113,6 +115,7 @@ static constexpr FnLabel StrToFnLabel(std::string_view str) {
   if (str == "kBuildEveryWhere")    return FnLabel::kBuildEveryWhere;
   if (str == "kAutoRepair")         return FnLabel::kAutoRepair;
   if (str == "kSocialismMajesty")   return FnLabel::kSocialismMajesty;
+  if (str == "kMakeCapturedMine")   return FnLabel::kMakeCapturedMine;
   if (str == "kMakeGarrisonedMine") return FnLabel::kMakeGarrisonedMine;
   if (str == "kInvadeMode")         return FnLabel::kInvadeMode;
   if (str == "kUnlimitTech")        return FnLabel::kUnlimitTech;

@@ -104,6 +104,7 @@ constexpr const char8_t* GetFnStrZh(FnLabel label) {
     case FnLabel::kBuildEveryWhere:     return u8"随意建筑";
     case FnLabel::kAutoRepair:          return u8"自动修理";
     case FnLabel::kSocialismMajesty:    return u8"社会主义万岁";
+    case FnLabel::kMakeCapturedMine:    return u8"全是我的-工程师占领";
     case FnLabel::kMakeGarrisonedMine:  return u8"全是我的-房屋驻军";
     case FnLabel::kInvadeMode:          return u8"侵略模式";
     case FnLabel::kUnlimitTech:         return u8"全科技";
@@ -138,6 +139,7 @@ constexpr const char8_t* GetFnStrEn(FnLabel label) {
     case FnLabel::kBuildEveryWhere:     return u8"Build everywhere";
     case FnLabel::kAutoRepair:          return u8"Auto repair";
     case FnLabel::kSocialismMajesty:    return u8"Socialism majesty";
+    case FnLabel::kMakeCapturedMine:    return u8"Make captured mine";
     case FnLabel::kMakeGarrisonedMine:  return u8"Make garrisoned mine";
     case FnLabel::kInvadeMode:          return u8"Invade mode";
     case FnLabel::kUnlimitTech:         return u8"Unlimit technology";
