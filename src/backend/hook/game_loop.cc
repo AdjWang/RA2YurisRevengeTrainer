@@ -28,8 +28,7 @@ static std::unique_ptr<Server> server;
 
 static void DoDestroyWindow() {
   // Reclaim resources here.
-  // BUG: hang
-  // server->Stop();
+  server->Stop();
   server.reset();
   trainer.reset();
 }

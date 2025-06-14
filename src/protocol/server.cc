@@ -31,25 +31,35 @@ Server::Server(backend::hook::ITrainer* trainer, uint16_t port)
   svr_.set_http_handler([this](websocketpp::connection_hdl hdl){
     OnHttpRequest(svr_, hdl);
   });
-  svr_.listen("0.0.0.0", std::to_string(port));
-  svr_.start_accept();
-  evloop_ = std::thread([this]() {
-    SetupNetThreadOnce();
-    svr_.run();
-    DLOG_F(INFO, "Server exit");
-  });
+  try {
+    svr_.listen("0.0.0.0", std::to_string(port));
+    svr_.start_accept();
+  } catch (const std::exception& e) {
+    LOG_F(ERROR, "Server start listen with err={}", e.what());
+  }
+  if (svr_.is_listening()) {
+    evloop_ = std::thread([this]() {
+      SetupNetThreadOnce();
+      try {
+        svr_.run();
+      } catch (const std::exception& e) {
+        LOG_F(ERROR, "Server exit with err={}", e.what());
+      }
+      DLOG_F(INFO, "Server exit");
+    });
+  }
 }
 
 void Server::Stop() {
-  boost::asio::dispatch(svr_.get_io_service(), [&]() {
-    websocketpp::lib::error_code ec;
-    svr_.stop_listening(ec);
-    if (ec) {
-      LOG_F(ERROR, "Failed to stop listening err=[{}]{}", ec.value(),
-            ec.message());
-    }
-  });
-  evloop_.join();
+  try {
+    svr_.stop();
+  } catch (const std::exception& e) {
+    LOG_F(ERROR, "Server stop with err={}", e.what());
+  }
+  // Check if event loop had started.
+  if (evloop_.joinable()) {
+    evloop_.join();
+  }
 }
 
 void Server::Update() {
