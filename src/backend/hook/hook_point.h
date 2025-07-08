@@ -13,7 +13,7 @@ constexpr uint32_t GetJumpBack(HookPoint hp) {
   return hp.first + hp.second;
 }
 
-// Assume the executable's image base is always 0x00400000.
+// Assume the executable's image base always be 0x00400000.
 static constexpr uint32_t kImageBase = 0x00400000;
 
 static constexpr HookPoint kHpBuiltinLogging = {0x004068E0, 5};
