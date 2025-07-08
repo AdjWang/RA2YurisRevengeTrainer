@@ -26,8 +26,8 @@ static std::once_flag init_once;
 static std::unique_ptr<Trainer> trainer;
 static std::unique_ptr<Server> server;
 
-static void DoDestroyWindow() {
-  // Reclaim resources here.
+static void ReclaimResource() {
+  DLOG_F(INFO, "Reclaim resources");
   server->Stop();
   server.reset();
   trainer.reset();
@@ -89,7 +89,7 @@ static DWORD WINAPI InjectTimeGetTime() {
 
 static void ExitGame() {
   LOG_F(INFO, "Manually send destroy event");
-  DestroyWindowOnce();
+  ReclaimResourceOnce();
   auto ra2WndProc = reinterpret_cast<WNDPROC>(0x007775C0);
   CHECK_NOTNULL(ra2WndProc);
   HWND hWnd = *(reinterpret_cast<HWND*>(0x00B73550));
@@ -104,9 +104,9 @@ static void WINAPI InjectPostMessageA(HWND hWnd, UINT Msg, WPARAM wParam,
 }
 }  // namespace
 
-void DestroyWindowOnce() {
+void ReclaimResourceOnce() {
   static std::once_flag destroy_flag;
-  std::call_once(destroy_flag, []() { DoDestroyWindow(); });
+  std::call_once(destroy_flag, []() { ReclaimResource(); });
 }
 
 void HookUpdate() {

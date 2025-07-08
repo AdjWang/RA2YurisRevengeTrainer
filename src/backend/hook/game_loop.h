@@ -6,7 +6,7 @@ namespace yrtr {
 namespace backend {
 namespace hook {
 
-void DestroyWindowOnce();
+void ReclaimResourceOnce();
 
 void HookUpdate();
 void HookExitGame();

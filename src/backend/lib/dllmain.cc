@@ -4,6 +4,7 @@ namespace fs = std::filesystem;
 
 #include "base/windows_shit.h"
 #define EAT_SHIT_FIRST  // prevent linter move windows shit down
+#include "backend/hook/game_loop.h"
 #include "backend/hook/hook.h"
 #include "base/macro.h"
 __YRTR_BEGIN_THIRD_PARTY_HEADERS
@@ -63,6 +64,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason,
       break;
     case DLL_PROCESS_DETACH: {
       OutputDebugStringA("[YRTR] Process detach");
+      yrtr::backend::hook::ReclaimResourceOnce();
       if (lpvReserved != nullptr) {
         break;
       }

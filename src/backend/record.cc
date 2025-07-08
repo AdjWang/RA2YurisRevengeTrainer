@@ -4,6 +4,7 @@
 
 #include "base/logging.h"
 #include "formatter/std.h"
+#include "gsl/util"
 #include "toml++/toml.hpp"
 
 namespace yrtr {
@@ -21,6 +22,7 @@ bool WriteCheckboxStateToToml(const CheckboxStateMap& state_map,
   if (!file.is_open()) {
     return false;
   }
+  auto _ = gsl::finally([&]() { file.close(); });
   DLOG_F(INFO, "Write record to file={}", filepath);
   file << root_tbl;
   return file.good();
