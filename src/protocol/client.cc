@@ -151,7 +151,7 @@ Client::WebsocketClient::connection_ptr Client::GetOrCreateConn() {
 }
 
 void Client::OnMessage(WebsocketClient& /*cli*/,
-                       websocketpp::connection_hdl hdl,
+                       websocketpp::connection_hdl /*hdl*/,
                        WebsocketClient::message_ptr msg) {
   DCHECK(IsWithinNetThread());
   std::string payload = msg->get_payload();
