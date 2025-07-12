@@ -472,26 +472,30 @@ label(exit)
 newmem: //this is allocated memory, you have read,write,execute access
 //place your code here
 push eax
-mov eax,[esi+24]  // check if player attacked by chrono
+mov eax,[esi+24] // check if player attacked by chrono
 mov eax,[eax+21C]
 cmp eax,[00A83D4C]
-jne exit
-originalcode:
-mov [esi+48],ecx  // hack chrono time
-exit:
 pop eax
+jne 71AB08
+jmp originalcode
+originalcode:
 cmp eax,ebx
+jg 71AB08
+exit:
 jmp returnhere
-"{proc}"+31A88A:
+"{proc}"+31A88D:
 jmp newmem
+nop
+nop
+nop
 returnhere:
 [DISABLE]
 //code from here till the end of the code will be used to disable the cheat
 dealloc(newmem)
-"{proc}"+31A88A:
-mov [esi+48],ecx
+"{proc}"+31A88D:
 cmp eax,ebx
-//Alt: db 89 4E 48 3B C3
+jg 71AB08
+//Alt: db 3B C3 0F 8F 73 02 00 00
 )";
 
 inline constexpr static std::string_view kAntiChronoDisbuild = R"(
