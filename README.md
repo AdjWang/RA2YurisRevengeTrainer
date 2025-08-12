@@ -21,6 +21,15 @@ cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_DEFAULT_CMP0091=NEW -DCMAKE_MSVC
 cmake --build ./build --config Release --target ra2_trainer -j $env:NUMBER_OF_PROCESSORS
 ```
 
+如果不想编译网页，只需要桌面程序：
+
+```
+git clone https://github.com/AdjWang/RA2YurisRevengeTrainer.git
+cd ./RA2YurisRevengeTrainer
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_DEFAULT_CMP0091=NEW -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded -DCMAKE_INSTALL_PREFIX=deps/out/Release -DYRTR_ENABLE_WEB=OFF -G Ninja -S . -B ./build
+cmake --build ./build --config Release --target ra2_trainer -j $env:NUMBER_OF_PROCESSORS
+```
+
 ## 编译后端
 
 ```
