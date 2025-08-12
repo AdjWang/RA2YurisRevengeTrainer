@@ -13,13 +13,13 @@ const FnLabel = {
   kInvalid: -1,
   // Button
   kApply: 0,
-  kFastBuild: 1,
+  kIAMWinner: 1,
   kDeleteUnit: 2,
   kClearShroud: 3,
   kGiveMeABomb: 4,
   kUnitLevelUp: 5,
   kUnitSpeedUp: 6,
-  kIAMWinner: 7,
+  kFastBuild: 7,
   kThisIsMine: 8,
   // Checkbox
   kGod: 9,
@@ -52,13 +52,13 @@ function strFnLabel(label) {
     case FnLabel.kInvalid: return "Invalid";
     // Button
     case FnLabel.kApply: return "Apply";
-    case FnLabel.kFastBuild: return "FastBuild";
+    case FnLabel.kIAMWinner: return "IAMWinner";
     case FnLabel.kDeleteUnit: return "DeleteUnit";
     case FnLabel.kClearShroud: return "ClearShroud";
     case FnLabel.kGiveMeABomb: return "GiveMeABomb";
     case FnLabel.kUnitLevelUp: return "UnitLevelUp";
     case FnLabel.kUnitSpeedUp: return "UnitSpeedUp";
-    case FnLabel.kIAMWinner: return "IAMWinner";
+    case FnLabel.kFastBuild: return "FastBuild";
     case FnLabel.kThisIsMine: return "ThisIsMine";
     // Checkbox
     case FnLabel.kGod: return "God";

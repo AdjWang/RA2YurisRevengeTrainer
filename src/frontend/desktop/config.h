@@ -25,13 +25,13 @@ class Config {
   constexpr int GetHotkey(FnLabel label) {
     switch(label) {
       case FnLabel::kApply:               return GLFW_KEY_1;
-      case FnLabel::kFastBuild:           return GLFW_KEY_2;
+      case FnLabel::kIAMWinner:           return GLFW_KEY_2;
       case FnLabel::kDeleteUnit:          return GLFW_KEY_3;
       case FnLabel::kClearShroud:         return GLFW_KEY_4;
       case FnLabel::kGiveMeABomb:         return GLFW_KEY_5;
       case FnLabel::kUnitLevelUp:         return GLFW_KEY_6;
       case FnLabel::kUnitSpeedUp:         return GLFW_KEY_7;
-      case FnLabel::kIAMWinner:           return GLFW_KEY_8;
+      case FnLabel::kFastBuild:           return GLFW_KEY_8;
       case FnLabel::kThisIsMine:          return GLFW_KEY_9;
       case FnLabel::kGod:                 return GLFW_KEY_Q;
       case FnLabel::kInstBuild:           return GLFW_KEY_W;

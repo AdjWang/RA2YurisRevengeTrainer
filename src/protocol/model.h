@@ -20,13 +20,13 @@ enum class FnLabel {
   kInvalid = -1,
   // Button
   kApply,
-  kFastBuild,
+  kIAMWinner,
   kDeleteUnit,
   kClearShroud,
   kGiveMeABomb,
   kUnitLevelUp,
   kUnitSpeedUp,
-  kIAMWinner,
+  kFastBuild,
   kThisIsMine,
   // Checkbox
   kGod,
@@ -57,13 +57,13 @@ constexpr std::string_view StrFnLabel(FnLabel label) {
     case FnLabel::kInvalid:             return "Invalid";
     // Button
     case FnLabel::kApply:               return "Apply";
-    case FnLabel::kFastBuild:           return "FastBuild";
+    case FnLabel::kIAMWinner:           return "IAMWinner";
     case FnLabel::kDeleteUnit:          return "DeleteUnit";
     case FnLabel::kClearShroud:         return "ClearShroud";
     case FnLabel::kGiveMeABomb:         return "GiveMeABomb";
     case FnLabel::kUnitLevelUp:         return "UnitLevelUp";
     case FnLabel::kUnitSpeedUp:         return "UnitSpeedUp";
-    case FnLabel::kIAMWinner:           return "IAMWinner";
+    case FnLabel::kFastBuild:           return "FastBuild";
     case FnLabel::kThisIsMine:          return "ThisIsMine";
     // Checkbox
     case FnLabel::kGod:                 return "God";
@@ -94,13 +94,13 @@ constexpr std::string_view StrFnLabel(FnLabel label) {
 static constexpr FnLabel StrToFnLabel(std::string_view str) {
   // Button
   if (str == "kApply")              return FnLabel::kApply;
-  if (str == "kFastBuild")          return FnLabel::kFastBuild;
+  if (str == "kIAMWinner")          return FnLabel::kIAMWinner;
   if (str == "kDeleteUnit")         return FnLabel::kDeleteUnit;
   if (str == "kClearShroud")        return FnLabel::kClearShroud;
   if (str == "kGiveMeABomb")        return FnLabel::kGiveMeABomb;
   if (str == "kUnitLevelUp")        return FnLabel::kUnitLevelUp;
   if (str == "kUnitSpeedUp")        return FnLabel::kUnitSpeedUp;
-  if (str == "kIAMWinner")          return FnLabel::kIAMWinner;
+  if (str == "kFastBuild")          return FnLabel::kFastBuild;
   if (str == "kThisIsMine")         return FnLabel::kThisIsMine;
   // Checkbox
   if (str == "kGod")                return FnLabel::kGod;

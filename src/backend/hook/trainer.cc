@@ -661,13 +661,13 @@ void Trainer::OnInputEvent(FnLabel label, uint32_t val) {
 void Trainer::OnButtonEvent(FnLabel label) {
   DCHECK(IsWithinGameLoopThread());
   switch (label) {
-    case FnLabel::kFastBuild:   OnBtnFastBuild();   break;
+    case FnLabel::kIAMWinner:   OnBtnIAMWinner();   break;
     case FnLabel::kDeleteUnit:  OnBtnDeleteUnit();  break;
     case FnLabel::kClearShroud: OnBtnClearShroud(); break;
     case FnLabel::kGiveMeABomb: OnBtnGiveMeABomb(); break;
     case FnLabel::kUnitLevelUp: OnBtnUnitLevelUp(); break;
     case FnLabel::kUnitSpeedUp: OnBtnUnitSpeedUp(); break;
-    case FnLabel::kIAMWinner:   OnBtnIAMWinner();   break;
+    case FnLabel::kFastBuild:   OnBtnFastBuild();   break;
     case FnLabel::kThisIsMine:  OnBtnThisIsMine();  break;
     default:
       LOG_F(ERROR, "Unknown button event={}", StrFnLabel(label));

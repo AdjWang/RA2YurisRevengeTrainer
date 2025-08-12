@@ -84,13 +84,13 @@ inline const char8_t* GetGuiStr(GuiLabel label, Lang lang) {
 constexpr const char8_t* GetFnStrZh(FnLabel label) {
   switch (label) {
     case FnLabel::kApply:               return u8"修改";
-    case FnLabel::kFastBuild:           return u8"快速建造";
+    case FnLabel::kIAMWinner:           return u8"立即胜利";
     case FnLabel::kDeleteUnit:          return u8"删除单位";
     case FnLabel::kClearShroud:         return u8"地图全开";
     case FnLabel::kGiveMeABomb:         return u8"核弹攻击";
     case FnLabel::kUnitLevelUp:         return u8"单位升级";
     case FnLabel::kUnitSpeedUp:         return u8"单位加速";
-    case FnLabel::kIAMWinner:           return u8"立即胜利";
+    case FnLabel::kFastBuild:           return u8"快速建造";
     case FnLabel::kThisIsMine:          return u8"这是我的";
     case FnLabel::kGod:                 return u8"无敌";
     case FnLabel::kInstBuild:           return u8"瞬间建造";
@@ -119,13 +119,13 @@ constexpr const char8_t* GetFnStrZh(FnLabel label) {
 constexpr const char8_t* GetFnStrEn(FnLabel label) {
   switch (label) {
     case FnLabel::kApply:               return u8"Apply";
-    case FnLabel::kFastBuild:           return u8"Fast build";
+    case FnLabel::kIAMWinner:           return u8"I am winner";
     case FnLabel::kDeleteUnit:          return u8"Delete unit";
     case FnLabel::kClearShroud:         return u8"Clear shroud";
     case FnLabel::kGiveMeABomb:         return u8"Give me a bomb";
     case FnLabel::kUnitLevelUp:         return u8"Selected units level up";
     case FnLabel::kUnitSpeedUp:         return u8"Selected units speed up";
-    case FnLabel::kIAMWinner:           return u8"I am winner";
+    case FnLabel::kFastBuild:           return u8"Fast build";
     case FnLabel::kThisIsMine:          return u8"This is mine";
     case FnLabel::kGod:                 return u8"I am god";
     case FnLabel::kInstBuild:           return u8"Instant build";

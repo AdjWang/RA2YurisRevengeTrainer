@@ -65,13 +65,13 @@ Client::Client(frontend::Gui& gui, uint16_t port)
       SendPostInput(FnLabel::kApply, val);
     });
   });
-  BIND_BUTTON(FastBuild);
+  BIND_BUTTON(IAMWinner);
   BIND_BUTTON(DeleteUnit);
   BIND_BUTTON(ClearShroud);
   BIND_BUTTON(GiveMeABomb);
   BIND_BUTTON(UnitLevelUp);
   BIND_BUTTON(UnitSpeedUp);
-  BIND_BUTTON(IAMWinner);
+  BIND_BUTTON(FastBuild);
   BIND_BUTTON(ThisIsMine);
   BIND_CHECKBOX(God);
   BIND_CHECKBOX(InstBuild);
