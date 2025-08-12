@@ -71,7 +71,7 @@ static void DetachAresDebugger() {
   if (IsDebuggerPresent()) {
     DetachFromDebugger();
     LOG_F(INFO, "Detach debugger succeed={}", !IsDebuggerPresent());
-    // // DEBUG
+    // DEBUG
     // MessageBox(NULL, "Debugger detatched", "Notice", MB_OK);
   }
 }
@@ -93,9 +93,6 @@ void InstallHooks() {
     // HookLogging();
     HookUpdate();
     HookExitGame();
-#ifdef YRTR_DEBUG
-    DetachAresDebugger();
-#endif
   });
 }
 
@@ -103,5 +100,8 @@ DEFINE_HOOK(0x006BB9D8, RA2WinMain, 5) {
   UNREFERENCED_PARAMETER(R);
   LOG_F(INFO, "WinMain");
   InstallHooks();
+#ifdef YRTR_DEBUG
+  DetachAresDebugger();
+#endif
   return 0;
 }

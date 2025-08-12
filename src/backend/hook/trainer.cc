@@ -573,7 +573,10 @@ Trainer::~Trainer() {
 
 bool Trainer::ShouldProtect(yrpp::AbstractClass* obj) {
   DCHECK(IsWithinGameLoopThread());
-  CHECK_NOTNULL(obj);
+  // Triggers in Reunion 2023.
+  if (obj == nullptr) [[unlikely]] {
+    return false;
+  }
   if (obj->AbstractFlags == yrpp::AbstractFlags::None) {
     return false;
   }
