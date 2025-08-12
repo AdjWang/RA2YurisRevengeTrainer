@@ -4,6 +4,7 @@
 
 #pragma once
 #include <format>
+#include <fstream>
 #include <mutex>
 
 #include "absl/log/absl_vlog_is_on.h"
@@ -18,6 +19,7 @@ namespace logging {
 
 enum class LogSink {
   kStd,
+  kFile,
 #ifdef _WIN32
   kDbgView,
 #endif
@@ -48,8 +50,25 @@ class StderrLogSink final : public absl::LogSink {
   std::mutex mu_;
 };
 
+class FileLogSink final : public absl::LogSink {
+ public:
+  static absl::LogSink* get() { return &kLogSink; }
+  ~FileLogSink() override;
+
+  void Send(const absl::LogEntry& entry) override;
+
+  // Call this before any logging occurs.
+  static bool SetLogFile(const std::string& filename);
+
+ private:
+  static FileLogSink kLogSink;
+  std::mutex mu_;
+  std::ofstream log_file_;
+};
+
 extern std::ostringstream& get_nullstream();
-extern void InitLogging(LogSink log_sink = LogSink::kStd);
+extern void InitLogging(LogSink log_sink = LogSink::kStd,
+                        const std::string& log_file = "");
 extern absl::LogSink* GetLogSink();
 }  // namespace logging
 }  // namespace yrtr

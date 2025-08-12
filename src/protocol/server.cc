@@ -53,6 +53,7 @@ Server::Server(backend::hook::ITrainer* trainer, uint16_t port)
     LOG_F(ERROR, "Server start listen with err={}", e.what());
   }
   if (svr_.is_listening()) {
+    LOG_F(INFO, "Server start listen on port={}", port);
     evloop_ = std::thread([this]() {
       SetupNetThreadOnce();
       try {

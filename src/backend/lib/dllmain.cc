@@ -32,7 +32,8 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason,
       OutputDebugStringA(std::format("[YRTR] Process attach base={:08X}",
                                      reinterpret_cast<uint32_t>(hinstDLL))
                              .c_str());
-      yrtr::logging::InitLogging(yrtr::logging::LogSink::kDbgView);
+      yrtr::logging::InitLogging(yrtr::logging::LogSink::kFile,
+                                 "ra2_trainer_backend.log");
       std::string dll_path = GetModule(hinstDLL);
       if (!dll_path.empty()) {
         absl::InitializeSymbolizer(dll_path.c_str());
