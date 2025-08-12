@@ -8,24 +8,23 @@
 
 使用 [CMake](https://cmake.org/), python3, npm, Ninja 和 Visual Studio 17 2022 构建。
 
-## 编译后端
-
-```
-git clone https://github.com/AdjWang/RA2YurisRevengeTrainer.git
-cd ./RA2YurisRevengeTrainer
-cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_DEFAULT_CMP0091=NEW -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded -DCMAKE_INSTALL_PREFIX=deps/out/Release -G Ninja -S . -B ./build
-cmake --build ./build --config Release --target ra2_trainer_backend -j $env:NUMBER_OF_PROCESSORS
-```
-
 ## 编译前端
 
 ```
-cd ./src/frontend/web
+git clone https://github.com/AdjWang/RA2YurisRevengeTrainer.git
+cd ./RA2YurisRevengeTrainer/src/frontend/web
 npm install
 npm run build
 cd ../../..
 python scripts/generate_web_main_page.py
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_DEFAULT_CMP0091=NEW -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded -DCMAKE_INSTALL_PREFIX=deps/out/Release -G Ninja -S . -B ./build
 cmake --build ./build --config Release --target ra2_trainer -j $env:NUMBER_OF_PROCESSORS
+```
+
+## 编译后端
+
+```
+cmake --build ./build --config Release --target ra2_trainer_backend -j $env:NUMBER_OF_PROCESSORS
 ```
 
 # 功能简介

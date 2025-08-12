@@ -9,6 +9,7 @@ project(ra2_trainer)
 option(YRTR_BUILD_TEST "Build unit tests." ON)
 option(YRTR_MSVC_STATIC_RUNTIME "Link static runtime libraries" ON)
 option(YRTR_FORCE_DCHECK "Force enable debug check." OFF)
+option(YRTR_ENABLE_WEB "Enable web as frontend" ON)
 
 set(YRTR_DEPS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/deps)
 set(YRTR_DEPS_OUTPUT_DIR ${YRTR_DEPS_DIR}/out/${CMAKE_BUILD_TYPE})
@@ -140,6 +141,9 @@ target_include_directories(yrtr_backend
   PUBLIC $<BUILD_INTERFACE:${YRTR_SOURCE_DIR}>
   PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
+if (YRTR_ENABLE_WEB)
+  target_compile_definitions(yrtr_backend PRIVATE YRTR_ENABLE_WEB)
+endif()
 # warning C4740: flow in or out of inline asm code suppresses global optimization
 target_compile_options(yrtr_backend PRIVATE /W4 $<$<CONFIG:Debug>:/WX> /wd4740)
 target_link_libraries(yrtr_backend

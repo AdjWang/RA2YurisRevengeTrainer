@@ -4,10 +4,25 @@
 #include "base/thread.h"
 #include "nlohmann/json.hpp"
 using json = nlohmann::json;
-// TODO: give this a macro to allow disable web page.
+#ifdef YRTR_ENABLE_WEB
 #include "protocol/main_page.h"
+#endif
 
 namespace yrtr {
+
+namespace {
+static constexpr std::string_view kEmptyPageHtml = R"(
+<!DOCTYPE html>
+<html>
+<head>
+    <title>YRTR Assist Tool</title>
+</head>
+<body>
+    Web frontend disabled.
+</body>
+</html>
+)";
+}  // namespace
 
 Server::Server(backend::hook::ITrainer* trainer, uint16_t port)
     : trainer_(trainer) {
@@ -113,7 +128,11 @@ void Server::OnHttpRequest(WebsocketServer& /*svr*/,
           ec.message());
     return;
   }
+#ifdef YRTR_ENABLE_WEB
   conn->set_body(std::string(kMainPageHtml));
+#else
+  conn->set_body(std::string(kEmptyPageHtml));
+#endif
   conn->set_status(websocketpp::http::status_code::ok);
 }
 
