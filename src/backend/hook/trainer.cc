@@ -1135,6 +1135,7 @@ void Trainer::OnCkboxSpySpy(bool activate) {
   UpdateCheckboxState(FnLabel::kSpySpy, activate);
 }
 
+// TODO: Use slider is better! Some mod modified the ui and this won't work.
 void Trainer::OnCkboxAdjustGameSpeed(bool activate) {
   DLOG_F(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
   DCHECK(IsWithinGameLoopThread());
