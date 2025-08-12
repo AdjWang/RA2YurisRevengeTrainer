@@ -10,8 +10,6 @@ auto_record = true
 [tech]
 # Intruder-入侵者战机
 ORCA = true
-# Hornet-大黄蜂
-HORNET = true
 # Black Eagle-黑鹰战机
 BEAG = true
 # Allied Power Plant-盟军发电厂
@@ -22,8 +20,6 @@ GAREFN = true
 GACNST = true
 # Allied Barracks-盟军兵营
 GAPILE = true
-# Sandbags-沙墙
-GASAND = true
 # Allied Service Depot-盟军维修厂
 GADEPT = true
 # Allied Battle Lab-盟军作战实验室
@@ -31,7 +27,7 @@ GATECH = true
 # Allied War Factory-盟军战车工厂
 GAWEAP = true
 # Einstein's Lab-爱因斯坦实验室
-CALAB = true
+CALAB = false
 # Soviet Tesla Reactor-磁能反应炉
 NAPOWR = true
 # Soviet Battle Lab-苏军作战实验室
@@ -55,7 +51,7 @@ NALASR = true
 # Allied Patriot Missile-爱国者飞弹
 NASAM = true
 # Sydney Kangaroo Burger-悉尼袋鼠堡
-CASYDN02 = true
+CASYDN02 = false
 # Allied Shipyard-盟军船厂
 GAYARD = true
 # Soviet Iron Curtain Device-铁幕装置
@@ -69,9 +65,9 @@ GACSPH = true
 # Allied Weather Controller-天气控制器
 GAWEAT = true
 # Bridge repair hut-桥梁维修小屋
-CABHUT = true
+CABHUT = false
 # Old Civilian Hospital-市民医院
-CAHOSP = true
+CAHOSP = false
 # Soviet Tesla Coil-磁暴线圈
 TESLA = true
 # Soviet Nuclear Missile Silo-核弹发射井
@@ -79,11 +75,11 @@ NAMISL = true
 # Allied Prism Cannon-光棱塔
 ATESLA = true
 # Tech Machine Shop-科技机器商店
-CAMACH = true
+CAMACH = false
 # Sydney Opera House-悉尼歌剧院
-CASYDN03 = true
+CASYDN03 = false
 # Ammo Crates-弹药箱
-AMMOCRAT = true
+AMMOCRAT = false
 # Soviet Shipyard-苏军造船厂
 NAYARD = true
 # Allied SpySat Uplink-间谍卫星
@@ -99,11 +95,11 @@ GAPILL = true
 # Soviet Flak Cannon-防空炮
 NAFLAK = true
 # Tech Outpost-科技前哨站
-CAOUTP = true
+CAOUTP = false
 # Tech Hospital-科技医院
-CATHOSP = true
+CATHOSP = false
 # Tech Airport-科技机场
-CAAIRP = true
+CAAIRP = false
 # Tech Oil Derrick-科技钻油厂
 CAOILD = true
 # Cloning Vats-复制中心
@@ -111,55 +107,55 @@ NACLON = true
 # Allied Ore Processor-矿石精炼器
 GAOREP = true
 # Statue of Liberty-自由女神像
-CANEWY04 = true
+CANEWY04 = false
 # ZZZ World Trade Center-世贸中心
-CANEWY05 = true
+CANEWY05 = false
 # Communications-通讯中心
-CATECH01 = true
+CATECH01 = false
 # White House-白宫
-CAWASH01 = true
+CAWASH01 = false
 # Barrels-油桶1
-CAMISC01 = true
+CAMISC01 = false
 # Barrel-油桶2
-CAMISC02 = true
+CAMISC02 = false
 # Paris Tower-埃菲尔铁塔
-CAPARS01 = true
+CAPARS01 = false
 # Allied Airforce Command Headquarters-盟军空指部
-GAAIRC = true
+GAAIRC = false
 # Farm Outhouse-移动式厕所
-CAFRMB = true
+CAFRMB = false
 # Allied American Airforce Command Headquarters-美国空指部
 AMRADR = true
 # Guard Shack-警卫哨
-CAGARD01 = true
+CAGARD01 = false
 # Mayan Prism Pyramid-玛雅金字塔
-MAYAN = true
+MAYAN = false
 # Mayan Prism Pyramid-玛雅金字塔
-CAMEX01 = true
+CAMEX01 = false
 # Russain Kremlin Palace-克里姆林宫
-CARUS03 = true
+CARUS03 = false
 # Paris Arc de Triumphe-巴黎凯旋门
-CAPARS11 = true
+CAPARS11 = false
 # Lighthouse-灯塔
-CAFARM06 = true
+CAFARM06 = false
 # Psychic Beacon-心灵信标
 NAPSYB = true
 # Psychic Amplifier-心灵增幅器
-NAPSYA = true
+NAPSYA = false
 # Air Force Academy Chapel Colorado-空军学院礼拜堂
-CACOLO01 = true
+CACOLO01 = false
 # Derelict Tank-废弃猛犸坦克
-CAMSC13 = true
+CAMSC13 = false
 # Tech Secret Lab-秘密科技实验室
-CASLAB = true
+CASLAB = false
 # TRANS FORTRESS-尤里要塞
-CATRAN03 = true
+CATRAN03 = false
 # Tech Civilian Power Plant-科技电厂
-CAPOWR = true
+CAPOWR = false
 # Concrete Bunker 03-科技混凝土碉堡
-CABUNK03 = true
+CABUNK03 = false
 # Concrete Bunker 04-科技混凝土碉堡
-CABUNK04 = true
+CABUNK04 = false
 # YACNST-尤里建造场
 YACNST = true
 # YAPOWR-生化反应室
@@ -204,8 +200,6 @@ IVAN = true
 DESO = true
 # Attack Dog-苏联警犬
 DOG = true
-# Technician-技师
-CTECH = true
 # Chrono Legionnaire-超时空军团兵
 CLEG = true
 # Spy-间谍
@@ -221,9 +215,9 @@ YURIPR = true
 # Sniper-狙击手
 SNIPE = true
 # Animal Cow-奶牛
-COW = true
+COW = false
 # Animal Alligator-鳄鱼
-ALL = true
+ALL = false
 # Tanya-谭雅
 TANY = true
 # Flak Trooper-防空步兵
@@ -235,39 +229,39 @@ SENGINEER = true
 # Allied Attack Dog-盟军警犬
 ADOG = true
 # Vladimir-弗拉基米尔
-VLADIMIR = true
+VLADIMIR = false
 # General Pentagon-五角大楼将军
-PENTGEN = true
+PENTGEN = false
 # President-总统
-PRES = true
+PRES = false
 # Secret Service-秘密保镖
-SSRV = true
+SSRV = false
 # Animal Polar Bear-北极熊
-POLARB = true
+POLARB = false
 # Animal Monkey-猴子
-JOSH = true
+JOSH = false
 # Cowboy-Westwood之星
-CLNT = true
+CLNT = false
 # Hero-终结者
-ARND = true
+ARND = false
 # Bodybuilder-兰博
-STLN = true
+STLN = false
 # Animal Camel-骆驼
-CAML = true
+CAML = false
 # Albert Einstein-爱因斯坦
 EINS = true
 # Evil Mummy-木乃伊
-MUMY = true
+MUMY = false
 # Romanov-罗曼诺夫
-RMNV = true
+RMNV = false
 # Lunar Infantry-登月飞行兵
-LUNR = true
+LUNR = false
 # Animal T-Rex-暴龙
-DNOA = true
+DNOA = false
 # Animal Bront-恐龙
-DNOB = true
+DNOB = false
 # Werewolf-狼人
-WWLF = true
+WWLF = false
 # BRUTE-狂兽人
 BRUTE = true
 # Allied Construction Vehicle-盟军移动基地车
@@ -275,7 +269,7 @@ AMCV = true
 # War Miner-武装采矿车
 HARV = true
 # Apocalypse-灾厄坦克
-APOC = true
+APOC = false
 # Rhino Heavy Tank-犀牛坦克
 HTNK = true
 # Armored Transport-野牛运输艇
@@ -321,9 +315,9 @@ TTNK = true
 # Hind Transport-飞碟
 HIND = true
 # Light Tank-轻坦克
-LTNK = true
+LTNK = false
 # Chrono Miner(noback)-超时空采矿车
-CMON = true
+CMON = false
 # Chrono Miner-超时空采矿车
 CMIN = true
 # Prism Tank-光棱坦克
@@ -335,12 +329,10 @@ MGTK = true
 # IFV-多功能步兵车
 FV = true
 # Vladimir's Dreadnought-弗拉基米尔指挥舰
-VLAD = true
+VLAD = false
 # Demolitions Truck-自爆卡车
 DTRUCK = true
 # Cruise Ship-游轮
-CRUISE = true
-# YDUM
-YDUM = true
+CRUISE = false
 # PCV-尤里移动基地车
 PCV = true
