@@ -67,7 +67,7 @@ static void Update() {
       std::chrono::duration_cast<std::chrono::microseconds>(ts_now - last_ts)
           .count();
   last_ts = ts_now;
-  double delta_sec = static_cast<double>(delta_us) / 10e6;
+  double delta_sec = static_cast<double>(delta_us) / 1e6;
   DCHECK_NOTNULL(trainer);
   trainer->Update(delta_sec);
   DCHECK_NOTNULL(server);
