@@ -36,6 +36,8 @@ cmake --build ./build --config Release --target ra2_trainer_backend -j $env:NUMB
 
 ## 使用方式
 
+dll 注入比远程线程安全，程序也更好写，但是代价是注入流程更加复杂。没有注入 Ares 需求的玩家可以选择继续使用[之前的 v4 版本](https://github.com/AdjWang/RA2YurisRevengeTrainer/releases/tag/v4.2)。
+
 ### 自动注入后端模块
 
 Ares：将 `ra2_trainer_backend.dll` 和 `ra2_trainer_backend.toml` 放到游戏目录。
