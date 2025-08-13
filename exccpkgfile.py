@@ -1,5 +1,4 @@
 from collections import defaultdict
-from functools import partial
 import logging
 from multiprocessing import cpu_count
 import os
@@ -268,30 +267,6 @@ class PlutoSVG(exccpkg.Package):
         return ctx.cmake.install(build_dir)
 
 
-class Syringe(exccpkg.Package):
-    name = "syringe"
-    version = "1.0.0"
-
-    @override
-    def grab(self, ctx: Context) -> Path:
-        url = "https://github.com/Phobos-developers/Syringe/archive/refs/tags/1.0.0.tar.gz"
-        return ctx.cmake.download(url, "syringe-1.0.0", ".tar.gz")
-
-    @override
-    def build(self, ctx: Context, src_dir: Path) -> Path:
-        return src_dir
-
-    @override
-    def install(self, ctx: Context, build_dir: Path) -> None:
-        proj_dir = build_dir
-        tools.mkdirp(ctx.cfg.install_dir / "include/Syringe", ctx.cfg.dryrun)
-        if not ctx.cfg.dryrun:
-            # Unfortunately, YRpp has no namespace, import them may conflict with
-            # existing names, becareful.
-            shutil.copy2(proj_dir / "include/Syringe.h", ctx.cfg.install_dir / "include/Syringe")
-            shutil.copy2(proj_dir / "include/declaration.hpp", ctx.cfg.install_dir / "include/Syringe")
-
-
 class Toml(exccpkg.Package):
     name = "toml"
     version = "3.4.0"
@@ -387,17 +362,20 @@ def collect() -> exccpkg.PackageCollection:
         Boost("static_assert"),
         Boost("throw_exception"),
         Boost("type_traits"),
-        Freetype(),
         Glfw(),
         Gsl(),
         Imgui(),
         NlohmannJson(),
         PlutoSVG(),
-        Syringe(),
         Toml(),
         Websocketpp(),
         YRpp(),
     ])
+    sub_collection = exccpkg.PackageCollection([
+        # PlutoSVG dependents on Freetype.
+        Freetype(),
+    ])
+    collection.merge(sub_collection)
     return collection
 
 

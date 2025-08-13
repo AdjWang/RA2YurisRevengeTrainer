@@ -1,10 +1,10 @@
 #include "base/windows_shit.h"
 #define EAT_SHIT_FIRST  // prevent linter move windows shit down
-#include "Syringe/Syringe.h"
-#include "base/logging.h"
+#include "Syringe.h"
 #include "backend/hook/game_loop.h"
 #include "backend/hook/logging.h"
 #include "backend/hook/memory_api.h"
+#include "base/logging.h"
 
 #ifdef YRTR_DEBUG
 // https://github.com/Phobos-developers/Phobos/blob/6391e7def58c8dc3168438087612cfaa8267c98d/src/Phobos.Ext.cpp#L306
