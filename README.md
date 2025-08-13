@@ -44,7 +44,7 @@ Ares：将 `ra2_trainer_backend.dll` 和 `ra2_trainer_backend.toml` 放到游戏
 
 ### 手动注入后端模块
 
-对于某些原版，`wsock32.dll` 会导致游戏启动时崩溃。对于某些 Ares 版本，如 `Tiberium Crisis 2`，不会自动识别可注入模块。此类版本要手动注入，使用任意 dll 注入工具注入 `ra2_trainer_backend.dll` 即可，注意仍需将 `ra2_trainer_backend.dll` 和 `ra2_trainer_backend.toml` 放在游戏目录下。
+对于某些原版，`wsock32.dll` 会导致游戏启动时崩溃。对于某些 Ares 版本，如 `Tiberium Crisis 2` 和复仇时刻，不会自动识别可注入模块。此类版本要手动注入，使用任意 dll 注入工具注入 `ra2_trainer_backend.dll` 即可，注意仍需将 `ra2_trainer_backend.dll` 和 `ra2_trainer_backend.toml` 放在游戏目录下。
 
 例如 [CheatEngine 自带的 dll 注入功能 (Inject DLL)](https://wiki.cheatengine.org/index.php?title=Help_File:Menus_and_Features)。
 
@@ -77,8 +77,6 @@ Ares：将 `ra2_trainer_backend.dll` 和 `ra2_trainer_backend.toml` 放到游戏
 - `Tiberium Crisis 2` 新篇章第一关使用工程师占领无线电台时不能开启无敌，否则无法触发任务事件导致卡关。
 
 - `Tiberium Crisis 2` 任务结束退出时如果没有附加 Ares 调试器会无法保存当前游戏进度和勋章。
-
-- 电脑防火墙
 
 ## 功能简介
 
@@ -124,10 +122,6 @@ Ares：将 `ra2_trainer_backend.dll` 和 `ra2_trainer_backend.toml` 放到游戏
 19. 无间道：被敌方间谍入侵会获得敌方科技。
 20. 任务调速：开启后执行任务时可以在暂停界面调整游戏速度。
 
-## 新版改进
-
-- 支持 Ares
-
 ## 感谢
 
-// TODO
+感谢 [bigsinger](https://github.com/bigsinger/) 提供的建议和咨询。
