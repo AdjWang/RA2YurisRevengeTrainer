@@ -1,5 +1,7 @@
 #include "base/logging.h"
 
+#include <ctime>
+
 #ifdef _WIN32
 #include "base/windows_shit.h"
 #endif
@@ -59,9 +61,12 @@ bool FileLogSink::SetLogFile(const std::string& filename) {
   // Write initial marker
   auto now = std::chrono::system_clock::now();
   auto now_time = std::chrono::system_clock::to_time_t(now);
-  std::string time_str = std::ctime(&now_time);
-  if (!time_str.empty() && time_str.back() == '\n') {
-    time_str.pop_back();  // Remove the trailing newline
+  std::string time_str;
+  time_str.resize(26);
+  errno_t ret = ctime_s(time_str.data(), time_str.size(), &now_time);
+  // Remove the trailing newline.
+  if (ret == 0 && !time_str.empty() && time_str.back() == '\n') {
+    time_str.pop_back();
   }
   kLogSink.log_file_ << "=== Log started at " << time_str << " ===\n";
   return true;
