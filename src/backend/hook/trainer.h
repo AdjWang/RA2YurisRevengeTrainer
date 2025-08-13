@@ -85,7 +85,6 @@ class Trainer : public ITrainer {
   bool activate_inst_superweapon_;
   bool activate_inst_turn_turret_;
   bool activate_inst_turn_body_;
-  bool activate_auto_clean_beacon_;
   // From VA:00450645, controls auto repair.
   absl::flat_hash_map<UniqId /*house_id*/, int /*iq_level*/> iq_levels_;
 

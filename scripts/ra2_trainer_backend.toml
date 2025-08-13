@@ -2,8 +2,6 @@
 # Optional, only used for debugging.
 hotreload_directory = "ra2_trainer_hotreload"
 port = 35271
-# Auto clean beacons.
-auto_clean_beacon = true
 # Auto record enabled checkboxes in last game.
 auto_record = true
 

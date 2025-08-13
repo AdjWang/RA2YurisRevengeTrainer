@@ -86,7 +86,6 @@ void Config::LoadGlobal(const toml::table& global) {
     HLOG_F(WARNING, "Failed to find hotreload_dir={}", hotreload_dir_);
   }
 #endif
-  auto_clean_beacon_ = CheckLoad<bool>(global, "auto_clean_beacon");
   auto_record_ = CheckLoad<bool>(global, "auto_record");
 }
 

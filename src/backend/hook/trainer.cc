@@ -17,7 +17,6 @@ __YRTR_BEGIN_THIRD_PARTY_HEADERS
 #include "TechnoClass.h"
 #include "Unsorted.h"
 __YRTR_END_THIRD_PARTY_HEADERS
-#include "backend/game/beacon.h"
 #include "backend/hook/hook_point.h"
 #include "backend/record.h"
 #include "backend/tech.h"
@@ -553,11 +552,9 @@ Trainer::Trainer(Config* cfg)
       activate_inst_superweapon_(false),
       activate_inst_turn_turret_(false),
       activate_inst_turn_body_(false),
-      activate_auto_clean_beacon_(false),
       on_state_updated_(nullptr),
       state_dirty_(true) {
   DCHECK_NOTNULL(cfg_);
-  activate_auto_clean_beacon_ = cfg_->auto_clean_beacon();
   mem_api_ = std::make_unique<MemoryAPI>();
   InitStates(state_);
   if (cfg_->auto_record()) {
@@ -620,10 +617,6 @@ void Trainer::Update(double /*delta*/) {
   }
   if (activate_inst_turn_turret_ || activate_inst_turn_body_) {
     RotateUnit();
-  }
-  if (activate_auto_clean_beacon_) {
-    game::Beacon::Instance->AutoClean(
-        yrpp::HouseClass::CurrentPlayer->ArrayIndex);
   }
   // Update selecting houses to view.
   SideMap selecting_houses;

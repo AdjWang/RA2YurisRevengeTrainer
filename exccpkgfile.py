@@ -47,7 +47,7 @@ class Config:
             -DCMAKE_LINK_FLAGS="{LDFLAGS["Windows"][self.cmake_build_type]}" """
         
         self.dryrun = False
-        self.rebuild = True
+        self.rebuild = False
 
 
 class CMakeCommon:
@@ -305,7 +305,7 @@ class Websocketpp(exccpkg.Package):
 
 class YRpp(exccpkg.Package):
     name = "YRpp"
-    version = "602d3c6"
+    version = "1a0dda3"
 
     @override
     def grab(self, ctx: Context) -> Path:
@@ -314,7 +314,7 @@ class YRpp(exccpkg.Package):
             tools.run_cmd(f"git clone https://github.com/AdjWang/YRpp.git {download_dir}", ctx.cfg.dryrun)
             cwd = os.getcwd()
             os.chdir(download_dir)
-            tools.run_cmd("git reset --hard 602d3c6", ctx.cfg.dryrun)
+            tools.run_cmd("git reset --hard 1a0dda3", ctx.cfg.dryrun)
             os.chdir(cwd)
         return download_dir
 
