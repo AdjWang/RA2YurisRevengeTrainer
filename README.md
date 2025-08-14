@@ -84,25 +84,35 @@ cmake --build ./build --config Release --target wsock32 ra2_trainer_backend -j $
 
 dll 注入比远程线程安全，程序也更好写，但是代价是注入流程更加复杂。没有注入 Ares 需求的玩家可以选择继续使用[之前的 v4 版本](https://github.com/AdjWang/RA2YurisRevengeTrainer/releases/tag/v4.2)。
 
-### 自动注入后端模块
+### 后端模块
 
-Ares：将 `ra2_trainer_backend.dll` 和 `ra2_trainer_backend.toml` 放到游戏目录。
+能自动注入最好，不行就得手动注入。可在游戏启动后执行一些功能，如 `Alt+1` 看是否有提示音判断注入是否成功。
+
+#### 自动注入
 
 原版：将 `wsock32.dll, ra2_trainer_backend.dll` 和 `ra2_trainer_backend.toml` 放到游戏目录。
 
-### 手动注入后端模块
+Ares：将 `ra2_trainer_backend.dll` 和 `ra2_trainer_backend.toml` 放到游戏目录。
 
-对于某些原版，`wsock32.dll` 会导致游戏启动时崩溃。对于某些 Ares 版本，如 `Tiberium Crisis 2` 和复仇时刻，不会自动识别可注入模块。此类版本要手动注入，使用任意 dll 注入工具注入 `ra2_trainer_backend.dll` 即可，注意仍需将 `ra2_trainer_backend.dll` 和 `ra2_trainer_backend.toml` 放在游戏目录下。
+对于某些 Ares 版本，如 `Tiberium Crisis 2`，`wsock32.dll` 会导致游戏启动时崩溃，所以不要误放 `wsock32.dll` 到 Ares 版本中。
+
+#### 手动注入
+
+对于一些 Ares 版本，如 `Tiberium Crisis 2` 和复仇时刻，不会自动识别可注入模块，此时需要手动注入。使用任意 dll 注入工具注入 `ra2_trainer_backend.dll` 即可，注意仍需将 `ra2_trainer_backend.dll` 和 `ra2_trainer_backend.toml` 放在游戏目录下，如果已经放置 `wsock32.dll` 记得删除。
 
 例如 [CheatEngine 自带的 dll 注入功能 (Inject DLL)](https://wiki.cheatengine.org/index.php?title=Help_File:Menus_and_Features)。
 
-### 桌面端
+### 前端页面
 
-打开 `ra2_trainer.exe` 即可，目录下需要有 `ra2_trainer.toml`.
+桌面端和网页端可开启任意数量，自动同步。通常二选一即可。
 
-### 网页端
+#### 桌面端
 
-后端启动后，会在默认端口 `35271` 开启监听服务供前端连接。此时将手机和电脑连接至同一局域网，手机访问 `http://<电脑 ip>:35271` 即可打开控制页面。
+打开 `ra2_trainer.exe` 即可，目录下需要有 `ra2_trainer.toml`. 默认访问端口 `35271` 收发数据，不直接修改游戏，因此不需要管理员权限。
+
+#### 网页端
+
+后端模块注入游戏后，会在默认端口 `35271` 开启监听服务供前端连接。此时将手机和电脑连接至同一局域网，手机访问 `http://<电脑 ip>:35271` 即可打开控制页面。
 
 > 可在 `powershell` 或 `cmd` 中使用 `ipconfig` 指令获取电脑端 ip 地址。
 > 
@@ -120,17 +130,17 @@ Ares：将 `ra2_trainer_backend.dll` 和 `ra2_trainer_backend.toml` 放到游戏
 
 ## 已知问题
 
-- 用于 Steam 尤里的复仇原版时游戏卡顿。需要将游戏目录下 `DDrawCompat.ini` 中的 `CpuAffinity = 1` 改为 `CpuAffinity = all`，修改后前端响应仍然略卡，但是后端看起来可以正常工作。
+- 用于 Steam 尤里的复仇原版时游戏卡顿。需要将游戏目录下 `DDrawCompat.ini` 中的 `CpuAffinity = 1` 改为 `CpuAffinity = all`，修改后前端响应仍然略卡，但是后端看起来可以正常工作。其他版本可能也设置了单核绑定，但是不一定卡顿，如果卡顿，优先[检查 CPU 亲和性配置](https://poweradm.com/set-cpu-affinity-powershell/)。
 
 - `Tiberium Crisis 2` 新篇章第一关使用工程师占领无线电台时不能开启无敌，否则无法触发任务事件导致卡关。
 
-- `Tiberium Crisis 2` 任务结束退出时如果没有附加 Ares 调试器会无法保存当前游戏进度和勋章。
+- `Tiberium Crisis 2` 任务结束退出时如果没有附加 Ares 调试器会无法保存当前游戏进度和勋章。仅在使用 `Debug` 模式编译时会遇到此问题。
 
 ## 界面说明
 
 ### 阵营过滤列表页面
 
-**与单位或阵营相关的功能仅对被保护阵营生效**。框选任意单位后可在修改器中添加被选单位所属阵营为被保护阵营，也允许保护 AI 玩家。
+**与单位或阵营相关的功能仅对被保护阵营生效**。框选任意单位后可在修改器中添加被选单位所属阵营为被保护阵营，也允许保护 AI 玩家。如果忘记配置保护阵营，可能直接冲锋陷阵 => 炮灰 => Game Over.
 
 ### 功能页面
 
