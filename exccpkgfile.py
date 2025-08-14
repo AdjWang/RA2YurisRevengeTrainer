@@ -14,7 +14,7 @@ class Config:
         self.project_dir = project_dir
         self.deps_dir = self.project_dir / "deps"
         self.download_dir = self.deps_dir / "download"
-        self.cmake_build_type = "Debug"
+        self.cmake_build_type = "Release"
         self.install_dir = self.deps_dir / "out" / self.cmake_build_type
         self.generator = "Ninja"
 
