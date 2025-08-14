@@ -58,14 +58,15 @@ bool FileLogSink::SetLogFile(const std::string& filename) {
   if (!kLogSink.log_file_.is_open()) {
     return false;
   }
-  // Write initial marker
+  // Write initial marker.
   auto now = std::chrono::system_clock::now();
   auto now_time = std::chrono::system_clock::to_time_t(now);
   std::string time_str;
   time_str.resize(26);
   errno_t ret = ctime_s(time_str.data(), time_str.size(), &now_time);
   // Remove the trailing newline.
-  if (ret == 0 && !time_str.empty() && time_str.back() == '\n') {
+  while (ret == 0 && !time_str.empty() &&
+         (time_str.back() == '\n' || time_str.back() == '\0')) {
     time_str.pop_back();
   }
   kLogSink.log_file_ << "=== Log started at " << time_str << " ===\n";
