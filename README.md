@@ -4,13 +4,58 @@
 
 ## 编译
 
-使用 [CMake](https://cmake.org/), python3, npm, Ninja 和 Visual Studio 17 2022 构建。
+使用 [CMake](https://cmake.org/), [Python3 >= 3.12](https://www.python.org/), [npm](https://www.npmjs.com/), [Ninja](https://ninja-build.org/) 和 [Visual Studio 17 2022](https://visualstudio.microsoft.com/) 构建。
+
+必须在 x86 模式的 [Developer Command Prompt 或 Developer PowerShell](https://learn.microsoft.com/en-us/visualstudio/ide/reference/command-prompt-powershell?view=vs-2022) 中执行编译命令。
+
+<details>
+
+<summary> 我的编译环境 </summary>
+
+```
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Try the new cross-platform PowerShell https://aka.ms/pscore6
+
+Could not start Developer PowerShell using the script path.
+Attempting to launch from the latest Visual Studio installation.
+**********************************************************************
+** Visual Studio 2022 Developer PowerShell v17.14.7
+** Copyright (c) 2025 Microsoft Corporation
+**********************************************************************
+PS C:\Projects\RA2YurisRevengeTrainer> python --version
+Python 3.12.5
+PS C:\Projects\RA2YurisRevengeTrainer> npm --version
+10.9.2
+PS C:\Projects\RA2YurisRevengeTrainer> ninja --version
+1.13.0.git
+PS C:\Projects\RA2YurisRevengeTrainer> cl
+Microsoft (R) C/C++ Optimizing Compiler Version 19.44.35211 for x86
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+usage: cl [ option... ] filename... [ /link linkoption... ]        
+PS C:\Projects\RA2YurisRevengeTrainer> cmake --version
+cmake version 3.30.2
+
+CMake suite maintained and supported by Kitware (kitware.com/cmake).
+PS C:\Projects\RA2YurisRevengeTrainer> 
+```
+
+</details>
+
+### 编译依赖
+
+```
+git clone https://github.com/AdjWang/RA2YurisRevengeTrainer.git
+cd ./RA2YurisRevengeTrainer
+python exccpkgfile.py
+```
 
 ### 编译前端
 
 ```
-git clone https://github.com/AdjWang/RA2YurisRevengeTrainer.git
-cd ./RA2YurisRevengeTrainer/src/frontend/web
+cd ./src/frontend/web
 npm install
 npm run build
 cd ../../..
@@ -19,11 +64,12 @@ cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_DEFAULT_CMP0091=NEW -DCMAKE_MSVC
 cmake --build ./build --config Release --target ra2_trainer -j $env:NUMBER_OF_PROCESSORS
 ```
 
+> 在 `powershell` 中使用 `$env:NUMBER_OF_PROCESSORS`，在 `cmd` 中使用 `%NUMBER_OF_PROCESSORS%`
+
 如果不想编译网页，只需要桌面程序：
 
 ```
-git clone https://github.com/AdjWang/RA2YurisRevengeTrainer.git
-cd ./RA2YurisRevengeTrainer
+cd .
 cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_DEFAULT_CMP0091=NEW -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded -DCMAKE_INSTALL_PREFIX=deps/out/Release -DYRTR_ENABLE_WEB=OFF -G Ninja -S . -B ./build
 cmake --build ./build --config Release --target ra2_trainer -j $env:NUMBER_OF_PROCESSORS
 ```
@@ -31,7 +77,7 @@ cmake --build ./build --config Release --target ra2_trainer -j $env:NUMBER_OF_PR
 ### 编译后端
 
 ```
-cmake --build ./build --config Release --target ra2_trainer_backend -j $env:NUMBER_OF_PROCESSORS
+cmake --build ./build --config Release --target wsock32 ra2_trainer_backend -j $env:NUMBER_OF_PROCESSORS
 ```
 
 ## 使用方式
@@ -68,7 +114,7 @@ Ares：将 `ra2_trainer_backend.dll` 和 `ra2_trainer_backend.toml` 放到游戏
 
 - 如果全局快捷键存在冲突，会注册失败，对应功能后的括号为空。
 
-- 项目使用 [`exccpkg`](https://github.com/AdjWang/exccpkg) 管理依赖，需要安装 `python >= 3.12, ninja`，如果不喜欢 `exccpkg`，可以用任何东西，只要让 `CMakeLists.txt` 里的 `find_package` 正常工作即可。
+- 项目使用 [`exccpkg`](https://github.com/AdjWang/exccpkg) 管理依赖，需要安装 `python >= 3.12, ninja`，如果不喜欢 `exccpkg`，需要自行拉取和编译依赖，依赖列表在 `exccpkgfile.py` 末尾。
 
 - 修改器后端会在游戏目录下产生 `ra2_trainer_backend.log` 日志，以供故障排查。
 
