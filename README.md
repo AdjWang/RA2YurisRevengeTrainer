@@ -26,6 +26,17 @@ Attempting to launch from the latest Visual Studio installation.
 **********************************************************************
 PS C:\Projects\RA2YurisRevengeTrainer> python --version
 Python 3.12.5
+PS C:\Projects\RA2YurisRevengeTrainer> python -m pip show exccpkg
+Name: exccpkg
+Version: 3.0.3
+Summary: An explicit C++ package builder.
+Home-page:
+Author: AdjWang
+Author-email: wwang230513@gmail.com
+License:
+Location: C:\Programs\Python312\Lib\site-packages
+Requires: requests
+Required-by:
 PS C:\Projects\RA2YurisRevengeTrainer> npm --version
 10.9.2
 PS C:\Projects\RA2YurisRevengeTrainer> ninja --version
@@ -43,6 +54,12 @@ PS C:\Projects\RA2YurisRevengeTrainer>
 ```
 
 </details>
+
+### 安装依赖编译工具
+
+```
+python -m pip install exccpkg
+```
 
 ### 编译依赖
 
