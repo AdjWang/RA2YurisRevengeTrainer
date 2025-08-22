@@ -597,7 +597,7 @@ bool Trainer::ShouldProtect(yrpp::HouseClass* house) {
 bool Trainer::ShouldEnableTech(yrpp::BuildingTypeClass* tech) {
   std::string_view key(tech->ID);
   Tech tech_key = GetTech(key);
-  if (tech_key == Tech::kUnknown) {
+  if (tech_key == Tech::kUnknown) [[unlikely]] {
     return false;
   }
   DCHECK_NOTNULL(Config::instance());
