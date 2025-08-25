@@ -4,6 +4,7 @@ namespace fs = std::filesystem;
 
 #include "base/windows_shit.h"
 #define EAT_SHIT_FIRST  // prevent linter move windows shit down
+#include "backend/config.h"
 #include "backend/hook/game_loop.h"
 #include "backend/hook/hook.h"
 #include "base/macro.h"
@@ -33,7 +34,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason,
                                      reinterpret_cast<uint32_t>(hinstDLL))
                              .c_str());
       yrtr::logging::InitLogging(yrtr::logging::LogSink::kFile,
-                                 "ra2_trainer_backend.log");
+                                 yrtr::backend::Config::kLogFileName);
       std::string dll_path = GetModule(hinstDLL);
       if (!dll_path.empty()) {
         absl::InitializeSymbolizer(dll_path.c_str());

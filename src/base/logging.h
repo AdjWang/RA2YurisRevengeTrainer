@@ -58,7 +58,7 @@ class FileLogSink final : public absl::LogSink {
   void Send(const absl::LogEntry& entry) override;
 
   // Call this before any logging occurs.
-  static bool SetLogFile(const std::string& filename);
+  static bool SetLogFile(std::string_view filename);
 
  private:
   static FileLogSink kLogSink;
@@ -68,7 +68,7 @@ class FileLogSink final : public absl::LogSink {
 
 extern std::ostringstream& get_nullstream();
 extern void InitLogging(LogSink log_sink = LogSink::kStd,
-                        const std::string& log_file = "");
+                        std::string_view log_file = "");
 extern absl::LogSink* GetLogSink();
 }  // namespace logging
 }  // namespace yrtr

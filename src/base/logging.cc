@@ -49,12 +49,12 @@ FileLogSink::~FileLogSink() {
   }
 }
 
-bool FileLogSink::SetLogFile(const std::string& filename) {
+bool FileLogSink::SetLogFile(std::string_view filename) {
   std::lock_guard<std::mutex> lock(kLogSink.mu_);
   if (kLogSink.log_file_.is_open()) {
     kLogSink.log_file_.close();
   }
-  kLogSink.log_file_.open(filename, std::ios::out | std::ios::trunc);
+  kLogSink.log_file_.open(filename.data(), std::ios::out | std::ios::trunc);
   if (!kLogSink.log_file_.is_open()) {
     return false;
   }
@@ -91,13 +91,13 @@ static std::ostringstream g_nullstream;
 
 std::ostringstream& get_nullstream() { return g_nullstream; }
 
-void InitLogging(LogSink log_sink, const std::string& log_file) {
+void InitLogging(LogSink log_sink, std::string_view log_file) {
   if (log_sink == LogSink::kStd) {
     absl::SetStderrThreshold(absl::LogSeverityAtLeast::kInfo);
     kLogSinkInst = StderrLogSink::get();
   } else if (log_sink == LogSink::kFile) {
     if (!FileLogSink::SetLogFile(log_file)) {
-      perror(("Failed to open log file: " + log_file).c_str());
+      perror(std::format("Failed to open log file: {}", log_file).c_str());
       abort();
     }
     kLogSinkInst = FileLogSink::get();

@@ -19,6 +19,7 @@ namespace backend {
 class Config {
  public:
   static constexpr std::string_view kCfgFileName = "ra2_trainer_backend.toml";
+  static constexpr std::string_view kLogFileName = "ra2_trainer_backend.log";
 
   static Config* instance() { return inst_.get(); }
   static bool Load(const fs::path& cfg_dir);
