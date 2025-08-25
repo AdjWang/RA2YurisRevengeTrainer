@@ -1270,6 +1270,11 @@ bool Trainer::UnlimitRadar() const {
   return true;
 }
 
+#undef CHECK_MEMAPI_OR_REPORT
+#undef CHECK_REPORT
+#undef CHECK_MEMAPI_OR_RETURN_FALSE
+#undef CHECK_RETF
+
 }  // namespace hook
 }  // namespace backend
 }  // namespace yrtr
