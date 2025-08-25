@@ -1,5 +1,7 @@
 #include "base/windows_shit.h"
 #define EAT_SHIT_FIRST  // prevent linter move windows shit down
+// Enable yrpp .syhks segment marker.
+#define SYR_VER 2
 #include "Syringe.h"
 #include "backend/hook/game_loop.h"
 #include "backend/hook/logging.h"
