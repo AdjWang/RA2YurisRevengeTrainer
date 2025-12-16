@@ -6,8 +6,10 @@
 __YRTR_BEGIN_THIRD_PARTY_HEADERS
 #include "absl/debugging/symbolize.h"
 __YRTR_END_THIRD_PARTY_HEADERS
+#include "base/crash_dump.h"
 #include "base/logging.h"
 #include "base/thread.h"
+#include "formatter/std.h"
 #include "frontend/desktop/char_table.h"
 #include "frontend/desktop/config.h"
 #include "frontend/desktop/glfw.h"
@@ -88,12 +90,9 @@ static LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam,
 }  // namespace
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, PSTR, int) {
-#ifdef YRTR_LOG_FILE
-  if (atexit(DumpLog) != 0) {
-    perror("Failed to register log dump function");
-  }
-#endif
-  logging::InitLogging(logging::LogSink::kDbgView);
+  logging::InitLogging(logging::LogSink::kFile, Config::kLogFileName);
+  // Do not use in DllMain, would crash.
+  absl::InitializeLog();
   SetupRendererThreadOnce();
 
   char exe_path[MAX_PATH] = {0};
@@ -104,6 +103,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, PSTR, int) {
     LOG_F(FATAL, "Failed to get module file name, err=[{}]{}", err, message);
     UNREACHABLE();
   }
+  fs::path crash_dump_dir =
+      fs::path(exe_path).parent_path() / Config::kCrashDumpDirName;
+  LOG_F(INFO, "Register crash dump dir={}", crash_dump_dir);
+  if (!fs::exists(crash_dump_dir)) {
+    fs::create_directories(crash_dump_dir);
+  }
+  debug::InitCrashDump(crash_dump_dir);
   absl::InitializeSymbolizer(exe_path);
 
   GLFWwindow* window;

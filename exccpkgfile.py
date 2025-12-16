@@ -130,6 +130,26 @@ class Boost(exccpkg.Package):
                             dirs_exist_ok=True)
 
 
+class Breakpad(exccpkg.Package):
+    name = "breakpad"
+    version = "2024.02.16"
+
+    @override
+    def grab(self, ctx: Context) -> Path:
+        url = "https://github.com/google/breakpad/archive/refs/tags/v2024.02.16.tar.gz"
+        return ctx.cmake.download(url, "breakpad-2024.02.16", ".tar.gz")
+
+    @override
+    def build(self, ctx: Context, src_dir: Path) -> Path:
+        # Compile manually in CMakeLists.txt
+        return src_dir
+
+    @override
+    def install(self, ctx: Context, build_dir: Path) -> None:
+        # Directly add sources in CMakeLists.txt
+        ...
+
+
 class Freetype(exccpkg.Package):
     name = "freetype"
     version = "2.13.2"
@@ -362,6 +382,7 @@ def collect() -> exccpkg.PackageCollection:
         Boost("static_assert"),
         Boost("throw_exception"),
         Boost("type_traits"),
+        Breakpad(),
         Glfw(),
         Gsl(),
         Imgui(),

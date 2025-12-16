@@ -59,6 +59,27 @@ target_compile_definitions(libimgui PUBLIC
 )
 target_link_libraries(libimgui PRIVATE Freetype::Freetype glfw plutosvg::plutosvg)
 
+set(BREAKPAD_PROJ_DIR ${YRTR_DEPS_DIR}/breakpad-2024.02.16)
+
+# https://groups.google.com/g/google-breakpad-dev/c/K0k1UTX0iM8
+set(BREAKPAD_INCLUDES
+    ${BREAKPAD_PROJ_DIR}/src
+    ${BREAKPAD_PROJ_DIR}/src/client/windows
+)
+set(BREAKPAD_SOURCES
+    ${BREAKPAD_PROJ_DIR}/src/common/windows/guid_string.cc
+    ${BREAKPAD_PROJ_DIR}/src/client/windows/handler/exception_handler.cc
+    ${BREAKPAD_PROJ_DIR}/src/client/windows/crash_generation/client_info.cc
+    ${BREAKPAD_PROJ_DIR}/src/client/windows/crash_generation/crash_generation_client.cc
+    ${BREAKPAD_PROJ_DIR}/src/client/windows/crash_generation/crash_generation_server.cc
+    ${BREAKPAD_PROJ_DIR}/src/client/windows/crash_generation/minidump_generator.cc
+    ${YRTR_SOURCE_DIR}/base/crash_dump.cc
+)
+add_library(breakpad STATIC ${BREAKPAD_SOURCES})
+target_include_directories(breakpad PUBLIC ${BREAKPAD_INCLUDES} ${YRTR_SOURCE_DIR})
+target_compile_definitions(breakpad PRIVATE UNICODE)
+target_compile_options(breakpad PRIVATE /wd4996)
+
 add_library(wsock32 SHARED
   ${YRTR_SOURCE_DIR}/wsock32/export_table.def
   ${YRTR_SOURCE_DIR}/wsock32/wsock32.cc
@@ -121,7 +142,7 @@ target_link_libraries(yrtr_frontend
 
 add_executable(ra2_trainer WIN32 ${YRTR_SOURCE_DIR}/frontend/desktop/bin/main.cc)
 target_compile_options(ra2_trainer PRIVATE /W4 $<$<CONFIG:Debug>:/WX>)
-target_link_libraries(ra2_trainer PRIVATE yrtr_frontend glfw)
+target_link_libraries(ra2_trainer PRIVATE yrtr_frontend breakpad glfw)
 
 add_library(yrtr_backend STATIC
   ${YRTR_SOURCE_DIR}/backend/config.cc
