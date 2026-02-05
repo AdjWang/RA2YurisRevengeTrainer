@@ -39,6 +39,7 @@ class Config:
             -DCMAKE_BUILD_TYPE={self.cmake_build_type}
             -DCMAKE_CXX_STANDARD=23
             -DCMAKE_POLICY_DEFAULT_CMP0091=NEW
+            -DCMAKE_POLICY_VERSION_MINIMUM=3.5
             -DCMAKE_MSVC_RUNTIME_LIBRARY={self.msvc_rt_lib}
             -DCMAKE_INSTALL_PREFIX={self.install_dir}
             -DCMAKE_INSTALL_LIBDIR=lib
@@ -325,7 +326,7 @@ class Websocketpp(exccpkg.Package):
 
 class YRpp(exccpkg.Package):
     name = "YRpp"
-    version = "1a0dda3"
+    version = "c0a6d06d"
 
     @override
     def grab(self, ctx: Context) -> Path:
@@ -334,7 +335,7 @@ class YRpp(exccpkg.Package):
             tools.run_cmd(f"git clone https://github.com/AdjWang/YRpp.git {download_dir}", ctx.cfg.dryrun)
             cwd = os.getcwd()
             os.chdir(download_dir)
-            tools.run_cmd("git reset --hard 1a0dda3", ctx.cfg.dryrun)
+            tools.run_cmd(f"git reset --hard {self.version}", ctx.cfg.dryrun)
             os.chdir(cwd)
         return download_dir
 
@@ -345,21 +346,8 @@ class YRpp(exccpkg.Package):
 
     @override
     def install(self, ctx: Context, build_dir: Path) -> None:
-        proj_dir = build_dir
-        tools.mkdirp(ctx.cfg.install_dir / "include/YRpp", ctx.cfg.dryrun)
-        # Unfortunately, YRpp has no namespace, import them may conflict with
-        # existing names, becareful.
-        def __copy_fn(src, dst):
-            src_path = Path(src)
-            # Skip these folders and files.
-            if (".git" in src_path.parts or
-                ".gitattributes" in src_path.parts or
-                ".gitignore" in src_path.parts):
-                return
-            shutil.copy2(src, dst)
-        if not ctx.cfg.dryrun:
-            shutil.copytree(proj_dir, ctx.cfg.install_dir / "include/YRpp", dirs_exist_ok=True,
-                            copy_function=__copy_fn)
+        # Directly add sources in CMakeLists.txt
+        ...
 
 
 def collect() -> exccpkg.PackageCollection:
