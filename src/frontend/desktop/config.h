@@ -20,6 +20,8 @@ namespace frontend {
 class Config {
  public:
   static constexpr std::string_view kCfgFileName = "ra2_trainer.toml";
+  static constexpr std::string_view kLogFileName = "ra2_trainer_frontend.log";
+  static constexpr std::string_view kCrashDumpDirName = "yrtr_crash_dump";
   static constexpr int kWin32HotKeyMod = MOD_ALT;
 
   constexpr int GetHotkey(FnLabel label) {
