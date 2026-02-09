@@ -12,6 +12,7 @@ __YRTR_END_THIRD_PARTY_HEADERS
 #include "formatter/std.h"
 #include "frontend/desktop/char_table.h"
 #include "frontend/desktop/config.h"
+#include "frontend/desktop/encoding.h"
 #include "frontend/desktop/glfw.h"
 #include "frontend/desktop/gui.h"
 #include "frontend/desktop/gui_context.h"
@@ -90,19 +91,22 @@ static LRESULT WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam,
 }  // namespace
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, PSTR, int) {
+  // Set locale.
+  std::locale::global(std::locale("en_US.UTF-8"));
   logging::InitLogging(logging::LogSink::kFile, Config::kLogFileName);
   // Do not use in DllMain, would crash.
   absl::InitializeLog();
   SetupRendererThreadOnce();
 
-  char exe_path[MAX_PATH] = {0};
-  DWORD nSize = GetModuleFileNameA(hInstance, exe_path, _countof(exe_path));
+  WCHAR raw_exe_path[MAX_PATH] = {0};
+  DWORD nSize = GetModuleFileNameW(hInstance, raw_exe_path, _countof(raw_exe_path));
   if (nSize == 0) {
     DWORD err = GetLastError();
     std::string message = std::system_category().message(err);
     LOG_F(FATAL, "Failed to get module file name, err=[{}]{}", err, message);
     UNREACHABLE();
   }
+  std::string exe_path = utils::Utf16ToUtf8(raw_exe_path);
   fs::path crash_dump_dir =
       fs::path(exe_path).parent_path() / Config::kCrashDumpDirName;
   LOG_F(INFO, "Register crash dump dir={}", crash_dump_dir);
@@ -110,7 +114,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, PSTR, int) {
     fs::create_directories(crash_dump_dir);
   }
   debug::InitCrashDump(crash_dump_dir);
-  absl::InitializeSymbolizer(exe_path);
+  absl::InitializeSymbolizer(exe_path.c_str());
 
   GLFWwindow* window;
   glfwSetErrorCallback(ErrorCallback);

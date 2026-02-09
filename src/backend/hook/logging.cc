@@ -3,7 +3,10 @@
 #include <cstdint>
 #include <cstdio>
 
+#include "base/macro.h"
+__YRTR_BEGIN_THIRD_PARTY_HEADERS
 #include "Unsorted.h"
+__YRTR_END_THIRD_PARTY_HEADERS
 #include "backend/hook/hook_point.h"
 #include "backend/hook/memory_api.h"
 #include "base/logging.h"
