@@ -1,7 +1,7 @@
 export {
   BtnFnLabelFirst, BtnFnLabelLast,
   CheckboxFnLabelFirst, CheckboxFnLabelLast,
-  FnLabel, strFnLabel
+  FnLabel, strFnLabel, getFnLabelHotkey
 };
 
 const BtnFnLabelFirst = 1;
@@ -83,5 +83,42 @@ function strFnLabel(label) {
     case FnLabel.kAdjustGameSpeed: return "AdjustGameSpeed";
     case FnLabel.kCount: return "Count";
     default: return "unknown";
+  }
+}
+
+function getFnLabelHotkey(label) {
+  switch (label) {
+    // Button
+    case FnLabel.kApply: return "Digit1";
+    case FnLabel.kIAMWinner: return "Digit2";
+    case FnLabel.kDeleteUnit: return "Digit3";
+    case FnLabel.kClearShroud: return "Digit4";
+    case FnLabel.kGiveMeABomb: return "Digit5";
+    case FnLabel.kUnitLevelUp: return "Digit6";
+    case FnLabel.kUnitSpeedUp: return "Digit7";
+    case FnLabel.kFastBuild: return "Digit8";
+    case FnLabel.kThisIsMine: return "Digit9";
+    // Checkbox
+    case FnLabel.kGod: return "KeyQ";
+    case FnLabel.kInstBuild: return "KeyW";
+    case FnLabel.kUnlimitSuperWeapon: return "KeyE";
+    case FnLabel.kInstFire: return "KeyT";
+    case FnLabel.kInstTurn: return "KeyY";
+    case FnLabel.kRangeToYourBase: return "KeyU";
+    case FnLabel.kFireToYourBase: return "KeyI";
+    case FnLabel.kFreezeGapGenerator: return "KeyO";
+    case FnLabel.kSellTheWorld: return "KeyA";
+    case FnLabel.kBuildEveryWhere: return "KeyD";
+    case FnLabel.kAutoRepair: return "KeyF";
+    case FnLabel.kSocialismMajesty: return "KeyH";
+    case FnLabel.kMakeCapturedMine: return "KeyL";
+    case FnLabel.kMakeGarrisonedMine: return "KeyZ";
+    case FnLabel.kInvadeMode: return "KeyX";
+    case FnLabel.kUnlimitTech: return "KeyV";
+    case FnLabel.kUnlimitFirePower: return "KeyB";
+    case FnLabel.kInstChrono: return "KeyN";
+    case FnLabel.kSpySpy: return "KeyM";
+    case FnLabel.kAdjustGameSpeed: return "Period";   /* . */
+    default: return "Invalid";
   }
 }

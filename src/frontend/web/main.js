@@ -5,6 +5,7 @@ import {
 } from './protocol';
 import { YRTRClient } from './client';
 import { Localization } from './localization';
+import { isTauriDesktop, registerHotkeys } from './tauri_init';
 
 var client = undefined;
 var selectingHouseMap = new Map();
@@ -178,9 +179,8 @@ function onStateUpdate(state) {
   }
 }
 
-function initClient() {
-  client = new YRTRClient(`ws://${window.location.hostname}:${window.location.port}`,
-                          onStateUpdate);
+function initClient(hostname, port) {
+  client = new YRTRClient(`ws://${hostname}:${port}`, onStateUpdate);
   // Connect to server
   client.connect();
   // Clean up on page unload
@@ -249,5 +249,11 @@ document.addEventListener('DOMContentLoaded', function () {
   initButton();
   initCheckbox();
   applyLocalization();
-  initClient();
+  if (isTauriDesktop()) {
+    registerHotkeys();
+    // DEBUG: get from backend, read from config file.
+    initClient("localhost", 35271);
+  } else {
+    initClient(window.location.hostname, window.location.port);
+  }
 });

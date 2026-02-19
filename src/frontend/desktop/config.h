@@ -47,12 +47,13 @@ class Config {
       case FnLabel::kBuildEveryWhere:     return GLFW_KEY_D;
       case FnLabel::kAutoRepair:          return GLFW_KEY_F;
       case FnLabel::kSocialismMajesty:    return GLFW_KEY_H;
-      case FnLabel::kMakeGarrisonedMine:  return GLFW_KEY_L;
-      case FnLabel::kInvadeMode:          return GLFW_KEY_Z;
-      case FnLabel::kUnlimitTech:         return GLFW_KEY_X;
-      case FnLabel::kUnlimitFirePower:    return GLFW_KEY_V;
-      case FnLabel::kInstChrono:          return GLFW_KEY_B;
-      case FnLabel::kSpySpy:              return GLFW_KEY_N;
+      case FnLabel::kMakeCapturedMine:    return GLFW_KEY_L;
+      case FnLabel::kMakeGarrisonedMine:  return GLFW_KEY_Z;
+      case FnLabel::kInvadeMode:          return GLFW_KEY_X;
+      case FnLabel::kUnlimitTech:         return GLFW_KEY_V;
+      case FnLabel::kUnlimitFirePower:    return GLFW_KEY_B;
+      case FnLabel::kInstChrono:          return GLFW_KEY_N;
+      case FnLabel::kSpySpy:              return GLFW_KEY_M;
       case FnLabel::kAdjustGameSpeed:     return GLFW_KEY_PERIOD;   /* . */
       default: return GLFW_KEY_UNKNOWN;
     }
