@@ -110,7 +110,7 @@ fn register_hotkeys(
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
-        .invoke_handler(tauri::generate_handler![get_label_hotkey_string])
+        .invoke_handler(tauri::generate_handler![get_ws_port, get_label_hotkey_string])
         .setup(move |app: &mut tauri::App| {
             let app_path = std::env::current_exe().unwrap();
             let app_dir = app_path.parent().unwrap();

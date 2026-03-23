@@ -17,6 +17,15 @@ export function isTauriDesktop() {
   return isTauriDesktop;
 }
 
+// Get websocket port number.
+export async function tauriGetWsPort() {
+  if (!isTauriDesktop()) {
+    return "";
+  }
+  const invoke = window.__TAURI__.core.invoke;
+  return await invoke("get_ws_port");
+}
+
 export async function tauriGetLabelHotkeyString(labelName) {
   if (!isTauriDesktop()) {
     return "";
