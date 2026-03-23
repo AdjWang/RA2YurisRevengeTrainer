@@ -130,7 +130,7 @@ void Server::OnHttpRequest(WebsocketServer& /*svr*/,
     return;
   }
 #ifdef YRTR_ENABLE_WEB
-  conn->set_body(std::string(kMainPageHtml));
+  conn->set_body(std::string(reinterpret_cast<const char*>(kMainPageHtml)));
 #else
   conn->set_body(std::string(kEmptyPageHtml));
 #endif

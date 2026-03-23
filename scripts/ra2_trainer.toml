@@ -1,15 +1,38 @@
 [ra2_trainer]
-# Available: zh, en
-language = "zh"
-enable_dpi_awareness = false
 port = 35271
 
-# font_path is optional, fontex_path is required.
-# If using fonts that separate characters and emojis, set both font_path and fontex_path.
-# If using fonts both supplies characters and emojis, set only fontex_path.
-# font_path = "C:\\Windows\\Fonts\\arial.ttf"
-# fontex_path = "C:\\Windows\\Fonts\\NotoColorEmoji-Regular.ttf"
-# Segoe UI Emoji font family is available on win10 and win11.
-# https://learn.microsoft.com/en-us/typography/font-list/segoe-ui-emoji
-font_path = "C:\\Windows\\Fonts\\simhei.ttf"
-fontex_path = "C:\\Windows\\Fonts\\seguiemj.ttf"
+# Get key names at:
+# https://w3c.github.io/uievents-code/#key-alphanumeric-section
+[hotkeys]
+# Buttons.
+Apply       = "Digit1"
+IAMWinner   = "Digit2"
+DeleteUnit  = "Digit3"
+ClearShroud = "Digit4"
+GiveMeABomb = "Digit5"
+UnitLevelUp = "Digit6"
+UnitSpeedUp = "Digit7"
+FastBuild   = "Digit8"
+ThisIsMine  = "Digit9"
+
+# Checkboxes
+God                = "KeyQ"
+InstBuild          = "KeyW"
+UnlimitSuperWeapon = "KeyE"
+InstFire           = "KeyT"
+InstTurn           = "KeyY"
+RangeToYourBase    = "KeyU"
+FireToYourBase     = "KeyI"
+FreezeGapGenerator = "KeyO"
+SellTheWorld       = "KeyA"
+BuildEveryWhere    = "KeyD"
+AutoRepair         = "KeyF"
+SocialismMajesty   = "KeyH"
+MakeCapturedMine   = "KeyL"
+MakeGarrisonedMine = "KeyZ"
+InvadeMode         = "KeyX"
+UnlimitTech        = "KeyV"
+UnlimitFirePower   = "KeyB"
+InstChrono         = "KeyN"
+SpySpy             = "KeyM"
+AdjustGameSpeed    = "Period"  # .

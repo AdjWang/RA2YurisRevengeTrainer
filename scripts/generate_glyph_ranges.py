@@ -31,9 +31,9 @@ def print_cpp_range_array(range_collection):
     
 
 if __name__ == '__main__':
-    with open(SCRIPT_DIR / '../src/char_table.h', 'r') as f:
+    with open(SCRIPT_DIR / '../src/frontend/desktop/char_table.h', 'r', encoding='utf-8') as f:
         char_tables = f.read()
-    with open(SCRIPT_DIR / '../src/config.h', 'r') as f:
+    with open(SCRIPT_DIR / '../src/frontend/desktop/config.h', 'r', encoding='utf-8') as f:
         hot_keys = f.read()
     res = re.findall(r'u8"(.*)"', char_tables + hot_keys)
     # print(res, len(res))

@@ -1,13 +1,12 @@
 import sys
 from pathlib import Path
-SCRIPT_DIR = Path(sys.argv[0]).parent
 
+SCRIPT_DIR = Path(sys.argv[0]).parent
 CPP_TEMPLATE = """
 // Auto generated file, do not modify.
 #pragma once
-#include <string_view>
 namespace yrtr {{
-inline static constexpr std::string_view kMainPageHtml = R"({})";
+inline static constexpr unsigned char kMainPageHtml[] = {{ {} }};
 }}
 """
 
@@ -20,7 +19,9 @@ if __name__ == '__main__':
         sys.exit(1)
     with open(WEB_DIST_PATH, 'r', encoding='utf-8') as f:
         html_content = f.read()
-    cpp_content = CPP_TEMPLATE.format(html_content)
+    # MSVC string literal has a limit of 16380 characters, use byte array instead.
+    # https://learn.microsoft.com/en-us/cpp/error-messages/compiler-errors-1/compiler-error-c2026?view=msvc-170
+    byte_array_content = ', '.join([f'0x{b:02X}' for b in html_content.encode('utf-8')])
+    cpp_content = CPP_TEMPLATE.format(byte_array_content)
     with open(OUTPUT_PATH, 'w', encoding='utf-8') as f:
         f.write(cpp_content)
-    

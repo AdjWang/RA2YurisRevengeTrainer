@@ -180,13 +180,7 @@ target_link_libraries(ra2_trainer_backend
   PRIVATE absl::failure_signal_handler
 )
 
-if(CMAKE_GENERATOR MATCHES "Visual Studio")
-    # Visual Studio-specific output directory
-    set(EXE_OUTPUT_DIR ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE})
-else()
-    # Default output directory for other generators
-    set(EXE_OUTPUT_DIR ${CMAKE_BINARY_DIR})
-endif()
+set(EXE_OUTPUT_DIR ${CMAKE_BINARY_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${EXE_OUTPUT_DIR})
 add_custom_command(TARGET ra2_trainer_backend POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy

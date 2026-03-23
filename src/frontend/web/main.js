@@ -5,7 +5,7 @@ import {
 } from './protocol';
 import { YRTRClient } from './client';
 import { Localization } from './localization';
-import { isTauriDesktop, registerHotkeys } from './tauri_init';
+import { isTauriDesktop, tauriRegisterHotkeys, tauriGetLabelHotkeyString } from './tauri_init';
 
 var client = undefined;
 var selectingHouseMap = new Map();
@@ -49,7 +49,17 @@ function initFilterList() {
   });
 }
 
-function initButton() {
+async function getLabelTextContent(label) {
+  let labelName = strFnLabel(label);
+  let hotkeyStr = isTauriDesktop() ? await tauriGetLabelHotkeyString(labelName) : "";
+  if (hotkeyStr != "") {
+    return localization.getFnStr(`k${labelName}`) + ` (${hotkeyStr})`;
+  } else {
+    return localization.getFnStr(`k${labelName}`);
+  }
+}
+
+async function initButton() {
   // Bind apply button with heading input.
   const apply_btn = document.getElementById('kApply');
   apply_btn.addEventListener('click', () => {
@@ -65,13 +75,13 @@ function initButton() {
   for (let i = BtnFnLabelFirst; i <= BtnFnLabelLast; i++) {
     const btn = document.createElement('button');
     btn.id = `btn${i}`;
-    btn.textContent = localization.getFnStr(`k${strFnLabel(i)}`);
+    btn.textContent = await getLabelTextContent(i);
     btn.addEventListener('click', () => onTriggerBtn(i, /*val*/ undefined));
     btnList.appendChild(btn);
   }
 }
 
-function createCheckbox(id, onChange) {
+async function createCheckbox(id, onChange) {
   const group = document.createElement('div');
   group.className = 'checkbox-group';
   const label = document.createElement('label');
@@ -86,17 +96,17 @@ function createCheckbox(id, onChange) {
     onChange(checked);
   });
   const text = document.createElement('span');
-  text.textContent = localization.getFnStr(`k${strFnLabel(id)}`);
+  text.textContent = await getLabelTextContent(id);
   label.appendChild(input);
   label.appendChild(text);
   group.appendChild(label);
   return group;
 }
 
-function initCheckbox() {
+async function initCheckbox() {
   let checkboxList = document.getElementById('checkbox-list');
   for (let i = CheckboxFnLabelFirst; i <= CheckboxFnLabelLast; i++) {
-    const checkbox = createCheckbox(i, (checked) => {
+    const checkbox = await createCheckbox(i, (checked) => {
       onTriggerCheckbox(i, checked);
     });
     checkboxList.appendChild(checkbox);
@@ -243,14 +253,14 @@ function applyLocalization() {
   });
 }
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async () => {
   initTab();
   initFilterList();
-  initButton();
-  initCheckbox();
+  await initButton();
+  await initCheckbox();
   applyLocalization();
   if (isTauriDesktop()) {
-    registerHotkeys();
+    await tauriRegisterHotkeys();
     // DEBUG: get from backend, read from config file.
     initClient("localhost", 35271);
   } else {

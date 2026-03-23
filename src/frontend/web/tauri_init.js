@@ -2,7 +2,7 @@
 import {
   BtnFnLabelFirst, BtnFnLabelLast,
   CheckboxFnLabelFirst, CheckboxFnLabelLast,
-  getFnLabelHotkey
+  strFnLabel
 } from './protocol';
 
 export function isTauriDesktop() {
@@ -17,17 +17,25 @@ export function isTauriDesktop() {
   return isTauriDesktop;
 }
 
-export async function registerHotkeys() {
+export async function tauriRegisterHotkeys() {
   if (!isTauriDesktop()) {
     return;
   }
   const invoke = window.__TAURI__.core.invoke;
   for (let i = BtnFnLabelFirst; i <= BtnFnLabelLast; i++) {
-    const ret = await invoke("register_hotkeys", { fnLabel: i, keyName: getFnLabelHotkey(i) });
+    const ret = await invoke("register_hotkey", { fnLabel: i, labelName: strFnLabel(i) });
     console.log(`register ${ret}`);
   }
   for (let i = CheckboxFnLabelFirst; i <= CheckboxFnLabelLast; i++) {
-    const ret = await invoke("register_hotkeys", { fnLabel: i, keyName: getFnLabelHotkey(i) });
+    const ret = await invoke("register_hotkey", { fnLabel: i, labelName: strFnLabel(i) });
     console.log(`register ${ret}`);
   }
+}
+
+export async function tauriGetLabelHotkeyString(labelName) {
+  if (!isTauriDesktop()) {
+    return "";
+  }
+  const invoke = window.__TAURI__.core.invoke;
+  return await invoke("get_label_hotkey_string", { labelName: labelName });
 }
