@@ -7,6 +7,7 @@ use std::sync::Mutex;
 use tauri::Emitter;
 use tauri::Manager;
 use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut};
+use global_hotkey::{HotKeyState};
 
 #[derive(Default)]
 struct AppState {
@@ -60,27 +61,25 @@ fn register_hotkeys(app: &tauri::App, hotkeys: &HashMap<String, String>) -> Hash
     #[cfg(desktop)]
     {
         let mut registered_hotkeys = HashMap::new();
-        let mut builder = tauri_plugin_global_shortcut::Builder::new();
-        for (label_name, key_name) in hotkeys.clone() {
-            let key_code = Code::from_str(&key_name).unwrap();
+        // Register hotkeys.
+        for (label_name, key_name) in hotkeys {
+            let key_code: Code = Code::from_str(key_name).unwrap();
             let shortcut = Shortcut::new(Some(Modifiers::ALT), key_code);
-            match app.global_shortcut().register(shortcut) {
+            match app.global_shortcut().on_shortcut(shortcut, move |app_handle , shortcut, event| {
+                if event.state == HotKeyState::Pressed {
+                    println!("Hotkey event for label '{}': {:?}", shortcut.key, event);
+                    app_handle.emit("hotkey-pressed", serde_json::json!({
+                        "labelName": format!("{}", shortcut.key),
+                    })).unwrap();
+                }
+            }) {
                 Ok(_) => {
-                    registered_hotkeys.insert(
-                        label_name.clone(),
-                        key_name.clone(),
-                    );
-                    builder = builder.with_handler(move |app_handle, _shortcut, event| {
-                        println!("Hotkey event for label '{}': {:?}", label_name, event);
-                        app_handle.emit("hotkey-pressed", serde_json::json!({
-                            "labelName": label_name.clone(),
-                        })).unwrap();
-                    });
+                    registered_hotkeys.insert(label_name.clone(), key_name.clone());
+                    println!("Registered hotkey for label '{}': {}", label_name, key_name);
                 },
                 Err(e) => println!("Failed to register hotkey for label '{}': {}", label_name, e),
             }
         }
-        let _ = app.handle().plugin(builder.build());
         registered_hotkeys
     }
 }
@@ -104,9 +103,8 @@ pub fn run() {
                         let backend_url = format!("http://localhost:{}", config.ra2_trainer.port);
 
                         state_guard.config.set(config).unwrap();
-                        let registered_hotkeys =
+                        state_guard.registered_hotkeys =
                             register_hotkeys(app, &state_guard.config.get().unwrap().hotkeys);
-                        state_guard.registered_hotkeys = registered_hotkeys;
 
                         // Pass the backend URL to the frontend.
                         let _ = webview.eval(&format!("window.backendUrl = '{}'; window.waitBackend();", backend_url));

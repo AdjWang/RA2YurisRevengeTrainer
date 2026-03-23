@@ -185,3 +185,8 @@ window.addEventListener('load', () => {
 window.addEventListener('beforeunload', () => {
   stopRetryInterval();
 });
+
+window.__TAURI__.event.listen('hotkey-pressed', (data) => {
+  // TODO
+  console.log(data);
+});

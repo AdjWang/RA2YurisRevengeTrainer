@@ -2559,6 +2559,7 @@ checksum = "f8dcc9c7d52a811697d2151c701e0d08956f92b0e24136cf4cf27b57a6a0d9bf"
 name = "ra2_trainer"
 version = "0.1.0"
 dependencies = [
+ "global-hotkey",
  "keyboard-codes",
  "once_cell",
  "serde",
@@ -2566,7 +2567,7 @@ dependencies = [
  "tauri",
  "tauri-build",
  "tauri-plugin-global-shortcut",
- "toml 0.8.2",
+ "toml 0.9.12+spec-1.1.0",
 ]
 
 [[package]]

@@ -3,13 +3,14 @@
   "version": "1.0.0",
   "description": "Web client for RA2 Yuri's Revenge trainer.",
   "main": "main.js",
+  "type": "module",
   "scripts": {
     "build": "vite build"
   },
   "author": "adjwang",
   "license": "ISC",
   "devDependencies": {
-    "vite": "^6.4.1",
-    "vite-plugin-singlefile": "^2.2.0"
+    "vite": "^8.0.2",
+    "vite-plugin-singlefile": "^2.3.2"
   }
 }

@@ -5,7 +5,7 @@ import {
 } from './protocol';
 import { YRTRClient } from './client';
 import { Localization } from './localization';
-import { isTauriDesktop, tauriRegisterHotkeys, tauriGetLabelHotkeyString } from './tauri_init';
+import { isTauriDesktop, tauriGetLabelHotkeyString } from './tauri_init';
 
 var client = undefined;
 var selectingHouseMap = new Map();
@@ -260,7 +260,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   await initCheckbox();
   applyLocalization();
   if (isTauriDesktop()) {
-    await tauriRegisterHotkeys();
     // DEBUG: get from backend, read from config file.
     initClient("localhost", 35271);
   } else {
