@@ -49,6 +49,7 @@ enum class FnLabel {
   kInstChrono,
   kSpySpy,
   kAdjustGameSpeed,
+  kSelectEnemy,
   kCount,
 };
 

@@ -532,6 +532,34 @@ static void __declspec(naked) __cdecl InjectSpySpy() {
     }
   }
 }
+
+static yrpp::HouseClass* selecting_house = nullptr;
+
+static void __declspec(naked) __cdecl InjectSelectFilterHouse() {
+  static constexpr uint32_t jmp_back = GetJumpBack(kHpSelectFilterHouse1);
+  // Allow selecting enemy objects and record selecting house.
+  __asm {
+    mov [selecting_house], ecx
+    mov al, 1
+    jmp [jmp_back]
+  }
+}
+
+// From VA:732C30. Put the house filter here and disable others.
+bool __fastcall InjectSelectFilterType(
+    const yrpp::TechnoClass* obj,
+    const yrpp::DynamicVectorClass<const char*>& id_names) {
+  for (int i = 0; i < id_names.Count; ++i) {
+    const char* id_name = id_names[i];
+    LOG_F(INFO, "Filter id_name={} obj={:p} obj_name={}", id_name, (void*)obj,
+          obj->GetType()->ID);
+    if (strcmp(obj->GetType()->ID, id_name) == 0 &&
+        obj->GetType()->Selectable && obj->Owner == selecting_house) {
+      return true;
+    }
+  }
+  return false;
+}
 }  // namespace
 
 #define CHECK_MEMAPI_OR_REPORT()                                               \
@@ -1139,6 +1167,42 @@ void Trainer::OnCkboxAdjustGameSpeed(bool activate) {
     CHECK_REPORT(mem_api_->WriteMemory(0x00A8EDDC, static_cast<uint8_t>(0)));
   }
   UpdateCheckboxState(FnLabel::kAdjustGameSpeed, activate);
+}
+
+void Trainer::OnCkboxSelectEnemy(bool activate) {
+  DLOG_F(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
+  DCHECK(IsWithinGameLoopThread());
+  CHECK_MEMAPI_OR_REPORT();
+  if (activate) {
+    CHECK_REPORT(
+        mem_api_->HookJump(kHpSelectFilterHouse1, InjectSelectFilterHouse));
+    CHECK_REPORT(
+        mem_api_->HookJump(kHpSelectFilterType, InjectSelectFilterType));
+    static constexpr std::array<uint8_t, 5> kReturnTrue{0xB0, 0x01, 0x90, 0x90,
+                                                        0x90};
+    // Apply selecting enemy's objects as if selecting player's objects.
+    // Patch IsPlayer to mov al, 1
+    CHECK_REPORT(mem_api_->HookCode(kHpSelectFilterHouse2, kReturnTrue));
+    CHECK_REPORT(mem_api_->HookCode(kHpSelectFilterHouse3, kReturnTrue));
+    CHECK_REPORT(mem_api_->HookCode(kHpSelectFilterHouse4, kReturnTrue));
+    CHECK_REPORT(mem_api_->HookCode(kHpSelectFilterHouse5, kReturnTrue));
+    CHECK_REPORT(mem_api_->HookCode(kHpSelectFilterHouse6, kReturnTrue));
+    CHECK_REPORT(mem_api_->HookCode(kHpSelectFilterHouse7, kReturnTrue));
+    // Skip unselect non-player objects.
+    CHECK_REPORT(mem_api_->HookJump(kHpSelectFilterHouse8,
+                                    reinterpret_cast<void*>(0x005F45FD)));
+  } else {
+    CHECK_REPORT(mem_api_->RestoreHook(kHpSelectFilterHouse1));
+    CHECK_REPORT(mem_api_->RestoreHook(kHpSelectFilterType));
+    CHECK_REPORT(mem_api_->RestoreHook(kHpSelectFilterHouse2));
+    CHECK_REPORT(mem_api_->RestoreHook(kHpSelectFilterHouse3));
+    CHECK_REPORT(mem_api_->RestoreHook(kHpSelectFilterHouse4));
+    CHECK_REPORT(mem_api_->RestoreHook(kHpSelectFilterHouse5));
+    CHECK_REPORT(mem_api_->RestoreHook(kHpSelectFilterHouse6));
+    CHECK_REPORT(mem_api_->RestoreHook(kHpSelectFilterHouse7));
+    CHECK_REPORT(mem_api_->RestoreHook(kHpSelectFilterHouse8));
+  }
+  UpdateCheckboxState(FnLabel::kSelectEnemy, activate);
 }
 
 #define CHECK_MEMAPI_OR_RETURN_FALSE()                                         \

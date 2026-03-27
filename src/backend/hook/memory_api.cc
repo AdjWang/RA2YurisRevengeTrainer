@@ -159,6 +159,16 @@ bool MemoryAPI::HookNop(const HookPoint hook_point) {
   return WriteHook(addr, asm_code);
 }
 
+bool MemoryAPI::HookCode(const HookPoint hook_point,
+                         std::span<const uint8_t> asm_code) {
+  CHECK_HANDLE_OR_RETURN_FALSE();
+  uint32_t addr = hook_point.first;
+  if (hooks_.contains(addr)) {
+    return true;
+  }
+  return WriteHook(addr, asm_code);
+}
+
 bool MemoryAPI::RestoreHook(const HookPoint hook_point) {
   uint32_t addr = hook_point.first;
   auto it = hooks_.find(addr);

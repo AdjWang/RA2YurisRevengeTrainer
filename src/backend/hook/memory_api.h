@@ -83,6 +83,7 @@ class MemoryAPI {
   bool HasHook(const HookPoint hook_point) const;
   bool HookJump(const HookPoint hook_point, void* dest);
   bool HookNop(const HookPoint hook_point);
+  bool HookCode(const HookPoint hook_point, std::span<const uint8_t> asm_code);
   bool RestoreHook(const HookPoint hook_point);
 
   bool CheckHandle() const;

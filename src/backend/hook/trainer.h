@@ -123,6 +123,7 @@ class Trainer : public ITrainer {
   void OnCkboxInstChrono(bool activate);
   void OnCkboxSpySpy(bool activate);
   void OnCkboxAdjustGameSpeed(bool activate);
+  void OnCkboxSelectEnemy(bool activate);
 
   void UpdateCheckboxState(FnLabel label, bool activate);
   // Return the activate state before set enable.
