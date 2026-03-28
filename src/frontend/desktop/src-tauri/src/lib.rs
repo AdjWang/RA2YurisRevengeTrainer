@@ -30,9 +30,12 @@ struct Ra2TrainerConfig {
 }
 
 #[tauri::command]
-fn get_ws_port(state: tauri::State<'_, Mutex<AppState>>) -> u16 {
+fn get_ws_port(state: tauri::State<'_, Mutex<AppState>>) -> Result<u16, String> {
     let state = state.lock().unwrap();
-    state.config.get().unwrap().ra2_trainer.port
+    match state.config.get() {
+        Some(config) => Ok(config.ra2_trainer.port),
+        None => Err("Failed to load config.".to_string()),
+    }
 }
 
 #[tauri::command]
@@ -132,27 +135,14 @@ pub fn run() {
             let state = app.handle().state::<Mutex<AppState>>();
             let mut state_guard = state.lock().unwrap();
             // Load config.
-            if let Some(webview) = app.get_webview_window("main") {
+            if let Some(_webview) = app.get_webview_window("main") {
                 match read_config() {
                     Ok(config) => {
-                        let backend_url = format!("http://localhost:{}", config.ra2_trainer.port);
-
                         state_guard.config.set(config).unwrap();
                         state_guard.registered_hotkeys =
                             register_hotkeys(app, &state_guard.config.get().unwrap().hotkeys);
-
-                        // Pass the backend URL to the frontend.
-                        let _ = webview.eval(&format!(
-                            "window.backendUrl = '{}'; window.waitBackend();",
-                            backend_url
-                        ));
                     }
-                    Err(e) => {
-                        let _ = webview.eval(&format!(
-                            "window.errorMessage = '{}'; window.waitBackend();",
-                            e
-                        ));
-                    }
+                    Err(e) => { error!("{}", e); }
                 };
             }
             Ok(())

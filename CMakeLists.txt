@@ -32,32 +32,9 @@ add_link_options($<$<CONFIG:Release>:/OPT:REF> $<$<CONFIG:Release>:/INCREMENTAL:
 
 # Add dependencies.
 find_package(absl REQUIRED)
-find_package(Freetype REQUIRED)
-find_package(glfw3 REQUIRED)
 find_package(Microsoft.GSL REQUIRED)
-find_package(plutosvg REQUIRED)
 find_package(tomlplusplus REQUIRED)
 find_package(websocketpp REQUIRED)
-
-set(IMGUI_PROJ_DIR ${YRTR_DEPS_DIR}/imgui-1.91.9b-docking)
-set(IMGUI_INCLUDES ${IMGUI_PROJ_DIR}
-                   ${IMGUI_PROJ_DIR}/backends)
-set(IMGUI_SOURCES  ${IMGUI_PROJ_DIR}/imgui.cpp
-                   ${IMGUI_PROJ_DIR}/imgui_demo.cpp
-                   ${IMGUI_PROJ_DIR}/imgui_draw.cpp
-                   ${IMGUI_PROJ_DIR}/imgui_tables.cpp
-                   ${IMGUI_PROJ_DIR}/imgui_widgets.cpp
-                   ${IMGUI_PROJ_DIR}/misc/freetype/imgui_freetype.cpp
-                   ${IMGUI_PROJ_DIR}/backends/imgui_impl_glfw.cpp
-                   ${IMGUI_PROJ_DIR}/backends/imgui_impl_opengl3.cpp
-                   ${IMGUI_PROJ_DIR}/backends/imgui_impl_win32.cpp)
-add_library(libimgui STATIC ${IMGUI_SOURCES})
-target_include_directories(libimgui PUBLIC ${IMGUI_INCLUDES})
-target_compile_definitions(libimgui PUBLIC
-  IMGUI_DISABLE_DEFAULT_ALLOCATORS   # use custom malloc/free across dlls
-  IMGUI_USE_WCHAR32 IMGUI_ENABLE_FREETYPE IMGUI_ENABLE_FREETYPE_PLUTOSVG   # support emoji
-)
-target_link_libraries(libimgui PRIVATE Freetype::Freetype glfw plutosvg::plutosvg)
 
 set(BREAKPAD_PROJ_DIR ${YRTR_DEPS_DIR}/breakpad-2024.02.16)
 
@@ -116,34 +93,6 @@ target_link_libraries(yrtr_base
   PUBLIC absl::synchronization
 )
 
-add_library(yrtr_frontend STATIC
-  ${YRTR_SOURCE_DIR}/frontend/desktop/config.cc
-  ${YRTR_SOURCE_DIR}/frontend/desktop/timer.cc
-  ${YRTR_SOURCE_DIR}/frontend/desktop/gui.cc
-  ${YRTR_SOURCE_DIR}/frontend/desktop/gui_context.cc
-  ${YRTR_SOURCE_DIR}/protocol/client.cc
-)
-target_include_directories(yrtr_frontend
-  PUBLIC $<BUILD_INTERFACE:${YRTR_DEPS_OUTPUT_DIR}/include>
-  PUBLIC $<BUILD_INTERFACE:${YRTR_SOURCE_DIR}>
-  PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-)
-target_compile_definitions(yrtr_frontend
-  PRIVATE $<$<CONFIG:Debug>:YRTR_GL_DEBUG_CTX>
-)
-target_compile_options(yrtr_frontend PRIVATE /W4 $<$<CONFIG:Debug>:/WX>)
-target_link_libraries(yrtr_frontend
-  PRIVATE yrtr_base
-  PRIVATE glfw
-  PRIVATE libimgui
-  PRIVATE opengl32
-  PRIVATE tomlplusplus::tomlplusplus
-)
-
-add_executable(ra2_trainer WIN32 ${YRTR_SOURCE_DIR}/frontend/desktop/bin/main.cc)
-target_compile_options(ra2_trainer PRIVATE /W4 $<$<CONFIG:Debug>:/WX>)
-target_link_libraries(ra2_trainer PRIVATE yrtr_frontend breakpad glfw)
-
 add_library(yrtr_backend STATIC
   ${YRTR_SOURCE_DIR}/backend/config.cc
   ${YRTR_SOURCE_DIR}/backend/record.cc
@@ -184,9 +133,6 @@ set(EXE_OUTPUT_DIR ${CMAKE_BINARY_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${EXE_OUTPUT_DIR})
 add_custom_command(TARGET ra2_trainer_backend POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy
-  ${CMAKE_CURRENT_SOURCE_DIR}/scripts/ra2_trainer.toml
-  ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-  COMMAND ${CMAKE_COMMAND} -E copy
   ${CMAKE_CURRENT_SOURCE_DIR}/scripts/ra2_trainer_backend.toml
   ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
 )
@@ -200,6 +146,11 @@ if (YRTR_BUILD_TEST)
     PRIVATE yrtr_base
     PRIVATE yrtr_backend
     PRIVATE absl::failure_signal_handler
+  )
+  add_custom_command(TARGET test_server POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/ra2_trainer_backend.toml
+    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
   )
 
   add_executable(test_json ${YRTR_SOURCE_DIR}/protocol/test_json.cc)

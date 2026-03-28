@@ -14,6 +14,8 @@ namespace yrtr {
 class Server {
  public:
   Server(backend::hook::ITrainer* trainer, uint16_t port);
+  Server(backend::hook::ITrainer* trainer, uint16_t port,
+         const fs::path& index);
   void Stop();
   void Update();
 
@@ -23,7 +25,9 @@ class Server {
   // many jobs in sending queue when the backend is not running, making the gui
   // actions, like close window, acts lagging.
   static constexpr int kConnTimeoutMilliseconds = 50;
+
   backend::hook::ITrainer* trainer_;
+  fs::path index_path_;
   std::thread evloop_;
   WebsocketServer svr_;
   // Record connection to propagate state.
@@ -32,6 +36,7 @@ class Server {
       conns_;
   TaskQueue game_loop_ch_;
 
+  void Init(uint16_t port);
   void OnOpenConn(websocketpp::connection_hdl hdl);
   void OnCloseConn(websocketpp::connection_hdl hdl);
   void OnMessage(WebsocketServer& svr, websocketpp::connection_hdl hdl,

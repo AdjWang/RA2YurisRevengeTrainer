@@ -64,6 +64,7 @@ void InitStates(State& state) {
   state.ckbox_states.emplace(FnLabel::kInstChrono,         CheckboxState{.enable=true, .activate=false});
   state.ckbox_states.emplace(FnLabel::kSpySpy,             CheckboxState{.enable=true, .activate=false});
   state.ckbox_states.emplace(FnLabel::kAdjustGameSpeed,    CheckboxState{.enable=true, .activate=false});
+  state.ckbox_states.emplace(FnLabel::kSelectEnemy,        CheckboxState{.enable=true, .activate=false});
 }
 
 namespace {
@@ -719,6 +720,7 @@ void Trainer::OnCheckboxEvent(FnLabel label, bool activate) {
     case FnLabel::kInstChrono:          OnCkboxInstChrono(activate);          break;
     case FnLabel::kSpySpy:              OnCkboxSpySpy(activate);              break;
     case FnLabel::kAdjustGameSpeed:     OnCkboxAdjustGameSpeed(activate);     break;
+    case FnLabel::kSelectEnemy:         OnCkboxSelectEnemy(activate);         break;
     default:
       LOG_F(ERROR, "Unknown checkbox event={}", StrFnLabel(label));
   }

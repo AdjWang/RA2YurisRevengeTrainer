@@ -112,6 +112,7 @@ constexpr const char8_t* GetFnStrZh(FnLabel label) {
     case FnLabel::kInstChrono:          return u8"瞬间超时空";
     case FnLabel::kSpySpy:              return u8"无间道";
     case FnLabel::kAdjustGameSpeed:     return u8"任务调速";
+    case FnLabel::kSelectEnemy:         return u8"多选敌方单位";
     default:                            return u8"unknown";
   }
 }
@@ -147,6 +148,7 @@ constexpr const char8_t* GetFnStrEn(FnLabel label) {
     case FnLabel::kInstChrono:          return u8"Instant chrono";
     case FnLabel::kSpySpy:              return u8"Spy spy";
     case FnLabel::kAdjustGameSpeed:     return u8"Enable game speed adjustment";
+    case FnLabel::kSelectEnemy:         return u8"Enable enemy selecting";
     default:                            return u8"unknown";
   }
 }

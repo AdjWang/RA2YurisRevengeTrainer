@@ -3,7 +3,6 @@ import { FnLabel } from "./protocol";
 export class YRTRClient {
   #onStateUpdate;
   #socket;
-  #getStateCount;
   #maxGetState;
   #connectionTimeout; // ms
   #reconnectInterval; // ms
@@ -14,7 +13,6 @@ export class YRTRClient {
     this.uri = uri;
     this.#onStateUpdate = onStateUpdate;
     this.#socket = null;
-    this.#getStateCount = 0;
     this.#maxGetState = 1;
     this.#connectionTimeout = 50; // ms
     this.#reconnectInterval = 1000; // ms
@@ -123,25 +121,16 @@ export class YRTRClient {
       console.error('Invalid get_state message format');
       return;
     }
-
-    this.#getStateCount--;
     this.#onStateUpdate(message.val);
   }
 
   #getState() {
-    if (this.#getStateCount >= this.#maxGetState) {
-      console.log('Too many get_state requests pending');
-      return;
-    }
-
     const event = {
       type: 'get_state',
       label: FnLabel.kInvalid,
       val: {}
     };
-
     this.#sendData(event);
-    this.#getStateCount++;
   }
 
   #sendData(data) {
@@ -149,7 +138,6 @@ export class YRTRClient {
       console.error('WebSocket is not connected, drop data');
       return;
     }
-
     try {
       this.#socket.send(JSON.stringify(data));
     } catch (error) {

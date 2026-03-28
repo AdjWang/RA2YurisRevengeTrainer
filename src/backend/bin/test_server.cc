@@ -33,8 +33,12 @@ static void Init(const char* exe_path) {
   CHECK(backend::Config::Load(fs::canonical(fs::path(exe_path)).parent_path()));
   trainer =
       std::make_unique<backend::hook::MockTrainer>(backend::Config::instance());
-  server = std::make_unique<Server>(trainer.get(),
-                                    backend::Config::instance()->port());
+  fs::path index_html_path;
+#ifdef YRTR_DEBUG
+  index_html_path = backend::Config::instance()->debug_web_index_path();
+#endif
+  server = std::make_unique<Server>(
+      trainer.get(), backend::Config::instance()->port(), index_html_path);
 }
 
 static void Update() {

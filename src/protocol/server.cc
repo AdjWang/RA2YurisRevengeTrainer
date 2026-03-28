@@ -1,5 +1,7 @@
 #include "protocol/server.h"
 
+#include <fstream>
+
 #include "base/logging.h"
 #include "base/thread.h"
 #include "nlohmann/json.hpp"
@@ -22,10 +24,31 @@ static constexpr std::string_view kEmptyPageHtml = R"(
 </body>
 </html>
 )";
+
+std::string CheckReadFile(const fs::path& path) {
+  CHECK_F(fs::exists(path), "Not found file={}", path.string());
+  std::ifstream ifs;
+  ifs.open(path);
+  CHECK(ifs.is_open());
+  std::stringstream ss;
+  ss << ifs.rdbuf();
+  ifs.close();
+  return ss.str();
+}
 }  // namespace
 
 Server::Server(backend::hook::ITrainer* trainer, uint16_t port)
     : trainer_(trainer) {
+  Init(port);
+}
+
+Server::Server(backend::hook::ITrainer* trainer, uint16_t port,
+               const fs::path& index)
+    : trainer_(trainer), index_path_(index) {
+  Init(port);
+}
+
+void Server::Init(uint16_t port) {
   game_loop_ch_.SetThreadId(GetGameLoopThreadId());
   trainer_->set_on_state_updated(
       std::bind_front(&Server::OnStateUpdated, this));
@@ -39,13 +62,11 @@ Server::Server(backend::hook::ITrainer* trainer, uint16_t port)
       [this](websocketpp::connection_hdl hdl) { OnOpenConn(hdl); });
   svr_.set_close_handler(
       [this](websocketpp::connection_hdl hdl) { OnCloseConn(hdl); });
-  svr_.set_message_handler([this](websocketpp::connection_hdl hdl,
-                                  WebsocketServer::message_ptr msg) {
-    OnMessage(svr_, hdl, msg);
-  });
-  svr_.set_http_handler([this](websocketpp::connection_hdl hdl){
-    OnHttpRequest(svr_, hdl);
-  });
+  svr_.set_message_handler(
+      [this](websocketpp::connection_hdl hdl,
+             WebsocketServer::message_ptr msg) { OnMessage(svr_, hdl, msg); });
+  svr_.set_http_handler(
+      [this](websocketpp::connection_hdl hdl) { OnHttpRequest(svr_, hdl); });
   try {
     svr_.listen("0.0.0.0", std::to_string(port));
     svr_.start_accept();
@@ -129,8 +150,14 @@ void Server::OnHttpRequest(WebsocketServer& /*svr*/,
           ec.message());
     return;
   }
-#ifdef YRTR_ENABLE_WEB
-  conn->set_body(std::string(reinterpret_cast<const char*>(kMainPageHtml)));
+#if defined(YRTR_ENABLE_WEB)
+  if (index_path_.empty()) {
+    conn->set_body(std::string(reinterpret_cast<const char*>(kMainPageHtml)));
+  } else {
+    DLOG_F(INFO, "Update index html from={}", index_path_.string());
+    std::string main_page_html = CheckReadFile(index_path_);
+    conn->set_body(main_page_html);
+  }
 #else
   conn->set_body(std::string(kEmptyPageHtml));
 #endif

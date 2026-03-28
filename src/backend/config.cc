@@ -45,6 +45,9 @@ bool Config::Load(const fs::path& cfg_dir) {
   inst_ = std::make_unique<Config>(cfg_path);
   HLOG_F(INFO, "Load from path={}", fs::canonical(cfg_path));
   auto cfg = toml::parse_file(cfg_path.string());
+  if (toml::table* debug = cfg["debug"].as_table()) {
+    inst_->LoadDebug(*debug);
+  }
   if (toml::table* global = cfg["ra2_trainer"].as_table()) {
     inst_->LoadGlobal(*global);
   } else {
@@ -72,6 +75,11 @@ fs::path Config::GetAbsolutePath(const fs::path& relpath) const {
   } else {
     return cfg_dir_ / relpath;
   }
+}
+
+void Config::LoadDebug(const toml::table& debug) {
+  debug_web_index_path_ =
+      fs::path(CheckLoad<std::string>(debug, "web_index_path"));
 }
 
 void Config::LoadGlobal(const toml::table& global) {

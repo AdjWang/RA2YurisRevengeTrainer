@@ -1,3 +1,6 @@
+[debug]
+web_index_path = "C:/Projects/RA2YurisRevengeTrainer/src/frontend/web/dist/index.html"
+
 [ra2_trainer]
 # Optional, only used for debugging.
 hotreload_directory = "ra2_trainer_hotreload"

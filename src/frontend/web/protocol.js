@@ -7,7 +7,7 @@ export {
 const BtnFnLabelFirst = 1;
 const BtnFnLabelLast = 8;
 const CheckboxFnLabelFirst = 9;
-const CheckboxFnLabelLast = 28;
+const CheckboxFnLabelLast = 29;
 // Enum mapping
 const FnLabel = {
   kInvalid: -1,
@@ -42,7 +42,8 @@ const FnLabel = {
   kInstChrono: 26,
   kSpySpy: 27,
   kAdjustGameSpeed: 28,
-  kCount: 29
+  kSelectEnemy: 29,
+  kCount: 30
 };
 
 // Helper function to get string representation of FnLabel. Only for internal
@@ -81,6 +82,7 @@ function strFnLabel(label) {
     case FnLabel.kInstChrono: return "InstChrono";
     case FnLabel.kSpySpy: return "SpySpy";
     case FnLabel.kAdjustGameSpeed: return "AdjustGameSpeed";
+    case FnLabel.kSelectEnemy: return "SelectEnemy";
     case FnLabel.kCount: return "Count";
     default: return "unknown";
   }

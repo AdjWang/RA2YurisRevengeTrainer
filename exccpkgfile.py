@@ -151,50 +151,6 @@ class Breakpad(exccpkg.Package):
         ...
 
 
-class Freetype(exccpkg.Package):
-    name = "freetype"
-    version = "2.13.2"
-
-    @override
-    def grab(self, ctx: Context) -> Path:
-        download_dir = ctx.cfg.deps_dir / "freetype-2.13.2"
-        if not download_dir.exists():
-            tools.run_cmd(f"git clone https://github.com/freetype/freetype.git {download_dir}", ctx.cfg.dryrun)
-            cwd = os.getcwd()
-            os.chdir(download_dir)
-            tools.run_cmd("git checkout VER-2-13-2", ctx.cfg.dryrun)
-            os.chdir(cwd)
-        return download_dir
-
-    @override
-    def build(self, ctx: Context, src_dir: Path) -> Path:
-        return ctx.cmake.build(src_dir)
-
-    @override
-    def install(self, ctx: Context, build_dir: Path) -> None:
-        return ctx.cmake.install(build_dir)
-
-
-class Glfw(exccpkg.Package):
-    name = "glfw"
-    version = "3.4"
-
-    @override
-    def grab(self, ctx: Context) -> Path:
-        url = "https://github.com/glfw/glfw/archive/refs/tags/3.4.tar.gz"
-        return ctx.cmake.download(url, "glfw-3.4", ".tar.gz")
-
-    @override
-    def build(self, ctx: Context, src_dir: Path) -> Path:
-        return ctx.cmake.build(src_dir, """-DGLFW_BUILD_EXAMPLES=OFF
-                                           -DGLFW_BUILD_TESTS=OFF
-                                           -DGLFW_BUILD_DOCS=OFF""")
-
-    @override
-    def install(self, ctx: Context, build_dir: Path) -> None:
-        return ctx.cmake.install(build_dir)
-
-
 class Gsl(exccpkg.Package):
     name = "GSL"
     version = "4.2.0"
@@ -211,26 +167,6 @@ class Gsl(exccpkg.Package):
     @override
     def install(self, ctx: Context, build_dir: Path) -> None:
         return ctx.cmake.install(build_dir)
-
-
-class Imgui(exccpkg.Package):
-    name = "imgui"
-    version = "1.91.9b-docking"
-
-    @override
-    def grab(self, ctx: Context) -> Path:
-        url = "https://github.com/ocornut/imgui/archive/refs/tags/v1.91.9b-docking.tar.gz"
-        return ctx.cmake.download(url, "imgui-1.91.9b-docking", ".tar.gz")
-
-    @override
-    def build(self, ctx: Context, src_dir: Path) -> Path:
-        # Compile manually in CMakeLists.txt
-        return src_dir
-
-    @override
-    def install(self, ctx: Context, build_dir: Path) -> None:
-        # Directly add sources in CMakeLists.txt
-        ...
 
 
 class NlohmannJson(exccpkg.Package):
@@ -259,33 +195,6 @@ class NlohmannJson(exccpkg.Package):
         tools.mkdirp(install_dir, ctx.cfg.dryrun)
         if not ctx.cfg.dryrun:
             shutil.copy(build_dir / "nlohmann-json-3.11.3.hpp", install_dir / "json.hpp")
-
-
-class PlutoSVG(exccpkg.Package):
-    name = "plutosvg"
-    version = "1.0.0"
-
-    @override
-    def grab(self, ctx: Context) -> Path:
-        url_plutovg = "https://github.com/sammycage/plutovg/archive/refs/tags/v1.0.0.tar.gz"
-        plutovg_path = ctx.cmake.download(url_plutovg, "plutovg-1.0.0", ".tar.gz")
-        url = "https://github.com/sammycage/plutosvg/archive/refs/tags/v0.0.6.tar.gz"
-        plutosvg_path = ctx.cmake.download(url, "plutosvg-0.0.6", ".tar.gz")
-        if not ctx.cfg.dryrun:
-            shutil.rmtree(plutosvg_path / "plutovg")
-            shutil.move(plutovg_path, plutosvg_path / "plutovg")
-        return plutosvg_path
-
-    @override
-    def build(self, ctx: Context, src_dir: Path) -> Path:
-        return ctx.cmake.build(src_dir, """-DBUILD_SHARED_LIBS=OFF
-                                           -DPLUTOSVG_BUILD_STATIC=ON
-                                           -DPLUTOSVG_ENABLE_FREETYPE=ON
-                                           -DPLUTOSVG_BUILD_EXAMPLES=OFF""")
-
-    @override
-    def install(self, ctx: Context, build_dir: Path) -> None:
-        return ctx.cmake.install(build_dir)
 
 
 class Toml(exccpkg.Package):
@@ -371,20 +280,12 @@ def collect() -> exccpkg.PackageCollection:
         Boost("throw_exception"),
         Boost("type_traits"),
         Breakpad(),
-        Glfw(),
         Gsl(),
-        Imgui(),
         NlohmannJson(),
-        PlutoSVG(),
         Toml(),
         Websocketpp(),
         YRpp(),
     ])
-    sub_collection = exccpkg.PackageCollection([
-        # PlutoSVG dependents on Freetype.
-        Freetype(),
-    ])
-    collection.merge(sub_collection)
     return collection
 
 

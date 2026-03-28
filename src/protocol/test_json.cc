@@ -24,6 +24,7 @@ static void InitStates(State& state) {
   state.ckbox_states.emplace(FnLabel::kInstChrono,         CheckboxState{.enable=true, .activate=false});
   state.ckbox_states.emplace(FnLabel::kSpySpy,             CheckboxState{.enable=true, .activate=false});
   state.ckbox_states.emplace(FnLabel::kAdjustGameSpeed,    CheckboxState{.enable=true, .activate=false});
+  state.ckbox_states.emplace(FnLabel::kSelectEnemy,        CheckboxState{.enable=true, .activate=false});
   state.selecting_houses.emplace(456, SideDesc{456, "456"});
   state.protected_houses.emplace(123, SideDesc{123, "123"});
 }

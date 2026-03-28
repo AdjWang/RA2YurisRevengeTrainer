@@ -26,6 +26,7 @@ class Config {
 
   Config(const fs::path& cfg_path);
 
+  const fs::path& debug_web_index_path() const { return debug_web_index_path_; }
   uint16_t port() const { return port_; }
   const fs::path& hotreload_dir() const { return hotreload_dir_; }
   bool auto_record() const { return auto_record_; }
@@ -46,11 +47,13 @@ class Config {
   const fs::path cfg_dir_;
   const fs::path cfg_path_;
 
+  fs::path debug_web_index_path_;
   uint16_t port_;
   fs::path hotreload_dir_;
   bool auto_record_;
   TechList tech_list_;
 
+  void LoadDebug(const toml::table& debug);
   void LoadGlobal(const toml::table& global);
   void LoadTechList(const toml::table& tech_tb);
 

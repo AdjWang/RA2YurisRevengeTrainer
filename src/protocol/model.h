@@ -16,6 +16,7 @@ using json = nlohmann::json;
 namespace yrtr {
 // MVC -- model.
 
+// TODO: Too many references, simplify. Generate code if necessary.
 enum class FnLabel {
   kInvalid = -1,
   // Button
@@ -87,6 +88,7 @@ constexpr std::string_view StrFnLabel(FnLabel label) {
     case FnLabel::kInstChrono:          return "InstChrono";
     case FnLabel::kSpySpy:              return "SpySpy";
     case FnLabel::kAdjustGameSpeed:     return "AdjustGameSpeed";
+    case FnLabel::kSelectEnemy:         return "SelectEnemy";
     case FnLabel::kCount:               return "Count";
     default:                            return "unknown";
   }
@@ -124,6 +126,7 @@ static constexpr FnLabel StrToFnLabel(std::string_view str) {
   if (str == "kInstChrono")         return FnLabel::kInstChrono;
   if (str == "kSpySpy")             return FnLabel::kSpySpy;
   if (str == "kAdjustGameSpeed")    return FnLabel::kAdjustGameSpeed;
+  if (str == "kSelectEnemy")        return FnLabel::kSelectEnemy;
   return FnLabel::kInvalid;
 }
 

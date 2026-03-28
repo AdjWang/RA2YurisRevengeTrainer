@@ -50,7 +50,12 @@ static void Init(HINSTANCE hInstance) {
   // Search configuration file at the same directory with the dll.
   CHECK(Config::Load(fs::canonical(fs::path(exe_path)).parent_path()));
   trainer = std::make_unique<Trainer>(Config::instance());
-  server = std::make_unique<Server>(trainer.get(), Config::instance()->port());
+  fs::path index_html_path;
+#ifdef YRTR_DEBUG
+  index_html_path = Config::instance()->debug_web_index_path();
+#endif
+  server = std::make_unique<Server>(trainer.get(), Config::instance()->port(),
+                                    index_html_path);
 }
 
 static void Update() {

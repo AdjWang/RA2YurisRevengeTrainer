@@ -60,7 +60,8 @@ export class Localization {
         kUnlimitFirePower: "大量弹药-重新建造生效",
         kInstChrono: "瞬间超时空",
         kSpySpy: "无间道",
-        kAdjustGameSpeed: "任务调速"
+        kAdjustGameSpeed: "任务调速",
+        kSelectEnemy: "多选敌方单位"
       },
       en: {
         kApply: "Apply",
@@ -91,7 +92,8 @@ export class Localization {
         kUnlimitFirePower: "Unlimit gun power",
         kInstChrono: "Instant chrono",
         kSpySpy: "Spy spy",
-        kAdjustGameSpeed: "Enable game speed adjustment"
+        kAdjustGameSpeed: "Enable game speed adjustment",
+        kSelectEnemy: "Enable enemy selecting"
       }
     };
   }

@@ -55,6 +55,7 @@ class Config {
       case FnLabel::kInstChrono:          return GLFW_KEY_N;
       case FnLabel::kSpySpy:              return GLFW_KEY_M;
       case FnLabel::kAdjustGameSpeed:     return GLFW_KEY_PERIOD;   /* . */
+      case FnLabel::kSelectEnemy:         return GLFW_KEY_COMMA;    /* , */
       default: return GLFW_KEY_UNKNOWN;
     }
   }

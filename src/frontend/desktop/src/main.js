@@ -84,47 +84,44 @@ async function checkUrlReachable(url, timeout = 2000) {
   }
 }
 
-window.waitBackend = async function () {
-  const err = window.errorMessage;
-  if (err) {
-    showBackendError(err, retry = false);
+window.handshake = async function () {
+  let url;
+  try {
+    const invoke = window.__TAURI__.core.invoke;
+    let port = await invoke("get_ws_port");
+    url = `http://localhost:${port}`;
+  } catch (err) {
+    showBackendError(`${t('noUrl')} err=${err}`, retry = false);
+    stopRetryInterval();
     return;
   }
-  const url = window.backendUrl;
+  console.info(`Handshake to url=${url}`);
   const loadingContainer = document.getElementById('loading-container');
   const backendFrame = document.getElementById('backend-frame');
   const statusMessage = document.getElementById('status-message');
-  if (!url) {
-    showBackendError(t('noUrl'), retry = false);
-    return;
-  }
   try {
     statusMessage.textContent = t('connecting');
-
-    // Check if backend is reachable
     const isReachable = await checkUrlReachable(url);
-
     if (isReachable) {
       statusMessage.textContent = t('connected');
-
       // Load the backend URL in iframe
       backendFrame.src = url;
       backendFrame.style.display = 'block';
       loadingContainer.style.display = 'none';
-
       // Handle iframe load error
       backendFrame.onerror = function () {
         showBackendError(t('loadFailed'), retry = true);
+        startRetryInterval();
       };
-
-      // Stop retry interval when connected
       stopRetryInterval();
     } else {
       showBackendError(t('notReachable'), retry = true);
+      startRetryInterval();
     }
   } catch (error) {
     console.error('Error checking backend:', error);
     showBackendError(t('connectionFailed'), retry = true);
+    startRetryInterval();
   }
 };
 
@@ -133,13 +130,11 @@ function showBackendError(message, retry) {
   if (retry) {
     loadingContainer.innerHTML = `
           <div id="status-message" class="message error">${message}</div>
-          <button class="retry-btn" onclick="window.waitBackend()">${t('retry')}</button>
+          <button class="retry-btn" onclick="window.handshake()">${t('retry')}</button>
           <div class="message" style="font-size: 12px; margin-top: 1rem;">
               ${t('retryAuto')}
           </div>
       `;
-    // Ensure retry interval is running
-    startRetryInterval();
   } else {
     loadingContainer.innerHTML = `
           <div id="status-message" class="message error">${message}</div>
@@ -151,21 +146,22 @@ function showBackendError(message, retry) {
 let retryInterval;
 
 function startRetryInterval() {
+  console.debug("startRetryInterval");
   if (retryInterval) clearInterval(retryInterval);
 
   retryInterval = setInterval(() => {
     const backendFrame = document.getElementById('backend-frame');
     const loadingContainer = document.getElementById('loading-container');
-
     // Only retry if we're still in loading state (iframe not visible)
     if (backendFrame.style.display !== 'block' &&
       loadingContainer.style.display !== 'none') {
-      window.waitBackend();
+      window.handshake();
     }
   }, 5000);
 }
 
 function stopRetryInterval() {
+  console.debug("stopRetryInterval");
   if (retryInterval) {
     clearInterval(retryInterval);
     retryInterval = null;
@@ -174,15 +170,14 @@ function stopRetryInterval() {
 
 // Start checking when page loads
 window.addEventListener('load', () => {
-  if (window.errorMessage || window.backendUrl) {
-    updateUIText(); // Set initial loading text in Chinese if needed
-    window.waitBackend();
-    startRetryInterval();
-  }
+  console.debug("on event load");
+  updateUIText(); // Set initial loading text in Chinese if needed
+  window.handshake();
 });
 
 // Cleanup on unload
 window.addEventListener('beforeunload', () => {
+  console.debug("on event beforeunload");
   stopRetryInterval();
 });
 

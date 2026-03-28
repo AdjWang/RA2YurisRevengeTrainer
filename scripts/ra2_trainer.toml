@@ -36,3 +36,4 @@ UnlimitFirePower   = "KeyB"
 InstChrono         = "KeyN"
 SpySpy             = "KeyM"
 AdjustGameSpeed    = "Period"  # .
+SelectEnemy        = "Comma"   # ,
