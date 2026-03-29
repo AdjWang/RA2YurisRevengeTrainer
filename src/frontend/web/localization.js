@@ -99,13 +99,11 @@ export class Localization {
   }
 
   setLanguage(lang) {
-    // if (lang === 'zh-CN') {
-    //   this.lang = 'zh';
-    // } else {
-    //   this.lang = 'en';
-    // }
-    // DEBUG
-    this.lang = 'zh';
+    if (lang === 'zh-CN') {
+      this.lang = 'zh';
+    } else {
+      this.lang = 'en';
+    }
   }
 
   getGuiStr(label) {
