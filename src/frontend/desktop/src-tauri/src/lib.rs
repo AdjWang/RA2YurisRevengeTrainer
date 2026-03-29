@@ -1,5 +1,5 @@
 use global_hotkey::HotKeyState;
-use log::{debug, error, info, warn};
+use log::{LevelFilter, debug, error, info, warn};
 use once_cell::sync::OnceCell;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -250,6 +250,7 @@ pub fn run() {
                         file_name: Some("ra2_trainer_frontend.log".to_string()),
                     }),
                 ])
+                .level(LevelFilter::Info)
                 .build();
             app.handle().plugin(logger).unwrap();
             // Init global states.

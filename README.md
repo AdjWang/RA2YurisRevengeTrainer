@@ -4,7 +4,7 @@
 
 ## 编译
 
-使用 [CMake](https://cmake.org/), [Python3 >= 3.12](https://www.python.org/), [npm](https://www.npmjs.com/), [Ninja](https://ninja-build.org/) 和 [Visual Studio 17 2022](https://visualstudio.microsoft.com/) 构建。
+使用 [CMake](https://cmake.org/), [Python3 >= 3.12](https://www.python.org/), [npm](https://www.npmjs.com/) 和 [Visual Studio 17 2022](https://visualstudio.microsoft.com/) 构建。
 
 必须在 x86 模式的 [Developer Command Prompt 或 Developer PowerShell](https://learn.microsoft.com/en-us/visualstudio/ide/reference/command-prompt-powershell?view=vs-2022) 中执行编译命令。
 
@@ -39,8 +39,6 @@ Requires: requests
 Required-by:
 PS C:\Projects\RA2YurisRevengeTrainer> npm --version
 10.9.2
-PS C:\Projects\RA2YurisRevengeTrainer> ninja --version
-1.13.0.git
 PS C:\Projects\RA2YurisRevengeTrainer> cl
 Microsoft (R) C/C++ Optimizing Compiler Version 19.44.35211 for x86
 Copyright (C) Microsoft Corporation.  All rights reserved.
@@ -50,7 +48,8 @@ PS C:\Projects\RA2YurisRevengeTrainer> cmake --version
 cmake version 3.30.2
 
 CMake suite maintained and supported by Kitware (kitware.com/cmake).
-PS C:\Projects\RA2YurisRevengeTrainer> 
+PS C:\Projects\RA2YurisRevengeTrainer> cargo --version
+cargo 1.93.1 (083ac5135 2025-12-15)
 ```
 
 </details>
@@ -58,10 +57,20 @@ PS C:\Projects\RA2YurisRevengeTrainer>
 ### 安装依赖编译工具
 
 ```
+cargo install tauri-cli
 python -m pip install exccpkg
 ```
 
-### 编译依赖
+### 编译前端
+
+```
+cd ./src/frontend/desktop/src-tauri
+cargo tauri build
+```
+
+### 编译后端
+
+#### 编译依赖
 
 ```
 git clone https://github.com/AdjWang/RA2YurisRevengeTrainer.git
@@ -69,7 +78,7 @@ cd ./RA2YurisRevengeTrainer
 python exccpkgfile.py
 ```
 
-### 编译前端
+#### 编译注入模块
 
 ```
 cd ./src/frontend/web
@@ -77,25 +86,11 @@ npm install
 npm run build
 cd ../../..
 python scripts/generate_web_main_page.py
-cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_DEFAULT_CMP0091=NEW -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded -DCMAKE_INSTALL_PREFIX=deps/out/Release -G Ninja -S . -B ./build
-cmake --build ./build --config Release --target ra2_trainer -j $env:NUMBER_OF_PROCESSORS
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_DEFAULT_CMP0091=NEW -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded -DCMAKE_INSTALL_PREFIX=deps/out/Release -G "Visual Studio 17 2022" -S . -B ./build -T v143,host=x86 -A win32
+cmake --build ./build --config Release --target wsock32 ra2_trainer_backend -j $env:NUMBER_OF_PROCESSORS
 ```
 
 > 在 `powershell` 中使用 `$env:NUMBER_OF_PROCESSORS`，在 `cmd` 中使用 `%NUMBER_OF_PROCESSORS%`
-
-如果不想编译网页，只需要桌面程序：
-
-```
-cd .
-cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_DEFAULT_CMP0091=NEW -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded -DCMAKE_INSTALL_PREFIX=deps/out/Release -DYRTR_ENABLE_WEB=OFF -G Ninja -S . -B ./build
-cmake --build ./build --config Release --target ra2_trainer -j $env:NUMBER_OF_PROCESSORS
-```
-
-### 编译后端
-
-```
-cmake --build ./build --config Release --target wsock32 ra2_trainer_backend -j $env:NUMBER_OF_PROCESSORS
-```
 
 ## 使用方式
 

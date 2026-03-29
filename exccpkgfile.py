@@ -16,7 +16,7 @@ class Config:
         self.download_dir = self.deps_dir / "download"
         self.cmake_build_type = "Release"
         self.install_dir = self.deps_dir / "out" / self.cmake_build_type
-        self.generator = "Ninja"
+        self.generator = "Visual Studio 17 2022"
 
         CFLAGS = defaultdict(dict)
         CXXFLAGS = defaultdict(dict)
@@ -66,8 +66,8 @@ class CMakeCommon:
         build_dir = src_dir / "cmake_build" / self.cfg.cmake_build_type
         tools.cmake_prepare_build_dir(build_dir, rebuild=self.cfg.rebuild, dryrun=self.cfg.dryrun)
         tools.run_cmd(f"""cmake {self.cfg.cmake_common} {cmake_options}
-                                -G {self.cfg.generator} -S {src_dir}
-                                -B {build_dir}""", self.cfg.dryrun)
+                                -G "{self.cfg.generator}" -S {src_dir}
+                                -B {build_dir} -T v143,host=x86 -A win32""", self.cfg.dryrun)
         tools.run_cmd(f"""cmake --build {build_dir}
                                 --config={self.cfg.cmake_build_type}
                                 --parallel={cpu_count()}""", self.cfg.dryrun)
@@ -75,6 +75,7 @@ class CMakeCommon:
     
     def install(self, build_dir: Path) -> None:
         tools.run_cmd(f"""cmake --install {build_dir}
+                                --config={self.cfg.cmake_build_type}
                                 --prefix={self.cfg.install_dir}""", self.cfg.dryrun)
 
 
