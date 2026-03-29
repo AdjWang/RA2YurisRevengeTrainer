@@ -21,11 +21,14 @@ static std::atomic<ThreadId> tid_game_loop = 0;
 static std::atomic<ThreadId> tid_render_loop = 0;
 // 1 thread for network should be enough.
 static std::atomic<ThreadId> tid_net_loop = 0;
+// Filesystem thread, dump records.
+static std::atomic<ThreadId> tid_fs_loop = 0;
 }  // namespace
 
 ThreadId GetGameLoopThreadId() { return tid_game_loop.load(); }
 ThreadId GetRendererThreadId() { return tid_render_loop.load(); }
 ThreadId GetNetThreadId() { return tid_net_loop.load(); }
+ThreadId GetFilesystemThreadId() { return tid_fs_loop.load(); }
 
 void SetupGameLoopThreadOnce(ThreadId tid) {
   static std::once_flag once_flag;
@@ -60,6 +63,17 @@ void SetupNetThreadOnce(ThreadId tid) {
   });
 }
 
+void SetupFilesystemThreadOnce(ThreadId tid) {
+  static std::once_flag once_flag;
+  std::call_once(once_flag, [&]() {
+    if (tid == 0) {
+      tid_fs_loop.store(GetCurrentThreadId());
+    } else {
+      tid_fs_loop.store(tid);
+    }
+  });
+}
+
 bool IsWithinThread(ThreadId tid) {
   return tid == GetCurrentThreadId();
 }
@@ -76,6 +90,10 @@ bool IsWithinNetThread() {
   return tid_net_loop.load() == GetCurrentThreadId();
 }
 
+bool IsWithinFilesystemThread() {
+  return tid_fs_loop.load() == GetCurrentThreadId();
+}
+
 std::string InspectThreads() {
   ThreadId tid_current = GetCurrentThreadId();
   std::stringstream ss;
@@ -84,6 +102,7 @@ std::string InspectThreads() {
   ss << std::format("Game loop tid={}\n", tid_game_loop.load());
   ss << std::format("Renderer tid={}\n", tid_render_loop.load());
   ss << std::format("Net tid={}\n", tid_net_loop.load());
+  ss << std::format("Filesystem tid={}\n", tid_fs_loop.load());
   ss << "====================\n";
   return ss.str();
 }

@@ -9,13 +9,16 @@ using ThreadId = uint32_t;
 ThreadId GetGameLoopThreadId();
 ThreadId GetRendererThreadId();
 ThreadId GetNetThreadId();
+ThreadId GetFilesystemThreadId();
 void SetupGameLoopThreadOnce(ThreadId tid = 0);
 void SetupRendererThreadOnce(ThreadId tid = 0);
 void SetupNetThreadOnce(ThreadId tid = 0);
+void SetupFilesystemThreadOnce(ThreadId tid = 0);
 bool IsWithinThread(ThreadId tid);
 bool IsWithinGameLoopThread();
 bool IsWithinRendererThread();
 bool IsWithinNetThread();
+bool IsWithinFilesystemThread();
 // For debugging.
 std::string InspectThreads();
 

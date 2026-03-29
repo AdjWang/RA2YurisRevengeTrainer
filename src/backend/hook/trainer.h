@@ -9,6 +9,7 @@ __YRTR_BEGIN_THIRD_PARTY_HEADERS
 #include "absl/container/inlined_vector.h"
 #include "absl/container/flat_hash_map.h"
 __YRTR_END_THIRD_PARTY_HEADERS
+#include "base/task_queue.h"
 #include "base/thread.h"
 #include "protocol/model.h"
 
@@ -25,8 +26,10 @@ namespace hook {
 // MVC -- controller.
 
 // Export for testing.
-void BeepEnable();
-void BeepDisable();
+bool GetBeepEnable();
+void SetBeepEnable(bool enable);
+void PlayBeepActivate();
+void PlayBeepDeactivate();
 void InitStates(State& state);
 
 // For testing.
@@ -70,6 +73,7 @@ class Trainer : public ITrainer {
   void OnProtectedListEvent(SideMap&& side_map) final;
 
  private:
+  static constexpr uint32_t kRecordDurationMs = 2000;
   // Update from state before use.
   static SideMap protected_houses_;
   static bool activate_disable_gagap_;
@@ -78,6 +82,10 @@ class Trainer : public ITrainer {
   State state_;
   std::function<void(State)> on_state_updated_;
   bool state_dirty_;
+
+  // Use a bool trigger as debouncing mechanism.
+  bool pending_record_;
+  std::chrono::system_clock::time_point last_record_ts_;
 
   std::unique_ptr<MemoryAPI> mem_api_;
 

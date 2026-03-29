@@ -1,5 +1,6 @@
 #include "backend/hook/trainer.h"
 
+#include "base/worker.h"  // include before WinSock.h
 #include "base/macro.h"
 __YRTR_BEGIN_THIRD_PARTY_HEADERS
 #include "AbstractTypeClass.h"
@@ -25,23 +26,39 @@ __YRTR_END_THIRD_PARTY_HEADERS
 namespace yrtr {
 namespace backend {
 namespace hook {
+
+static Worker g_fs_worker("Filesystem");
+static bool g_enable_beep = true;
+
 SideMap Trainer::protected_houses_;
 bool Trainer::activate_disable_gagap_ = false;
 
-void BeepEnable() {
-  std::thread t([]() {
-    Beep(600, 100);
-    Beep(1000, 100);
-  });
-  t.detach();
+bool GetBeepEnable() {
+  return g_enable_beep;
 }
 
-void BeepDisable() {
-  std::thread t([]() {
-    Beep(1000, 100);
-    Beep(600, 100);
-  });
-  t.detach();
+void SetBeepEnable(bool enable) {
+  g_enable_beep = enable;
+}
+
+void PlayBeepActivate() {
+  if (g_enable_beep) {
+    std::thread t([]() {
+      Beep(600, 100);
+      Beep(1000, 100);
+    });
+    t.detach();
+  }
+}
+
+void PlayBeepDeactivate() {
+  if (g_enable_beep) {
+    std::thread t([]() {
+      Beep(1000, 100);
+      Beep(600, 100);
+    });
+    t.detach();
+  }
 }
 
 void InitStates(State& state) {
@@ -582,20 +599,30 @@ Trainer::Trainer(Config* cfg)
       activate_inst_turn_turret_(false),
       activate_inst_turn_body_(false),
       on_state_updated_(nullptr),
-      state_dirty_(true) {
+      state_dirty_(true),
+      pending_record_(false) {
   DCHECK_NOTNULL(cfg_);
   mem_api_ = std::make_unique<MemoryAPI>();
   InitStates(state_);
   if (cfg_->auto_record()) {
-    ReadCheckboxStateFromToml(cfg_->record_path(), /*out*/ state_.ckbox_states);
+    // Read checkbox state from record file.
+    bool ok = ReadCheckboxStateFromToml(cfg_->record_path(),
+                                        /*out*/ state_.ckbox_states);
+    if (ok) {
+      // Apply recorded checkbox state.
+      bool temp = GetBeepEnable();
+      SetBeepEnable(false);
+      for (auto [label, activate] : state_.ckbox_states) {
+        OnCheckboxEvent(label, activate.activate);
+      }
+      SetBeepEnable(temp);
+    }
+    // Setup record worker thread.
+    g_fs_worker.PostTask([this]() { SetupFilesystemThreadOnce(); });
   }
 }
 
-Trainer::~Trainer() {
-  if (cfg_->auto_record()) {
-    WriteCheckboxStateToToml(state_.ckbox_states, cfg_->record_path());
-  }
-}
+Trainer::~Trainer() {}
 
 bool Trainer::ShouldProtect(yrpp::AbstractClass* obj) {
   DCHECK(IsWithinGameLoopThread());
@@ -666,6 +693,15 @@ void Trainer::Update(double /*delta*/) {
   }
   protected_houses_ = state_.protected_houses;
   PropagateStateIfDirty();
+  // Do record.
+  if (pending_record_) [[unlikely]] {
+    DCHECK(cfg_->auto_record());
+    pending_record_ = false;
+    g_fs_worker.PostTask([this, ckbox_states_copy = state_.ckbox_states]() {
+      DCHECK(IsWithinFilesystemThread());
+      WriteCheckboxStateToToml(ckbox_states_copy, cfg_->record_path());
+    });
+  }
 }
 
 void Trainer::OnInputEvent(FnLabel label, uint32_t val) {
@@ -742,10 +778,17 @@ void Trainer::PropagateStateIfDirty() {
     return;
   }
   state_dirty_ = false;
-  if (on_state_updated_ == nullptr) {
-    return;
+  if (on_state_updated_ != nullptr) {
+    on_state_updated_(state_);
   }
-  on_state_updated_(state_);
+  if (cfg_->auto_record()) {
+    // Trigger record states.
+    auto now = std::chrono::system_clock::now();
+    if (now - last_record_ts_ > std::chrono::milliseconds(kRecordDurationMs)) {
+      last_record_ts_ = now;
+      pending_record_ = true;
+    }
+  }
 }
 
 void Trainer::OnInputCredit(uint32_t val) {
@@ -753,7 +796,7 @@ void Trainer::OnInputCredit(uint32_t val) {
   DCHECK(IsWithinGameLoopThread());
   CHECK_REPORT(IsGaming());
   CHECK_REPORT(WriteCredit(val));
-  BeepEnable();
+  PlayBeepActivate();
 }
 
 void Trainer::OnBtnFastBuild() {
@@ -768,7 +811,7 @@ void Trainer::OnBtnFastBuild() {
     house->NumConYards = 15;
     house->NumShipyards = 15;
   });
-  BeepEnable();
+  PlayBeepActivate();
 }
 
 void Trainer::OnBtnDeleteUnit() {
@@ -777,7 +820,7 @@ void Trainer::OnBtnDeleteUnit() {
   CHECK_MEMAPI_OR_REPORT();
   CHECK_REPORT(IsGaming());
   ForeachSelectingObject([](yrpp::ObjectClass* obj) { obj->UnInit(); });
-  BeepEnable();
+  PlayBeepActivate();
 }
 
 void Trainer::OnBtnClearShroud() {
@@ -788,7 +831,7 @@ void Trainer::OnBtnClearShroud() {
   if (yrpp::HouseClass::CurrentPlayer != nullptr) {
     yrpp::MapClass::Instance->Reveal(yrpp::HouseClass::CurrentPlayer);
   }
-  BeepEnable();
+  PlayBeepActivate();
 }
 
 void Trainer::OnBtnGiveMeABomb() {
@@ -825,7 +868,7 @@ void Trainer::OnBtnGiveMeABomb() {
   CHECK_NOTNULL(nuke_inst);
   nuke_inst->Grant(/*oneTime*/ true, /*announce*/ false, /*onHold*/ false);
   yrpp::SidebarClass::Instance->AddCameo(yrpp::AbstractType::Special, index);
-  BeepEnable();
+  PlayBeepActivate();
 }
 
 void Trainer::OnBtnUnitLevelUp() {
@@ -839,7 +882,7 @@ void Trainer::OnBtnUnitLevelUp() {
       techno->Veterancy.SetElite(true);
     }
   });
-  BeepEnable();
+  PlayBeepActivate();
 }
 
 void Trainer::OnBtnUnitSpeedUp() {
@@ -859,7 +902,7 @@ void Trainer::OnBtnUnitSpeedUp() {
       infantry->SpeedMultiplier = 2.0;
     }
   });
-  BeepEnable();
+  PlayBeepActivate();
   // FUTURE: how to speed up aircrafts?
 }
 
@@ -869,7 +912,7 @@ void Trainer::OnBtnIAMWinner() {
   CHECK_MEMAPI_OR_REPORT();
   CHECK_REPORT(IsGaming());
   CHECK_REPORT(mem_api_->WriteMemory(0x00A83D49, static_cast<uint8_t>(1)));
-  BeepEnable();
+  PlayBeepActivate();
 }
 
 void Trainer::OnBtnThisIsMine() {
@@ -884,7 +927,7 @@ void Trainer::OnBtnThisIsMine() {
       techno->SetOwningHouse(yrpp::HouseClass::CurrentPlayer);
     }
   });
-  BeepEnable();
+  PlayBeepActivate();
 }
 
 void Trainer::OnCkboxGod(bool activate) {
@@ -1251,9 +1294,9 @@ bool Trainer::SetEnableCheckbox(FnLabel label, bool enable) {
 void Trainer::UpdateCheckboxState(FnLabel label, bool activate) {
   DCHECK(IsWithinGameLoopThread());
   if (activate) {
-    BeepEnable();
+    PlayBeepActivate();
   } else {
-    BeepDisable();
+    PlayBeepDeactivate();
   }
   if (state_.ckbox_states[label].activate != activate) {
     state_.ckbox_states[label].activate = activate;

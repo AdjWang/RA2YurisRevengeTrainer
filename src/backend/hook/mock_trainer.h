@@ -32,6 +32,7 @@ class MockTrainer : public ITrainer {
   void OnProtectedListEvent(SideMap&& side_map) final;
 
  private:
+  static constexpr uint32_t kRecordDurationMs = 2000;
   // Update from state before use.
   static SideMap protected_houses_;
 
@@ -39,6 +40,10 @@ class MockTrainer : public ITrainer {
   State state_;
   std::function<void(State)> on_state_updated_;
   bool state_dirty_;
+
+  // Use a bool trigger as debouncing mechanism.
+  bool pending_record_;
+  std::chrono::system_clock::time_point last_record_ts_;
 
   void PropagateStateIfDirty();
   void UpdateCheckboxState(FnLabel label, bool activate);

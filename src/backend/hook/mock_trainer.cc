@@ -1,5 +1,6 @@
 #include "backend/hook/mock_trainer.h"
 
+#include "base/worker.h"  // include before WinSock.h
 #include "backend/record.h"
 #include "base/logging.h"
 #include "base/thread.h"
@@ -7,22 +8,33 @@
 namespace yrtr {
 namespace backend {
 namespace hook {
+static Worker g_fs_worker("Filesystem");
 SideMap MockTrainer::protected_houses_;
 
 MockTrainer::MockTrainer(Config* cfg)
     : cfg_(cfg),
-      state_dirty_(true) {
+      state_dirty_(true),
+      pending_record_(false) {
   InitStates(state_);
   if (cfg_->auto_record()) {
-    ReadCheckboxStateFromToml(cfg_->record_path(), /*out*/ state_.ckbox_states);
+    // Read checkbox state from record file.
+    bool ok = ReadCheckboxStateFromToml(cfg_->record_path(),
+                                        /*out*/ state_.ckbox_states);
+    if (ok) {
+      // Apply recorded checkbox state.
+      bool temp = GetBeepEnable();
+      SetBeepEnable(false);
+      for (auto [label, activate] : state_.ckbox_states) {
+        OnCheckboxEvent(label, activate.activate);
+      }
+      SetBeepEnable(temp);
+    }
+    // Setup record worker thread.
+    g_fs_worker.PostTask([this]() { SetupFilesystemThreadOnce(); });
   }
 }
 
-MockTrainer::~MockTrainer() {
-  if (cfg_->auto_record()) {
-    WriteCheckboxStateToToml(state_.ckbox_states, cfg_->record_path());
-  }
-}
+MockTrainer::~MockTrainer() {}
 
 void MockTrainer::Update(double /*delta*/) {
   CHECK(IsWithinGameLoopThread());
@@ -42,6 +54,15 @@ void MockTrainer::Update(double /*delta*/) {
   }
   protected_houses_ = state_.protected_houses;
   PropagateStateIfDirty();
+  // Do record.
+  if (pending_record_) [[unlikely]] {
+    DCHECK(cfg_->auto_record());
+    pending_record_ = false;
+    g_fs_worker.PostTask([this, ckbox_states_copy = state_.ckbox_states]() {
+      DCHECK(IsWithinFilesystemThread());
+      WriteCheckboxStateToToml(ckbox_states_copy, cfg_->record_path());
+    });
+  }
 }
 
 void MockTrainer::OnInputEvent(FnLabel label, uint32_t val) {
@@ -49,14 +70,14 @@ void MockTrainer::OnInputEvent(FnLabel label, uint32_t val) {
   // There's only one input event for now.
   CHECK_EQ(static_cast<int>(label), static_cast<int>(FnLabel::kApply));
   LOG_F(INFO, "OnInputEvent label={} val={}", StrFnLabel(label), val);
-  BeepEnable();
+  PlayBeepActivate();
   PropagateStateIfDirty();
 }
 
 void MockTrainer::OnButtonEvent(FnLabel label) {
   CHECK(IsWithinGameLoopThread());
   LOG_F(INFO, "OnButtonEvent label={}", StrFnLabel(label));
-  BeepEnable();
+  PlayBeepActivate();
   PropagateStateIfDirty();
 }
 
@@ -83,17 +104,24 @@ void MockTrainer::PropagateStateIfDirty() {
     return;
   }
   state_dirty_ = false;
-  if (on_state_updated_ == nullptr) {
-    return;
+  if (on_state_updated_ != nullptr) {
+    on_state_updated_(state_);
   }
-  on_state_updated_(state_);
+  if (cfg_->auto_record()) {
+    // Trigger record states.
+    auto now = std::chrono::system_clock::now();
+    if (now - last_record_ts_ > std::chrono::milliseconds(kRecordDurationMs)) {
+      last_record_ts_ = now;
+      pending_record_ = true;
+    }
+  }
 }
 
 void MockTrainer::UpdateCheckboxState(FnLabel label, bool activate) {
   if (activate) {
-    BeepEnable();
+    PlayBeepActivate();
   } else {
-    BeepDisable();
+    PlayBeepDeactivate();
   }
   if (state_.ckbox_states[label].activate != activate) {
     state_.ckbox_states[label].activate = activate;
