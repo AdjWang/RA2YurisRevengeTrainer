@@ -1,15 +1,10 @@
-export {
-  BtnFnLabelFirst, BtnFnLabelLast,
-  CheckboxFnLabelFirst, CheckboxFnLabelLast,
-  FnLabel, strFnLabel,
-};
 
-const BtnFnLabelFirst = 1;
-const BtnFnLabelLast = 8;
-const CheckboxFnLabelFirst = 9;
-const CheckboxFnLabelLast = 29;
+export const BtnFnLabelFirst = 1;
+export const BtnFnLabelLast = 8;
+export const CheckboxFnLabelFirst = 9;
+export const CheckboxFnLabelLast = 29;
 // Enum mapping
-const FnLabel = {
+export const FnLabel = {
   kInvalid: -1,
   // Button
   kApply: 0,
@@ -48,7 +43,7 @@ const FnLabel = {
 
 // Helper function to get string representation of FnLabel. Only for internal
 // use. To get localized name, use getGuiStr and getFnStr.
-function strFnLabel(label) {
+export function strFnLabel(label) {
   switch (label) {
     case FnLabel.kInvalid: return "Invalid";
     // Button

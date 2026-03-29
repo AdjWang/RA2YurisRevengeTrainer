@@ -96,37 +96,37 @@ constexpr std::string_view StrFnLabel(FnLabel label) {
 
 static constexpr FnLabel StrToFnLabel(std::string_view str) {
   // Button
-  if (str == "kApply")              return FnLabel::kApply;
-  if (str == "kIAMWinner")          return FnLabel::kIAMWinner;
-  if (str == "kDeleteUnit")         return FnLabel::kDeleteUnit;
-  if (str == "kClearShroud")        return FnLabel::kClearShroud;
-  if (str == "kGiveMeABomb")        return FnLabel::kGiveMeABomb;
-  if (str == "kUnitLevelUp")        return FnLabel::kUnitLevelUp;
-  if (str == "kUnitSpeedUp")        return FnLabel::kUnitSpeedUp;
-  if (str == "kFastBuild")          return FnLabel::kFastBuild;
-  if (str == "kThisIsMine")         return FnLabel::kThisIsMine;
+  if (str == "Apply")              return FnLabel::kApply;
+  if (str == "IAMWinner")          return FnLabel::kIAMWinner;
+  if (str == "DeleteUnit")         return FnLabel::kDeleteUnit;
+  if (str == "ClearShroud")        return FnLabel::kClearShroud;
+  if (str == "GiveMeABomb")        return FnLabel::kGiveMeABomb;
+  if (str == "UnitLevelUp")        return FnLabel::kUnitLevelUp;
+  if (str == "UnitSpeedUp")        return FnLabel::kUnitSpeedUp;
+  if (str == "FastBuild")          return FnLabel::kFastBuild;
+  if (str == "ThisIsMine")         return FnLabel::kThisIsMine;
   // Checkbox
-  if (str == "kGod")                return FnLabel::kGod;
-  if (str == "kInstBuild")          return FnLabel::kInstBuild;
-  if (str == "kUnlimitSuperWeapon") return FnLabel::kUnlimitSuperWeapon;
-  if (str == "kInstFire")           return FnLabel::kInstFire;
-  if (str == "kInstTurn")           return FnLabel::kInstTurn;
-  if (str == "kRangeToYourBase")    return FnLabel::kRangeToYourBase;
-  if (str == "kFireToYourBase")     return FnLabel::kFireToYourBase;
-  if (str == "kFreezeGapGenerator") return FnLabel::kFreezeGapGenerator;
-  if (str == "kSellTheWorld")       return FnLabel::kSellTheWorld;
-  if (str == "kBuildEveryWhere")    return FnLabel::kBuildEveryWhere;
-  if (str == "kAutoRepair")         return FnLabel::kAutoRepair;
-  if (str == "kSocialismMajesty")   return FnLabel::kSocialismMajesty;
-  if (str == "kMakeCapturedMine")   return FnLabel::kMakeCapturedMine;
-  if (str == "kMakeGarrisonedMine") return FnLabel::kMakeGarrisonedMine;
-  if (str == "kInvadeMode")         return FnLabel::kInvadeMode;
-  if (str == "kUnlimitTech")        return FnLabel::kUnlimitTech;
-  if (str == "kUnlimitFirePower")   return FnLabel::kUnlimitFirePower;
-  if (str == "kInstChrono")         return FnLabel::kInstChrono;
-  if (str == "kSpySpy")             return FnLabel::kSpySpy;
-  if (str == "kAdjustGameSpeed")    return FnLabel::kAdjustGameSpeed;
-  if (str == "kSelectEnemy")        return FnLabel::kSelectEnemy;
+  if (str == "God")                return FnLabel::kGod;
+  if (str == "InstBuild")          return FnLabel::kInstBuild;
+  if (str == "UnlimitSuperWeapon") return FnLabel::kUnlimitSuperWeapon;
+  if (str == "InstFire")           return FnLabel::kInstFire;
+  if (str == "InstTurn")           return FnLabel::kInstTurn;
+  if (str == "RangeToYourBase")    return FnLabel::kRangeToYourBase;
+  if (str == "FireToYourBase")     return FnLabel::kFireToYourBase;
+  if (str == "FreezeGapGenerator") return FnLabel::kFreezeGapGenerator;
+  if (str == "SellTheWorld")       return FnLabel::kSellTheWorld;
+  if (str == "BuildEveryWhere")    return FnLabel::kBuildEveryWhere;
+  if (str == "AutoRepair")         return FnLabel::kAutoRepair;
+  if (str == "SocialismMajesty")   return FnLabel::kSocialismMajesty;
+  if (str == "MakeCapturedMine")   return FnLabel::kMakeCapturedMine;
+  if (str == "MakeGarrisonedMine") return FnLabel::kMakeGarrisonedMine;
+  if (str == "InvadeMode")         return FnLabel::kInvadeMode;
+  if (str == "UnlimitTech")        return FnLabel::kUnlimitTech;
+  if (str == "UnlimitFirePower")   return FnLabel::kUnlimitFirePower;
+  if (str == "InstChrono")         return FnLabel::kInstChrono;
+  if (str == "SpySpy")             return FnLabel::kSpySpy;
+  if (str == "AdjustGameSpeed")    return FnLabel::kAdjustGameSpeed;
+  if (str == "SelectEnemy")        return FnLabel::kSelectEnemy;
   return FnLabel::kInvalid;
 }
 

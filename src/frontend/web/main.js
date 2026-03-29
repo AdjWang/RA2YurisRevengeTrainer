@@ -5,7 +5,7 @@ import {
 } from './protocol';
 import { YRTRClient } from './client';
 import { Localization } from './localization';
-import { isTauriDesktop, tauriGetWsPort, tauriGetLabelHotkeyString } from './tauri_init';
+import { isTauriDesktop, tauriGetWsPort, tauriGetKeyNameByLabel } from './tauri_init';
 
 var client = undefined;
 var selectingHouseMap = new Map();
@@ -30,8 +30,8 @@ function initFilterList() {
   // Source list functionality
   const sourceList = document.getElementById('source-list');
   const destinationList = document.getElementById('destination-list');
-  const addAllBtn = document.getElementById('kAddAll');
-  const clearAllBtn = document.getElementById('kClearAll');
+  const addAllBtn = document.getElementById('AddAll');
+  const clearAllBtn = document.getElementById('ClearAll');
   // Add all items to destination list
   addAllBtn.addEventListener('click', () => {
     sourceList.querySelectorAll('.selectable').forEach(item => {
@@ -51,17 +51,18 @@ function initFilterList() {
 
 async function getLabelTextContent(label) {
   let labelName = strFnLabel(label);
-  let hotkeyStr = isTauriDesktop() ? await tauriGetLabelHotkeyString(labelName) : "";
+  let hotkeyStr = isTauriDesktop() ? await tauriGetKeyNameByLabel(labelName) : "";
   if (hotkeyStr != "") {
-    return localization.getFnStr(`k${labelName}`) + ` (${hotkeyStr})`;
+    return localization.getFnStr(`${labelName}`) + ` (${hotkeyStr})`;
   } else {
-    return localization.getFnStr(`k${labelName}`);
+    return localization.getFnStr(`${labelName}`);
   }
 }
 
 async function initButton() {
   // Bind apply button with heading input.
-  const apply_btn = document.getElementById('kApply');
+  let apply_btn = document.getElementById('Apply');
+  apply_btn.textContent = await getLabelTextContent(FnLabel.kApply);
   apply_btn.addEventListener('click', () => {
     const amount = document.getElementById('money-input').value;
     if (amount) {
@@ -74,7 +75,7 @@ async function initButton() {
   let btnList = document.getElementById('btn-list');
   for (let i = BtnFnLabelFirst; i <= BtnFnLabelLast; i++) {
     const btn = document.createElement('button');
-    btn.id = `btn${i}`;
+    btn.id = strFnLabel(i);
     btn.textContent = await getLabelTextContent(i);
     btn.addEventListener('click', () => onTriggerBtn(i, /*val*/ undefined));
     btnList.appendChild(btn);
@@ -88,7 +89,7 @@ async function createCheckbox(id, onChange) {
   label.className = 'checkbox-label';
   const input = document.createElement('input');
   input.type = 'checkbox';
-  input.id = `checkbox${id}`;
+  input.id = strFnLabel(id);
   input.addEventListener('change', (e) => {
     const checked = input.checked;
     // Only allowed to chagnge state from this script.
@@ -176,7 +177,8 @@ function onStateUpdate(state) {
     state.ckbox_states.forEach(element => {
       const label = element[0];
       const checkboxState = element[1];
-      const checkbox = document.getElementById(`checkbox${label}`);
+      const labelName = strFnLabel(label);
+      const checkbox = document.getElementById(labelName);
       if (checkbox) {
         checkbox.checked = checkboxState.activate;
         checkbox.disabled = !checkboxState.enable;
@@ -227,24 +229,15 @@ function onUpdateProtectedHouseList(houses) {
 }
 
 function applyLocalization() {
-  const fn_labels = [
-    "kApply",
-  ];
   const gui_labels = [
-    "kMoney",
-    "kAssist",
-    "kFilter",
-    "kSelectingHouseList",
-    "kProtectedHouseList",
-    "kAddAll",
-    "kClearAll",
+    "Money",
+    "Assist",
+    "Filter",
+    "SelectingHouseList",
+    "ProtectedHouseList",
+    "AddAll",
+    "ClearAll",
   ];
-  fn_labels.forEach(label => {
-    let element = document.getElementById(label);
-    if (element) {
-      element.textContent = localization.getFnStr(label);
-    }
-  });
   gui_labels.forEach(label => {
     let element = document.getElementById(label);
     if (element) {
@@ -264,5 +257,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     initClient("localhost", port);
   } else {
     initClient(window.location.hostname, window.location.port);
+  }
+});
+
+// Listen event from tauri wrapper.
+window.addEventListener('message', (event) => {
+  if (event.data.event == "hotkey-pressed") {
+    const keyName = event.data.payload.key;
+    const labelName = event.data.payload.labelName;
+    console.debug(`hotkey=${keyName} label=${labelName}`);
+    const element = document.getElementById(labelName);
+    if (element != null) {
+      element.click();
+    } else {
+      console.error(`Failed to get element of id=${labelName}`);
+    }
   }
 });

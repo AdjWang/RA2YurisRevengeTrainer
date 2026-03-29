@@ -181,7 +181,8 @@ window.addEventListener('beforeunload', () => {
   stopRetryInterval();
 });
 
-window.__TAURI__.event.listen('hotkey-pressed', (data) => {
-  // TODO
-  console.log(data);
+window.__TAURI__.event.listen('hotkey-pressed', async (data) => {
+  // Bypass to content window inside <iframe>.
+  const iframe = document.getElementById("backend-frame");
+  iframe.contentWindow.postMessage(data, '*');
 });

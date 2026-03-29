@@ -26,10 +26,18 @@ export async function tauriGetWsPort() {
   return await invoke("get_ws_port");
 }
 
-export async function tauriGetLabelHotkeyString(labelName) {
+export async function tauriGetKeyNameByLabel(labelName) {
   if (!isTauriDesktop()) {
     return "";
   }
   const invoke = window.__TAURI__.core.invoke;
-  return await invoke("get_label_hotkey_string", { labelName: labelName });
+  return await invoke("get_key_name_by_label", { labelName: labelName });
+}
+
+export async function tauriGetLabelNameByKey(keyName) {
+  if (!isTauriDesktop()) {
+    return "";
+  }
+  const invoke = window.__TAURI__.core.invoke;
+  return await invoke("get_label_name_by_key", { keyName: keyName });
 }

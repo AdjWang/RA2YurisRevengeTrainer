@@ -3,107 +3,109 @@ export class Localization {
     this.setLanguage(navigator.language);
     this.guiLabels = {
       zh: {
-        kTitle: "辅助工具",
-        kState: "状态",
-        kStateOk: "游戏运行中",
-        kStateIdle: "未检测到游戏",
-        kMoney: "钱",
-        kAssist: "功能",
-        kFilter: "过滤",
-        kSelectingHouseList: "选中阵营",
-        kProtectedHouseList: "保护阵营",
-        kAddAll: "添加全部",
-        kClearAll: "删除全部"
+        Title: "辅助工具",
+        State: "状态",
+        StateOk: "游戏运行中",
+        StateIdle: "未检测到游戏",
+        Money: "钱",
+        Assist: "功能",
+        Filter: "过滤",
+        SelectingHouseList: "选中阵营",
+        ProtectedHouseList: "保护阵营",
+        AddAll: "添加全部",
+        ClearAll: "删除全部"
       },
       en: {
-        kTitle: "Assist Tool",
-        kState: "State",
-        kStateOk: "Game running",
-        kStateIdle: "Game not running",
-        kMoney: "Money",
-        kAssist: "Assist",
-        kFilter: "Filter",
-        kSelectingHouseList: "Selecting house",
-        kProtectedHouseList: "Protected house",
-        kAddAll: "Add all",
-        kClearAll: "Clear all"
+        Title: "Assist Tool",
+        State: "State",
+        StateOk: "Game running",
+        StateIdle: "Game not running",
+        Money: "Money",
+        Assist: "Assist",
+        Filter: "Filter",
+        SelectingHouseList: "Selecting house",
+        ProtectedHouseList: "Protected house",
+        AddAll: "Add all",
+        ClearAll: "Clear all"
       }
     };
 
     this.fnLabels = {
       zh: {
-        kApply: "修改",
-        kFastBuild: "快速建造",
-        kDeleteUnit: "删除单位",
-        kClearShroud: "地图全开",
-        kGiveMeABomb: "核弹攻击",
-        kUnitLevelUp: "单位升级",
-        kUnitSpeedUp: "单位加速",
-        kIAMWinner: "立即胜利",
-        kThisIsMine: "这是我的",
-        kGod: "无敌",
-        kInstBuild: "瞬间建造",
-        kUnlimitSuperWeapon: "无限超武",
-        kInstFire: "极速攻击",
-        kInstTurn: "极速转身",
-        kRangeToYourBase: "远程攻击",
-        kFireToYourBase: "远程警戒",
-        kFreezeGapGenerator: "瘫痪裂缝产生器",
-        kSellTheWorld: "卖卖卖",
-        kBuildEveryWhere: "随意建筑",
-        kAutoRepair: "自动修理",
-        kSocialismMajesty: "社会主义万岁",
-        kMakeCapturedMine: "全是我的-工程师占领",
-        kMakeGarrisonedMine: "全是我的-房屋驻军",
-        kInvadeMode: "侵略模式",
-        kUnlimitTech: "全科技",
-        kUnlimitFirePower: "大量弹药-重新建造生效",
-        kInstChrono: "瞬间超时空",
-        kSpySpy: "无间道",
-        kAdjustGameSpeed: "任务调速",
-        kSelectEnemy: "多选敌方单位"
+        Apply: "修改",
+        FastBuild: "快速建造",
+        DeleteUnit: "删除单位",
+        ClearShroud: "地图全开",
+        GiveMeABomb: "核弹攻击",
+        UnitLevelUp: "单位升级",
+        UnitSpeedUp: "单位加速",
+        IAMWinner: "立即胜利",
+        ThisIsMine: "这是我的",
+        God: "无敌",
+        InstBuild: "瞬间建造",
+        UnlimitSuperWeapon: "无限超武",
+        InstFire: "极速攻击",
+        InstTurn: "极速转身",
+        RangeToYourBase: "远程攻击",
+        FireToYourBase: "远程警戒",
+        FreezeGapGenerator: "瘫痪裂缝产生器",
+        SellTheWorld: "卖卖卖",
+        BuildEveryWhere: "随意建筑",
+        AutoRepair: "自动修理",
+        SocialismMajesty: "社会主义万岁",
+        MakeCapturedMine: "全是我的-工程师占领",
+        MakeGarrisonedMine: "全是我的-房屋驻军",
+        InvadeMode: "侵略模式",
+        UnlimitTech: "全科技",
+        UnlimitFirePower: "大量弹药-重新建造生效",
+        InstChrono: "瞬间超时空",
+        SpySpy: "无间道",
+        AdjustGameSpeed: "任务调速",
+        SelectEnemy: "多选敌方单位"
       },
       en: {
-        kApply: "Apply",
-        kFastBuild: "Fast build",
-        kDeleteUnit: "Delete unit",
-        kClearShroud: "Clear shroud",
-        kGiveMeABomb: "Give me a bomb",
-        kUnitLevelUp: "Selected units level up",
-        kUnitSpeedUp: "Selected units speed up",
-        kIAMWinner: "I am winner",
-        kThisIsMine: "This is mine",
-        kGod: "I am god",
-        kInstBuild: "Instant build",
-        kUnlimitSuperWeapon: "No super weapon cd",
-        kInstFire: "No fire cd",
-        kInstTurn: "Instant turn",
-        kRangeToYourBase: "Range to your base",
-        kFireToYourBase: "Fire to your base",
-        kFreezeGapGenerator: "Disable gap generator",
-        kSellTheWorld: "Sell the world",
-        kBuildEveryWhere: "Build everywhere",
-        kAutoRepair: "Auto repair",
-        kSocialismMajesty: "Socialism majesty",
-        kMakeCapturedMine: "Make captured mine",
-        kMakeGarrisonedMine: "Make garrisoned mine",
-        kInvadeMode: "Invade mode",
-        kUnlimitTech: "Unlimit technology",
-        kUnlimitFirePower: "Unlimit gun power",
-        kInstChrono: "Instant chrono",
-        kSpySpy: "Spy spy",
-        kAdjustGameSpeed: "Enable game speed adjustment",
-        kSelectEnemy: "Enable enemy selecting"
+        Apply: "Apply",
+        FastBuild: "Fast build",
+        DeleteUnit: "Delete unit",
+        ClearShroud: "Clear shroud",
+        GiveMeABomb: "Give me a bomb",
+        UnitLevelUp: "Selected units level up",
+        UnitSpeedUp: "Selected units speed up",
+        IAMWinner: "I am winner",
+        ThisIsMine: "This is mine",
+        God: "I am god",
+        InstBuild: "Instant build",
+        UnlimitSuperWeapon: "No super weapon cd",
+        InstFire: "No fire cd",
+        InstTurn: "Instant turn",
+        RangeToYourBase: "Range to your base",
+        FireToYourBase: "Fire to your base",
+        FreezeGapGenerator: "Disable gap generator",
+        SellTheWorld: "Sell the world",
+        BuildEveryWhere: "Build everywhere",
+        AutoRepair: "Auto repair",
+        SocialismMajesty: "Socialism majesty",
+        MakeCapturedMine: "Make captured mine",
+        MakeGarrisonedMine: "Make garrisoned mine",
+        InvadeMode: "Invade mode",
+        UnlimitTech: "Unlimit technology",
+        UnlimitFirePower: "Unlimit gun power",
+        InstChrono: "Instant chrono",
+        SpySpy: "Spy spy",
+        AdjustGameSpeed: "Enable game speed adjustment",
+        SelectEnemy: "Enable enemy selecting"
       }
     };
   }
 
   setLanguage(lang) {
-    if (lang === 'zh-CN') {
-      this.lang = 'zh';
-    } else {
-      this.lang = 'en';
-    }
+    // if (lang === 'zh-CN') {
+    //   this.lang = 'zh';
+    // } else {
+    //   this.lang = 'en';
+    // }
+    // DEBUG
+    this.lang = 'zh';
   }
 
   getGuiStr(label) {

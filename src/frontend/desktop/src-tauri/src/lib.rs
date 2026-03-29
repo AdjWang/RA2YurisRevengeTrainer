@@ -34,12 +34,12 @@ fn get_ws_port(state: tauri::State<'_, Mutex<AppState>>) -> Result<u16, String> 
     let state = state.lock().unwrap();
     match state.config.get() {
         Some(config) => Ok(config.ra2_trainer.port),
-        None => Err("Failed to load config.".to_string()),
+        None => Err("Failed to load config. Check log file for more details.".to_string()),
     }
 }
 
 #[tauri::command]
-fn get_label_hotkey_string(state: tauri::State<'_, Mutex<AppState>>, label_name: &str) -> String {
+fn get_key_name_by_label(state: tauri::State<'_, Mutex<AppState>>, label_name: &str) -> String {
     // Get key code from config.
     let state = state.lock().unwrap();
     match state.registered_hotkeys.get(label_name) {
@@ -80,6 +80,7 @@ fn register_hotkeys(
         for (label_name, key_name) in hotkeys {
             let key_code: Code = Code::from_str(key_name).unwrap();
             let shortcut = Shortcut::new(Some(Modifiers::ALT), key_code);
+            let shortcut_label_name = label_name.clone();
             match app
                 .global_shortcut()
                 .on_shortcut(shortcut, move |app_handle, shortcut, event| {
@@ -89,7 +90,8 @@ fn register_hotkeys(
                             .emit(
                                 "hotkey-pressed",
                                 serde_json::json!({
-                                    "labelName": format!("{}", shortcut.key),
+                                    "key": format!("{}", shortcut.key),
+                                    "labelName": shortcut_label_name,
                                 }),
                             )
                             .unwrap();
@@ -113,7 +115,10 @@ fn register_hotkeys(
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
-        .invoke_handler(tauri::generate_handler![get_ws_port, get_label_hotkey_string])
+        .invoke_handler(tauri::generate_handler![
+            get_ws_port,
+            get_key_name_by_label,
+        ])
         .setup(move |app: &mut tauri::App| {
             let app_path = std::env::current_exe().unwrap();
             let app_dir = app_path.parent().unwrap();
