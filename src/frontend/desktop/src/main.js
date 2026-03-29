@@ -171,6 +171,7 @@ function stopRetryInterval() {
 // Start checking when page loads
 window.addEventListener('load', () => {
   console.debug("on event load");
+  
   updateUIText(); // Set initial loading text in Chinese if needed
   window.handshake();
 });
@@ -186,3 +187,8 @@ window.__TAURI__.event.listen('hotkey-pressed', async (data) => {
   const iframe = document.getElementById("backend-frame");
   iframe.contentWindow.postMessage(data, '*');
 });
+
+// window.__TAURI__.window.getCurrentWindow().onResized(({ payload }) => {
+//   console.log(`Window resized to ${payload.width}x${payload.height}`);
+//   // Your resize logic here
+// });
