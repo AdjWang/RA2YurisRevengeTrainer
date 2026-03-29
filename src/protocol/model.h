@@ -94,7 +94,7 @@ constexpr std::string_view StrFnLabel(FnLabel label) {
   }
 }
 
-static constexpr FnLabel StrToFnLabel(std::string_view str) {
+inline FnLabel StrToFnLabel(std::string_view str) {
   // Button
   if (str == "Apply")              return FnLabel::kApply;
   if (str == "IAMWinner")          return FnLabel::kIAMWinner;
