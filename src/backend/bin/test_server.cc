@@ -17,6 +17,7 @@ __YRTR_BEGIN_THIRD_PARTY_HEADERS
 __YRTR_END_THIRD_PARTY_HEADERS
 #include "base/thread.h"
 #include "protocol/server.h"
+#include "version.h"
 
 namespace yrtr {
 static std::unique_ptr<backend::hook::MockTrainer> trainer;
@@ -28,6 +29,7 @@ static void Init(const char* exe_path) {
   options.call_previous_handler = true;
   absl::InstallFailureSignalHandler(options);
   logging::InitLogging();
+  LOG_F(INFO, "Ra2 trainer version=" YRTR_VERSION);
   // Setup thread id.
   SetupGameLoopThreadOnce();
   CHECK(backend::Config::Load(fs::canonical(fs::path(exe_path)).parent_path()));

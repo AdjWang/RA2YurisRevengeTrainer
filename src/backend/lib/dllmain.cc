@@ -13,6 +13,7 @@ __YRTR_BEGIN_THIRD_PARTY_HEADERS
 #include "absl/debugging/symbolize.h"
 __YRTR_END_THIRD_PARTY_HEADERS
 #include "base/logging.h"
+#include "version.h"
 
 namespace {
 std::string GetModule(HINSTANCE hInst) {
@@ -46,6 +47,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason,
         std::string exe_path = GetModule(NULL);
         if (fs::path(exe_path).filename().string().find("game") !=
             std::string::npos) {
+          LOG_F(INFO, "Ra2 trainer version=" YRTR_VERSION);
           InstallHooks();
         }
       } else {

@@ -1,0 +1,14 @@
+#ifndef _VERSION_H_
+#define _VERSION_H_
+
+#define YRTR_STR(s) #s
+#define YRTR_VER_STR(a, b, c) YRTR_STR(a) "." YRTR_STR(b) "." YRTR_STR(c)
+
+#define YRTR_VERSION_MAJOR 5
+#define YRTR_VERSION_MINOR 1
+#define YRTR_VERSION_PATCH 0
+
+#define YRTR_VERSION \
+  YRTR_VER_STR(YRTR_VERSION_MAJOR, YRTR_VERSION_MINOR, YRTR_VERSION_PATCH)
+
+#endif
