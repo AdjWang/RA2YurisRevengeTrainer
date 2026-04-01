@@ -554,11 +554,13 @@ static void __declspec(naked) __cdecl InjectSpySpy() {
 static yrpp::HouseClass* selecting_house = nullptr;
 
 static void __declspec(naked) __cdecl InjectSelectFilterHouse() {
-  static constexpr uint32_t jmp_back = GetJumpBack(kHpSelectFilterHouse1);
+  static constexpr uint32_t jmp_back = 0x006DA7C3;
   // Allow selecting enemy objects and record selecting house.
   __asm {
-    mov [selecting_house], ecx
-    mov al, 1
+    mov eax, [esi]
+    // AbstractClass__GetOwningHouse_4104A0
+    call [eax + 0x3C]
+    mov [selecting_house], eax
     jmp [jmp_back]
   }
 }
