@@ -571,8 +571,8 @@ bool __fastcall InjectSelectFilterType(
     const yrpp::DynamicVectorClass<const char*>& id_names) {
   for (int i = 0; i < id_names.Count; ++i) {
     const char* id_name = id_names[i];
-    LOG_F(INFO, "Filter id_name={} obj={:p} obj_name={}", id_name, (void*)obj,
-          obj->GetType()->ID);
+    // LOG_F(INFO, "Filter id_name={} obj={:p} obj_name={}", id_name, (void*)obj,
+    //       obj->GetType()->ID);
     if (strcmp(obj->GetType()->ID, id_name) == 0 &&
         obj->GetType()->Selectable && obj->Owner == selecting_house) {
       return true;
@@ -924,7 +924,7 @@ void Trainer::OnBtnThisIsMine() {
   CHECK_REPORT(IsGaming());
   ForeachSelectingObject([](yrpp::ObjectClass* obj) {
     yrpp::TechnoClass* techno = DynamicCast<yrpp::TechnoClass*>(obj);
-    DLOG_F(INFO, "obj={:p} to techno={:p}", (void*)obj, (void*)techno);
+    // DLOG_F(INFO, "obj={:p} to techno={:p}", (void*)obj, (void*)techno);
     if (techno != nullptr) {
       techno->SetOwningHouse(yrpp::HouseClass::CurrentPlayer);
     }
@@ -1278,8 +1278,9 @@ void Trainer::ForeachProtectedHouse(std::function<void(yrpp::HouseClass*)> cb) {
     if (house != nullptr) {
       cb(house);
     } else {
-      LOG_F(ERROR, "Not found house={} by id={}", desc.item_name(),
-            desc.uniq_id);
+      // Too noisy, only enable for testing.
+      // LOG_F(ERROR, "Not found house={} by id={}", desc.item_name(),
+      //       desc.uniq_id);
     }
   }
 }

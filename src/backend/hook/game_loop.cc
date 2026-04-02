@@ -83,7 +83,7 @@ static DWORD WINAPI InjectTimeGetTime() {
   static uint32_t last_frame = 0;
   if (yrpp::Game::IsActive) {
     uint32_t current_frame = yrpp::Unsorted::CurrentFrame;
-    if (current_frame > last_frame) {
+    if (current_frame != last_frame) {
       last_frame = current_frame;
       Update();
     }
