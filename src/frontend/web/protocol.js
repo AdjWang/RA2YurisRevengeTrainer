@@ -2,7 +2,9 @@
 export const BtnFnLabelFirst = 1;
 export const BtnFnLabelLast = 8;
 export const CheckboxFnLabelFirst = 9;
-export const CheckboxFnLabelLast = 29;
+export const CheckboxFnLabelLast = 28;
+export const SliderFnLabelFirst = 29;
+export const SliderFnLabelLast = 29;
 // Enum mapping
 export const FnLabel = {
   kInvalid: -1,
@@ -36,8 +38,9 @@ export const FnLabel = {
   kUnlimitFirePower: 25,
   kInstChrono: 26,
   kSpySpy: 27,
-  kAdjustGameSpeed: 28,
-  kSelectEnemy: 29,
+  kSelectEnemy: 28,
+  // Slider
+  kAdjustGameSpeed: 29,
   kCount: 30
 };
 
@@ -76,8 +79,9 @@ export function strFnLabel(label) {
     case FnLabel.kUnlimitFirePower: return "UnlimitFirePower";
     case FnLabel.kInstChrono: return "InstChrono";
     case FnLabel.kSpySpy: return "SpySpy";
-    case FnLabel.kAdjustGameSpeed: return "AdjustGameSpeed";
     case FnLabel.kSelectEnemy: return "SelectEnemy";
+    // Slider
+    case FnLabel.kAdjustGameSpeed: return "AdjustGameSpeed";
     case FnLabel.kCount: return "Count";
     default: return "unknown";
   }

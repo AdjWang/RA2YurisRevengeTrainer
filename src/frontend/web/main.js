@@ -114,6 +114,14 @@ async function initCheckbox() {
   }
 }
 
+async function initSlider() {
+  let sliderAdjustGameSpeed = document.getElementById(strFnLabel(FnLabel.kAdjustGameSpeed));
+  sliderAdjustGameSpeed.addEventListener('input', (e) => {
+    const val = e.target.value;
+    onTriggerSlider(FnLabel.kAdjustGameSpeed, parseInt(val));
+  });
+}
+
 function updateSelectingHouseList(houses) {
   // Do not clear all by set innerHTML and add all here, frequently changing
   // items even nothing changed causes click event randomly missing.
@@ -223,6 +231,15 @@ function onTriggerCheckbox(fnLabel, checked) {
   }
 }
 
+function onTriggerSlider(fnLabel, val) {
+  console.log(`Slider [${fnLabel}]${strFnLabel(fnLabel)} is now ${val}`);
+  if (client) {
+    client.sendSlider(fnLabel, val);
+  } else {
+    console.warn(`Client not connecting to the server`);
+  }
+}
+
 function onUpdateProtectedHouseList(houses) {
   let sideMap = Array.from(houses);
   client.sendProtectedList(sideMap);
@@ -251,6 +268,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initFilterList();
   await initButton();
   await initCheckbox();
+  await initSlider();
   applyLocalization();
   if (isTauriDesktop()) {
     let port = await tauriGetWsPort();

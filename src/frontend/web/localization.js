@@ -60,8 +60,8 @@ export class Localization {
         UnlimitFirePower: "大量弹药-重新建造生效",
         InstChrono: "瞬间超时空",
         SpySpy: "无间道",
-        AdjustGameSpeed: "任务调速",
-        SelectEnemy: "多选敌方单位"
+        SelectEnemy: "多选敌方单位",
+        AdjustGameSpeed: "任务调速"
       },
       en: {
         Apply: "Apply",
@@ -92,8 +92,8 @@ export class Localization {
         UnlimitFirePower: "Unlimit gun power",
         InstChrono: "Instant chrono",
         SpySpy: "Spy spy",
-        AdjustGameSpeed: "Enable game speed adjustment",
-        SelectEnemy: "Enable enemy selecting"
+        SelectEnemy: "Enable enemy selecting",
+        AdjustGameSpeed: "Enable game speed adjustment"
       }
     };
   }

@@ -16,7 +16,6 @@ using json = nlohmann::json;
 namespace yrtr {
 // MVC -- model.
 
-// TODO: Too many references, simplify. Generate code if necessary.
 enum class FnLabel {
   kInvalid = -1,
   // Button
@@ -49,8 +48,9 @@ enum class FnLabel {
   kUnlimitFirePower,
   kInstChrono,
   kSpySpy,
-  kAdjustGameSpeed,
   kSelectEnemy,
+  // Slider
+  kAdjustGameSpeed,
   kCount,
 };
 
@@ -87,8 +87,9 @@ constexpr std::string_view StrFnLabel(FnLabel label) {
     case FnLabel::kUnlimitFirePower:    return "UnlimitFirePower";
     case FnLabel::kInstChrono:          return "InstChrono";
     case FnLabel::kSpySpy:              return "SpySpy";
-    case FnLabel::kAdjustGameSpeed:     return "AdjustGameSpeed";
     case FnLabel::kSelectEnemy:         return "SelectEnemy";
+    // Slider
+    case FnLabel::kAdjustGameSpeed:     return "AdjustGameSpeed";
     case FnLabel::kCount:               return "Count";
     default:                            return "unknown";
   }
@@ -125,8 +126,9 @@ inline FnLabel StrToFnLabel(std::string_view str) {
   if (str == "UnlimitFirePower")   return FnLabel::kUnlimitFirePower;
   if (str == "InstChrono")         return FnLabel::kInstChrono;
   if (str == "SpySpy")             return FnLabel::kSpySpy;
-  if (str == "AdjustGameSpeed")    return FnLabel::kAdjustGameSpeed;
   if (str == "SelectEnemy")        return FnLabel::kSelectEnemy;
+  // Slider
+  if (str == "AdjustGameSpeed")    return FnLabel::kAdjustGameSpeed;
   return FnLabel::kInvalid;
 }
 
@@ -134,6 +136,11 @@ struct CheckboxState {
   bool enable = true;
   bool activate = false;
   NLOHMANN_DEFINE_TYPE_INTRUSIVE(CheckboxState, enable, activate);
+};
+
+struct SliderState {
+  uint32_t val = 0;
+  NLOHMANN_DEFINE_TYPE_INTRUSIVE(SliderState, val);
 };
 
 using UniqId = uint32_t;
@@ -147,6 +154,7 @@ struct SideDesc {
 };
 
 using CheckboxStateMap = std::unordered_map<FnLabel, CheckboxState>;
+using SliderStateMap = std::unordered_map<FnLabel, SliderState>;
 using SideMap = std::map<UniqId, SideDesc>;
 
 // Only compare keys.
@@ -167,13 +175,14 @@ struct State {
   // Export checkbox states to controller to bind them with the game state
   // instead of gui state.
   CheckboxStateMap ckbox_states;
+  SliderStateMap slider_states;
   // "House" emm..., fine, classic westwood naming convention. Use map to drop
   // duplications.
   SideMap selecting_houses;
   // Read by controller, write by view.
   SideMap protected_houses;
-  NLOHMANN_DEFINE_TYPE_INTRUSIVE(State, ckbox_states, selecting_houses,
-                                 protected_houses);
+  NLOHMANN_DEFINE_TYPE_INTRUSIVE(State, ckbox_states, slider_states,
+                                 selecting_houses, protected_houses);
 };
 
 template <class T>
@@ -253,6 +262,22 @@ inline std::string MakeCheckboxEvent(FnLabel label, bool activate) {
 inline Event<bool> ParseCheckboxEvent(const json& data) {
   auto event = data.get<Event<bool>>();
   DCHECK_EQ(event.type, "checkbox");
+  DCHECK_NE(static_cast<int>(event.label), static_cast<int>(FnLabel::kInvalid));
+  return event;
+}
+
+inline std::string MakeSliderEvent(FnLabel label, uint32_t val) {
+  Event<uint32_t> event{
+      .type = "slider",
+      .label = label,
+      .val = val,
+  };
+  return json(event).dump();
+}
+
+inline Event<uint32_t> ParseSliderEvent(const json& data) {
+  auto event = data.get<Event<uint32_t>>();
+  DCHECK_EQ(event.type, "slider");
   DCHECK_NE(static_cast<int>(event.label), static_cast<int>(FnLabel::kInvalid));
   return event;
 }

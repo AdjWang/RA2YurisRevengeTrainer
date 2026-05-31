@@ -87,6 +87,16 @@ export class YRTRClient {
     this.#sendData(event);
   }
 
+  sendSlider(label, val) {
+    const event = {
+      type: 'slider',
+      label: label,
+      val: val
+    };
+
+    this.#sendData(event);
+  }
+
   sendProtectedList(sideMap) {
     const event = {
       type: 'protected_list',

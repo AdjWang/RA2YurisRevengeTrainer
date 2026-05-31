@@ -131,6 +131,8 @@ void Server::OnMessage(WebsocketServer& /*svr*/,
       OnPostButtonEvent(ParseButtonEvent(raw_data));
     } else if (type == "checkbox") {
       OnPostCheckboxEvent(ParseCheckboxEvent(raw_data));
+    } else if (type == "slider") {
+      OnPostSliderEvent(ParseSliderEvent(raw_data));
     } else if (type == "protected_list") {
       OnPostProtectedListEvent(ParseProtectedListEvent(raw_data));
     } else {
@@ -223,6 +225,13 @@ void Server::OnPostCheckboxEvent(Event<bool>&& event) {
   DCHECK(IsWithinNetThread());
   game_loop_ch_.ExecuteOrScheduleTask([this, event = std::move(event)]() {
     trainer_->OnCheckboxEvent(event.label, event.val);
+  });
+}
+
+void Server::OnPostSliderEvent(Event<uint32_t>&& event) {
+  DCHECK(IsWithinNetThread());
+  game_loop_ch_.ExecuteOrScheduleTask([this, event = std::move(event)]() {
+    trainer_->OnSliderEvent(event.label, event.val);
   });
 }
 

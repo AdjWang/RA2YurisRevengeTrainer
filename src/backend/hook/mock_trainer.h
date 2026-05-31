@@ -29,6 +29,7 @@ class MockTrainer : public ITrainer {
   void OnInputEvent(FnLabel label, uint32_t val) final;
   void OnButtonEvent(FnLabel label) final;
   void OnCheckboxEvent(FnLabel label, bool activate) final;
+  void OnSliderEvent(FnLabel label, uint32_t val) final;
   void OnProtectedListEvent(SideMap&& side_map) final;
 
  private:
@@ -47,6 +48,7 @@ class MockTrainer : public ITrainer {
 
   void PropagateStateIfDirty();
   void UpdateCheckboxState(FnLabel label, bool activate);
+  void UpdateSliderState(FnLabel label, uint32_t val);
 
   DISALLOW_COPY_AND_ASSIGN(MockTrainer);
 };

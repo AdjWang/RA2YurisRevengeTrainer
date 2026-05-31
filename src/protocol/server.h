@@ -20,7 +20,14 @@ class Server {
   void Update();
 
  private:
-  using WebsocketServer = websocketpp::server<websocketpp::config::asio>;
+  struct quiet_config : public websocketpp::config::asio {
+    // Exclude frame_header from logging.
+    static const long alog_level = websocketpp::config::asio::alog_level &
+                                   ~websocketpp::log::alevel::frame_header;
+  };
+  // using WebsocketServer = websocketpp::server<websocketpp::config::asio>;
+  using WebsocketServer = websocketpp::server<quiet_config>;
+
   // This tool is used in LAN, 50ms should be enough. Large timeout queues too
   // many jobs in sending queue when the backend is not running, making the gui
   // actions, like close window, acts lagging.
@@ -48,6 +55,7 @@ class Server {
   void OnPostInputEvent(Event<uint32_t>&& event);
   void OnPostButtonEvent(Event<int>&& event);
   void OnPostCheckboxEvent(Event<bool>&& event);
+  void OnPostSliderEvent(Event<uint32_t>&& event);
   void OnPostProtectedListEvent(Event<SideMap>&& event);
 
   DISALLOW_COPY_AND_ASSIGN(Server);

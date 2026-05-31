@@ -92,7 +92,6 @@ Client::Client(frontend::Gui& gui, uint16_t port)
   BIND_CHECKBOX(UnlimitFirePower);
   BIND_CHECKBOX(InstChrono);
   BIND_CHECKBOX(SpySpy);
-  BIND_CHECKBOX(AdjustGameSpeed);
   BIND_CHECKBOX(SelectEnemy);
 }
 

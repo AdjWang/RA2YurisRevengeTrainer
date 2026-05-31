@@ -608,14 +608,23 @@ Trainer::Trainer(Config* cfg)
   InitStates(state_);
   if (cfg_->auto_record()) {
     // Read checkbox state from record file.
-    bool ok = ReadCheckboxStateFromToml(cfg_->record_path(),
-                                        /*out*/ state_.ckbox_states);
-    if (ok) {
-      // Apply recorded checkbox state.
+    {
       bool temp = GetBeepEnable();
       SetBeepEnable(false);
-      for (auto [label, activate] : state_.ckbox_states) {
-        OnCheckboxEvent(label, activate.activate);
+      Record record(cfg_->record_path());
+      bool ok = record.ReadCheckboxStates(state_.ckbox_states);
+      if (ok) {
+        // Apply recorded checkbox state.
+        for (auto [label, activate] : state_.ckbox_states) {
+          OnCheckboxEvent(label, activate.activate);
+        }
+      }
+      ok = record.ReadSliderStates(state_.slider_states);
+      if (ok) {
+        // Apply recorded slider state.
+        for (auto [label, val] : state_.slider_states) {
+          OnSliderEvent(label, val.val);
+        }
       }
       SetBeepEnable(temp);
     }
@@ -696,12 +705,18 @@ void Trainer::Update(double /*delta*/) {
   protected_houses_ = state_.protected_houses;
   PropagateStateIfDirty();
   // Do record.
-  if (pending_record_) [[unlikely]] {
+  auto now = std::chrono::system_clock::now();
+  if (pending_record_ &&
+      now - last_record_ts_ > std::chrono::milliseconds(kRecordDurationMs))
+      [[unlikely]] {
     DCHECK(cfg_->auto_record());
     pending_record_ = false;
-    g_fs_worker.PostTask([this, ckbox_states_copy = state_.ckbox_states]() {
+    g_fs_worker.PostTask([this, ckbox_states_copy = state_.ckbox_states,
+                          slider_states_copy = state_.slider_states]() {
       DCHECK(IsWithinFilesystemThread());
-      WriteCheckboxStateToToml(ckbox_states_copy, cfg_->record_path());
+      Record record(cfg_->record_path());
+      record.WriteCheckboxStates(ckbox_states_copy);
+      record.WriteSliderStates(slider_states_copy);
     });
   }
 }
@@ -757,10 +772,19 @@ void Trainer::OnCheckboxEvent(FnLabel label, bool activate) {
     case FnLabel::kUnlimitFirePower:    OnCkboxUnlimitFirePower(activate);    break;
     case FnLabel::kInstChrono:          OnCkboxInstChrono(activate);          break;
     case FnLabel::kSpySpy:              OnCkboxSpySpy(activate);              break;
-    case FnLabel::kAdjustGameSpeed:     OnCkboxAdjustGameSpeed(activate);     break;
     case FnLabel::kSelectEnemy:         OnCkboxSelectEnemy(activate);         break;
     default:
       LOG_F(ERROR, "Unknown checkbox event={}", StrFnLabel(label));
+  }
+  PropagateStateIfDirty();
+}
+
+void Trainer::OnSliderEvent(FnLabel label, uint32_t val) {
+  DCHECK(IsWithinGameLoopThread());
+  switch (label) {
+    case FnLabel::kAdjustGameSpeed:     OnSliderAdjustGameSpeed(val);     break;
+    default:
+      LOG_F(ERROR, "Unknown slider event={}", StrFnLabel(label));
   }
   PropagateStateIfDirty();
 }
@@ -784,12 +808,7 @@ void Trainer::PropagateStateIfDirty() {
     on_state_updated_(state_);
   }
   if (cfg_->auto_record()) {
-    // Trigger record states.
-    auto now = std::chrono::system_clock::now();
-    if (now - last_record_ts_ > std::chrono::milliseconds(kRecordDurationMs)) {
-      last_record_ts_ = now;
-      pending_record_ = true;
-    }
+    pending_record_ = true;
   }
 }
 
@@ -1203,17 +1222,13 @@ void Trainer::OnCkboxSpySpy(bool activate) {
   UpdateCheckboxState(FnLabel::kSpySpy, activate);
 }
 
-// TODO: Use slider is better! Some mod modified the ui and this won't work.
-void Trainer::OnCkboxAdjustGameSpeed(bool activate) {
-  DLOG_F(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
+void Trainer::OnSliderAdjustGameSpeed(uint32_t val) {
+  DLOG_F(INFO, "Trigger {} val={}", __FUNCTION__, val);
   DCHECK(IsWithinGameLoopThread());
   CHECK_MEMAPI_OR_REPORT();
-  if (activate) {
-    CHECK_REPORT(mem_api_->WriteMemory(0x00A8EDDC, static_cast<uint8_t>(1)));
-  } else {
-    CHECK_REPORT(mem_api_->WriteMemory(0x00A8EDDC, static_cast<uint8_t>(0)));
-  }
-  UpdateCheckboxState(FnLabel::kAdjustGameSpeed, activate);
+  uint8_t game_speed = 6 - std::clamp<uint8_t>(static_cast<uint8_t>(val), 0, 6);
+  CHECK_REPORT(mem_api_->WriteMemory(0x00A8EDDC, game_speed));
+  UpdateSliderState(FnLabel::kAdjustGameSpeed, game_speed);
 }
 
 void Trainer::OnCkboxSelectEnemy(bool activate) {
@@ -1303,6 +1318,15 @@ void Trainer::UpdateCheckboxState(FnLabel label, bool activate) {
   }
   if (state_.ckbox_states[label].activate != activate) {
     state_.ckbox_states[label].activate = activate;
+    state_dirty_ = true;
+  }
+}
+
+void Trainer::UpdateSliderState(FnLabel label, uint32_t val) {
+  DCHECK(IsWithinGameLoopThread());
+  PlayBeepActivate();
+  if (state_.slider_states[label].val != val) {
+    state_.slider_states[label].val = val;
     state_dirty_ = true;
   }
 }

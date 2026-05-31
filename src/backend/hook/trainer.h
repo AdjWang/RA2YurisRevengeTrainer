@@ -42,6 +42,7 @@ class ITrainer {
   virtual void OnInputEvent(FnLabel label, uint32_t val) = 0;
   virtual void OnButtonEvent(FnLabel label) = 0;
   virtual void OnCheckboxEvent(FnLabel label, bool activate) = 0;
+  virtual void OnSliderEvent(FnLabel label, uint32_t val) = 0;
   virtual void OnProtectedListEvent(SideMap&& side_map) = 0;
 };
 
@@ -70,6 +71,7 @@ class Trainer : public ITrainer {
   void OnInputEvent(FnLabel label, uint32_t val) final;
   void OnButtonEvent(FnLabel label) final;
   void OnCheckboxEvent(FnLabel label, bool activate) final;
+  void OnSliderEvent(FnLabel label, uint32_t val) final;
   void OnProtectedListEvent(SideMap&& side_map) final;
 
  private:
@@ -130,10 +132,11 @@ class Trainer : public ITrainer {
   void OnCkboxUnlimitFirePower(bool activate);
   void OnCkboxInstChrono(bool activate);
   void OnCkboxSpySpy(bool activate);
-  void OnCkboxAdjustGameSpeed(bool activate);
   void OnCkboxSelectEnemy(bool activate);
+  void OnSliderAdjustGameSpeed(uint32_t val);
 
   void UpdateCheckboxState(FnLabel label, bool activate);
+  void UpdateSliderState(FnLabel label, uint32_t val);
   // Return the activate state before set enable.
   bool SetEnableCheckbox(FnLabel label, bool enable);
   void FinishBuilding() const;

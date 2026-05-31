@@ -18,14 +18,23 @@ MockTrainer::MockTrainer(Config* cfg)
   InitStates(state_);
   if (cfg_->auto_record()) {
     // Read checkbox state from record file.
-    bool ok = ReadCheckboxStateFromToml(cfg_->record_path(),
-                                        /*out*/ state_.ckbox_states);
-    if (ok) {
-      // Apply recorded checkbox state.
+    {
       bool temp = GetBeepEnable();
       SetBeepEnable(false);
-      for (auto [label, activate] : state_.ckbox_states) {
-        OnCheckboxEvent(label, activate.activate);
+      Record record(cfg_->record_path());
+      bool ok = record.ReadCheckboxStates(state_.ckbox_states);
+      if (ok) {
+        // Apply recorded checkbox state.
+        for (auto [label, activate] : state_.ckbox_states) {
+          OnCheckboxEvent(label, activate.activate);
+        }
+      }
+      ok = record.ReadSliderStates(state_.slider_states);
+      if (ok) {
+        // Apply recorded slider state.
+        for (auto [label, val] : state_.slider_states) {
+          OnSliderEvent(label, val.val);
+        }
       }
       SetBeepEnable(temp);
     }
@@ -55,12 +64,19 @@ void MockTrainer::Update(double /*delta*/) {
   protected_houses_ = state_.protected_houses;
   PropagateStateIfDirty();
   // Do record.
-  if (pending_record_) [[unlikely]] {
+  auto now = std::chrono::system_clock::now();
+  if (pending_record_ &&
+      now - last_record_ts_ > std::chrono::milliseconds(kRecordDurationMs))
+      [[unlikely]] {
+    last_record_ts_ = now;
     DCHECK(cfg_->auto_record());
     pending_record_ = false;
-    g_fs_worker.PostTask([this, ckbox_states_copy = state_.ckbox_states]() {
+    g_fs_worker.PostTask([this, ckbox_states_copy = state_.ckbox_states,
+                          slider_states_copy = state_.slider_states]() {
       DCHECK(IsWithinFilesystemThread());
-      WriteCheckboxStateToToml(ckbox_states_copy, cfg_->record_path());
+      Record record(cfg_->record_path());
+      record.WriteCheckboxStates(ckbox_states_copy);
+      record.WriteSliderStates(slider_states_copy);
     });
   }
 }
@@ -89,6 +105,13 @@ void MockTrainer::OnCheckboxEvent(FnLabel label, bool activate) {
   PropagateStateIfDirty();
 }
 
+void MockTrainer::OnSliderEvent(FnLabel label, uint32_t val) {
+  CHECK(IsWithinGameLoopThread());
+  LOG_F(INFO, "OnSliderEvent label={} val={}", StrFnLabel(label), val);
+  UpdateSliderState(label, val);
+  PropagateStateIfDirty();
+}
+
 void MockTrainer::OnProtectedListEvent(SideMap&& side_map) {
   CHECK(IsWithinGameLoopThread());
   if (!AreEqual(state_.protected_houses, side_map)) {
@@ -108,12 +131,7 @@ void MockTrainer::PropagateStateIfDirty() {
     on_state_updated_(state_);
   }
   if (cfg_->auto_record()) {
-    // Trigger record states.
-    auto now = std::chrono::system_clock::now();
-    if (now - last_record_ts_ > std::chrono::milliseconds(kRecordDurationMs)) {
-      last_record_ts_ = now;
-      pending_record_ = true;
-    }
+    pending_record_ = true;
   }
 }
 
@@ -125,6 +143,15 @@ void MockTrainer::UpdateCheckboxState(FnLabel label, bool activate) {
   }
   if (state_.ckbox_states[label].activate != activate) {
     state_.ckbox_states[label].activate = activate;
+    state_dirty_ = true;
+  }
+}
+
+void MockTrainer::UpdateSliderState(FnLabel label, uint32_t val) {
+  DCHECK(IsWithinGameLoopThread());
+  PlayBeepActivate();
+  if (state_.slider_states[label].val != val) {
+    state_.slider_states[label].val = val;
     state_dirty_ = true;
   }
 }
