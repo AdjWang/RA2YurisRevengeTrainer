@@ -24,19 +24,8 @@ Attempting to launch from the latest Visual Studio installation.
 ** Visual Studio 2022 Developer PowerShell v17.14.7
 ** Copyright (c) 2025 Microsoft Corporation
 **********************************************************************
-PS C:\Projects\RA2YurisRevengeTrainer> python --version
-Python 3.12.5
-PS C:\Projects\RA2YurisRevengeTrainer> python -m pip show exccpkg
-Name: exccpkg
-Version: 3.0.3
-Summary: An explicit C++ package builder.
-Home-page:
-Author: AdjWang
-Author-email: wwang230513@gmail.com
-License:
-Location: C:\Programs\Python312\Lib\site-packages
-Requires: requests
-Required-by:
+PS C:\Projects\RA2YurisRevengeTrainer> uv --version
+uv 0.11.7 (9d177269e 2026-04-15 x86_64-pc-windows-msvc)
 PS C:\Projects\RA2YurisRevengeTrainer> npm --version
 10.9.2
 PS C:\Projects\RA2YurisRevengeTrainer> cl
@@ -44,10 +33,6 @@ Microsoft (R) C/C++ Optimizing Compiler Version 19.44.35211 for x86
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
 usage: cl [ option... ] filename... [ /link linkoption... ]        
-PS C:\Projects\RA2YurisRevengeTrainer> cmake --version
-cmake version 3.30.2
-
-CMake suite maintained and supported by Kitware (kitware.com/cmake).
 PS C:\Projects\RA2YurisRevengeTrainer> cargo --version
 cargo 1.93.1 (083ac5135 2025-12-15)
 ```
@@ -58,7 +43,7 @@ cargo 1.93.1 (083ac5135 2025-12-15)
 
 ```
 cargo install tauri-cli
-python -m pip install exccpkg
+uv sync
 ```
 
 ### 编译前端
@@ -75,7 +60,7 @@ cargo tauri build
 ```
 git clone https://github.com/AdjWang/RA2YurisRevengeTrainer.git
 cd ./RA2YurisRevengeTrainer
-python exccpkgfile.py
+uv run exccpkgfile.py
 ```
 
 #### 编译注入模块
@@ -85,9 +70,9 @@ cd ./src/frontend/web
 npm install
 npm run build
 cd ../../..
-python scripts/generate_web_main_page.py
-cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_DEFAULT_CMP0091=NEW -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded -DCMAKE_INSTALL_PREFIX=deps/out/Release -G "Visual Studio 17 2022" -S . -B ./build -T v143,host=x86 -A win32
-cmake --build ./build --config Release --target wsock32 ra2_trainer_backend -j $env:NUMBER_OF_PROCESSORS
+uv run scripts/generate_web_main_page.py
+uv run cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_DEFAULT_CMP0091=NEW -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded -DCMAKE_INSTALL_PREFIX=deps/out/Release -G "Visual Studio 17 2022" -S . -B ./build -T v143,host=x86 -A win32
+uv run cmake --build ./build --config Release --target wsock32 ra2_trainer_backend -j $env:NUMBER_OF_PROCESSORS
 ```
 
 > 在 `powershell` 中使用 `$env:NUMBER_OF_PROCESSORS`，在 `cmd` 中使用 `%NUMBER_OF_PROCESSORS%`
@@ -121,6 +106,8 @@ Ares：将 `ra2_trainer_backend.dll` 和 `ra2_trainer_backend.toml` 放到游戏
 #### 桌面端
 
 打开 `ra2_trainer.exe` 即可，目录下需要有 `ra2_trainer.toml`. 默认访问端口 `35271` 收发数据，不直接修改游戏，因此不需要管理员权限。
+
+> 当桌面端无法连接到后端时，可使用 `test_server.exe` 暂时替代后端测试 `35271` 端口是否可用。
 
 #### 网页端
 
