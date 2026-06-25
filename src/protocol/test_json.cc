@@ -4,7 +4,7 @@
 using json = nlohmann::json;
 
 namespace yrtr {
-static void InitStates(State& state) {
+static void InitDefaultStates(State& state) {
   state.ckbox_states.emplace(FnLabel::kGod,                CheckboxState{.enable=true, .activate=false});
   state.ckbox_states.emplace(FnLabel::kInstBuild,          CheckboxState{.enable=true, .activate=false});
   state.ckbox_states.emplace(FnLabel::kUnlimitSuperWeapon, CheckboxState{.enable=true, .activate=false});
@@ -25,6 +25,7 @@ static void InitStates(State& state) {
   state.ckbox_states.emplace(FnLabel::kSpySpy,             CheckboxState{.enable=true, .activate=false});
   state.ckbox_states.emplace(FnLabel::kAdjustGameSpeed,    CheckboxState{.enable=true, .activate=false});
   state.ckbox_states.emplace(FnLabel::kSelectEnemy,        CheckboxState{.enable=true, .activate=false});
+  state.ckbox_states.emplace(FnLabel::kPauseGame,          CheckboxState{.enable=true, .activate=false});
   state.selecting_houses.emplace(456, SideDesc{456, "456"});
   state.protected_houses.emplace(123, SideDesc{123, "123"});
 }
@@ -33,7 +34,7 @@ static void InitStates(State& state) {
 int main() {
   yrtr::logging::InitLogging();
   yrtr::State state_send;
-  yrtr::InitStates(state_send);
+  yrtr::InitDefaultStates(state_send);
 
   json data(state_send);
   LOG(INFO) << data.dump();

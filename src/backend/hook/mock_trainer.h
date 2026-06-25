@@ -44,7 +44,7 @@ class MockTrainer : public ITrainer {
 
   // Use a bool trigger as debouncing mechanism.
   bool pending_record_;
-  std::chrono::system_clock::time_point last_record_ts_;
+  std::chrono::steady_clock::time_point last_record_ts_;
 
   void PropagateStateIfDirty();
   void UpdateCheckboxState(FnLabel label, bool activate);

@@ -61,6 +61,7 @@ export class Localization {
         InstChrono: "瞬间超时空",
         SpySpy: "无间道",
         SelectEnemy: "多选敌方单位",
+        PauseGame: "暂停游戏",
         AdjustGameSpeed: "任务调速"
       },
       en: {
@@ -93,6 +94,7 @@ export class Localization {
         InstChrono: "Instant chrono",
         SpySpy: "Spy spy",
         SelectEnemy: "Enable enemy selecting",
+        PauseGame: "Pause game",
         AdjustGameSpeed: "Enable game speed adjustment"
       }
     };

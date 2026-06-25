@@ -30,7 +30,7 @@ bool GetBeepEnable();
 void SetBeepEnable(bool enable);
 void PlayBeepActivate();
 void PlayBeepDeactivate();
-void InitStates(State& state);
+void InitDefaultStates(State& state);
 
 // For testing.
 class ITrainer {
@@ -85,9 +85,13 @@ class Trainer : public ITrainer {
   std::function<void(State)> on_state_updated_;
   bool state_dirty_;
 
+  bool paused() const {
+    DCHECK(IsWithinGameLoopThread());
+    return state_.ckbox_states.at(FnLabel::kPauseGame).activate;
+  }
   // Use a bool trigger as debouncing mechanism.
   bool pending_record_;
-  std::chrono::system_clock::time_point last_record_ts_;
+  std::chrono::steady_clock::time_point last_record_ts_;
 
   std::unique_ptr<MemoryAPI> mem_api_;
 
@@ -133,6 +137,7 @@ class Trainer : public ITrainer {
   void OnCkboxInstChrono(bool activate);
   void OnCkboxSpySpy(bool activate);
   void OnCkboxSelectEnemy(bool activate);
+  void OnCkboxPauseGame(bool activate);
   void OnSliderAdjustGameSpeed(uint32_t val);
 
   void UpdateCheckboxState(FnLabel label, bool activate);

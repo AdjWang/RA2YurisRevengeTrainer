@@ -65,31 +65,36 @@ static void Update() {
     Init(hInstance);
   });
   DCHECK(IsWithinGameLoopThread());
-  static std::chrono::system_clock::time_point last_ts =
-      std::chrono::system_clock::now();
-  auto ts_now = std::chrono::system_clock::now();
+  static std::chrono::steady_clock::time_point last_ts =
+      std::chrono::steady_clock::now();
+  auto ts_now = std::chrono::steady_clock::now();
   int64_t delta_us =
       std::chrono::duration_cast<std::chrono::microseconds>(ts_now - last_ts)
           .count();
-  last_ts = ts_now;
   double delta_sec = static_cast<double>(delta_us) / 1e6;
-  DCHECK_NOTNULL(trainer);
-  trainer->Update(delta_sec);
-  DCHECK_NOTNULL(server);
-  server->Update();
+  if (delta_sec > 0.05) {
+    last_ts = ts_now;
+    DCHECK_NOTNULL(trainer);
+    trainer->Update(delta_sec);
+    DCHECK_NOTNULL(server);
+    server->Update();
+  }
 }
 
-static DWORD WINAPI InjectTimeGetTime() {
-  static uint32_t last_frame = 0;
-  if (yrpp::Game::IsActive) {
-    uint32_t current_frame = yrpp::Unsorted::CurrentFrame;
-    if (current_frame != last_frame) {
-      last_frame = current_frame;
-      Update();
-    }
+static void __declspec(naked) __cdecl InjectTimeGetTime() {
+  static constexpr uint32_t jmp_back = GetJumpBack(kHpUpdate);
+  __asm {
+    mov eax, 0x00B73550
+    mov eax, [eax]
+    pushad
   }
-  // Original code.
-  return timeGetTime();
+  if (yrpp::Game::IsActive) {
+    Update();
+  }
+  __asm {
+    popad
+    jmp [jmp_back]
+  }
 }
 
 static void ExitGame() {
@@ -100,6 +105,7 @@ static void ExitGame() {
   HWND hWnd = *(reinterpret_cast<HWND*>(0x00B73550));
   CallWindowProc(ra2WndProc, hWnd, WM_DESTROY, NULL, NULL);
 }
+
 static void WINAPI InjectPostMessageA(HWND hWnd, UINT Msg, WPARAM wParam,
                                       LPARAM lParam) {
   if (Msg == WM_DESTROY) [[unlikely]] {
@@ -116,8 +122,7 @@ void ReclaimResourceOnce() {
 
 void HookUpdate() {
   DLOG_F(INFO, "[YRTR-HOOK] {}", __func__);
-  MemoryAPI::instance()->WriteMemory(
-      kHpUpdate.first, reinterpret_cast<void*>(InjectTimeGetTime));
+  MemoryAPI::instance()->HookJump(kHpUpdate, InjectTimeGetTime);
 }
 
 void HookExitGame() {

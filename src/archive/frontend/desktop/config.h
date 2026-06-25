@@ -56,6 +56,7 @@ class Config {
       case FnLabel::kSpySpy:              return GLFW_KEY_M;
       case FnLabel::kAdjustGameSpeed:     return GLFW_KEY_PERIOD;   /* . */
       case FnLabel::kSelectEnemy:         return GLFW_KEY_COMMA;    /* , */
+      case FnLabel::kPauseGame:           return GLFW_KEY_SLASH;    /* / */
       default: return GLFW_KEY_UNKNOWN;
     }
   }
@@ -100,6 +101,7 @@ class Config {
       case GLFW_KEY_M: return u8"M";
       case GLFW_KEY_COMMA: return u8",";
       case GLFW_KEY_PERIOD: return u8".";
+      case GLFW_KEY_SLASH: return u8"/";
       default: return u8"unknown";
     }
   }

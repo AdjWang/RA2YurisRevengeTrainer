@@ -2,9 +2,9 @@
 export const BtnFnLabelFirst = 1;
 export const BtnFnLabelLast = 8;
 export const CheckboxFnLabelFirst = 9;
-export const CheckboxFnLabelLast = 28;
-export const SliderFnLabelFirst = 29;
-export const SliderFnLabelLast = 29;
+export const CheckboxFnLabelLast = 29;
+export const SliderFnLabelFirst = 30;
+export const SliderFnLabelLast = 30;
 // Enum mapping
 export const FnLabel = {
   kInvalid: -1,
@@ -39,9 +39,10 @@ export const FnLabel = {
   kInstChrono: 26,
   kSpySpy: 27,
   kSelectEnemy: 28,
+  kPauseGame: 29,
   // Slider
-  kAdjustGameSpeed: 29,
-  kCount: 30
+  kAdjustGameSpeed: 30,
+  kCount: 31
 };
 
 // Helper function to get string representation of FnLabel. Only for internal
@@ -80,6 +81,7 @@ export function strFnLabel(label) {
     case FnLabel.kInstChrono: return "InstChrono";
     case FnLabel.kSpySpy: return "SpySpy";
     case FnLabel.kSelectEnemy: return "SelectEnemy";
+    case FnLabel.kPauseGame: return "PauseGame";
     // Slider
     case FnLabel.kAdjustGameSpeed: return "AdjustGameSpeed";
     case FnLabel.kCount: return "Count";

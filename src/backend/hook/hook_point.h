@@ -17,7 +17,8 @@ constexpr uint32_t GetJumpBack(HookPoint hp) {
 static constexpr uint32_t kImageBase = 0x00400000;
 
 static constexpr HookPoint kHpBuiltinLogging        = {0x004068E0, 5};
-static constexpr HookPoint kHpUpdate                = {0x007E1530, 5};
+static constexpr HookPoint kHpUpdate                = {0x005D4D50, 5};
+static constexpr HookPoint kHpSwapBuffer            = {0x004F4598, 5};
 static constexpr HookPoint kHpExitGame              = {0x007E14AC, 5};
 
 static constexpr HookPoint kHpSellTheWorldCursor    = {0x006929D1, 7};
@@ -55,6 +56,7 @@ static constexpr HookPoint kHpSelectFilterHouse5    = {0x007329DB, 5};
 static constexpr HookPoint kHpSelectFilterHouse6    = {0x00732A5C, 5};
 static constexpr HookPoint kHpSelectFilterHouse7    = {0x00732B05, 5};
 static constexpr HookPoint kHpSelectFilterHouse8    = {0x005F45AF, 5};
+static constexpr HookPoint kHpLogicClassUpdate      = {0x0055DC9E, 5};
 
 }  // namespace hook
 }  // namespace backend

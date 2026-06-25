@@ -15,7 +15,7 @@ MockTrainer::MockTrainer(Config* cfg)
     : cfg_(cfg),
       state_dirty_(true),
       pending_record_(false) {
-  InitStates(state_);
+  InitDefaultStates(state_);
   if (cfg_->auto_record()) {
     // Read checkbox state from record file.
     {
@@ -64,7 +64,7 @@ void MockTrainer::Update(double /*delta*/) {
   protected_houses_ = state_.protected_houses;
   PropagateStateIfDirty();
   // Do record.
-  auto now = std::chrono::system_clock::now();
+  auto now = std::chrono::steady_clock::now();
   if (pending_record_ &&
       now - last_record_ts_ > std::chrono::milliseconds(kRecordDurationMs))
       [[unlikely]] {

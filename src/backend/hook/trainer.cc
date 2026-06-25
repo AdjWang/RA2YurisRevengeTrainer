@@ -15,6 +15,7 @@ __YRTR_BEGIN_THIRD_PARTY_HEADERS
 #include "SidebarClass.h"
 #include "SpawnManagerClass.h"
 #include "SuperClass.h"
+#include "TacticalClass.h"
 #include "TechnoClass.h"
 #include "Unsorted.h"
 __YRTR_END_THIRD_PARTY_HEADERS
@@ -61,27 +62,28 @@ void PlayBeepDeactivate() {
   }
 }
 
-void InitStates(State& state) {
-  state.ckbox_states.emplace(FnLabel::kGod,                CheckboxState{.enable=true, .activate=false});
-  state.ckbox_states.emplace(FnLabel::kInstBuild,          CheckboxState{.enable=true, .activate=false});
-  state.ckbox_states.emplace(FnLabel::kUnlimitSuperWeapon, CheckboxState{.enable=true, .activate=false});
-  state.ckbox_states.emplace(FnLabel::kInstFire,           CheckboxState{.enable=true, .activate=false});
-  state.ckbox_states.emplace(FnLabel::kInstTurn,           CheckboxState{.enable=true, .activate=false});
-  state.ckbox_states.emplace(FnLabel::kRangeToYourBase,    CheckboxState{.enable=true, .activate=false});
-  state.ckbox_states.emplace(FnLabel::kFireToYourBase,     CheckboxState{.enable=false, .activate=false});
-  state.ckbox_states.emplace(FnLabel::kFreezeGapGenerator, CheckboxState{.enable=true, .activate=false});
-  state.ckbox_states.emplace(FnLabel::kSellTheWorld,       CheckboxState{.enable=true, .activate=false});
-  state.ckbox_states.emplace(FnLabel::kBuildEveryWhere,    CheckboxState{.enable=true, .activate=false});
-  state.ckbox_states.emplace(FnLabel::kAutoRepair,         CheckboxState{.enable=true, .activate=false});
-  state.ckbox_states.emplace(FnLabel::kSocialismMajesty,   CheckboxState{.enable=true, .activate=false});
-  state.ckbox_states.emplace(FnLabel::kMakeGarrisonedMine, CheckboxState{.enable=true, .activate=false});
-  state.ckbox_states.emplace(FnLabel::kInvadeMode,         CheckboxState{.enable=true, .activate=false});
-  state.ckbox_states.emplace(FnLabel::kUnlimitTech,        CheckboxState{.enable=true, .activate=false});
-  state.ckbox_states.emplace(FnLabel::kUnlimitFirePower,   CheckboxState{.enable=true, .activate=false});
-  state.ckbox_states.emplace(FnLabel::kInstChrono,         CheckboxState{.enable=true, .activate=false});
-  state.ckbox_states.emplace(FnLabel::kSpySpy,             CheckboxState{.enable=true, .activate=false});
-  state.ckbox_states.emplace(FnLabel::kAdjustGameSpeed,    CheckboxState{.enable=true, .activate=false});
-  state.ckbox_states.emplace(FnLabel::kSelectEnemy,        CheckboxState{.enable=true, .activate=false});
+void InitDefaultStates(State& state) {
+  state.ckbox_states.try_emplace(FnLabel::kGod,                CheckboxState{.enable=true, .activate=false});
+  state.ckbox_states.try_emplace(FnLabel::kInstBuild,          CheckboxState{.enable=true, .activate=false});
+  state.ckbox_states.try_emplace(FnLabel::kUnlimitSuperWeapon, CheckboxState{.enable=true, .activate=false});
+  state.ckbox_states.try_emplace(FnLabel::kInstFire,           CheckboxState{.enable=true, .activate=false});
+  state.ckbox_states.try_emplace(FnLabel::kInstTurn,           CheckboxState{.enable=true, .activate=false});
+  state.ckbox_states.try_emplace(FnLabel::kRangeToYourBase,    CheckboxState{.enable=true, .activate=false});
+  state.ckbox_states.try_emplace(FnLabel::kFireToYourBase,     CheckboxState{.enable=false, .activate=false});
+  state.ckbox_states.try_emplace(FnLabel::kFreezeGapGenerator, CheckboxState{.enable=true, .activate=false});
+  state.ckbox_states.try_emplace(FnLabel::kSellTheWorld,       CheckboxState{.enable=true, .activate=false});
+  state.ckbox_states.try_emplace(FnLabel::kBuildEveryWhere,    CheckboxState{.enable=true, .activate=false});
+  state.ckbox_states.try_emplace(FnLabel::kAutoRepair,         CheckboxState{.enable=true, .activate=false});
+  state.ckbox_states.try_emplace(FnLabel::kSocialismMajesty,   CheckboxState{.enable=true, .activate=false});
+  state.ckbox_states.try_emplace(FnLabel::kMakeGarrisonedMine, CheckboxState{.enable=true, .activate=false});
+  state.ckbox_states.try_emplace(FnLabel::kInvadeMode,         CheckboxState{.enable=true, .activate=false});
+  state.ckbox_states.try_emplace(FnLabel::kUnlimitTech,        CheckboxState{.enable=true, .activate=false});
+  state.ckbox_states.try_emplace(FnLabel::kUnlimitFirePower,   CheckboxState{.enable=true, .activate=false});
+  state.ckbox_states.try_emplace(FnLabel::kInstChrono,         CheckboxState{.enable=true, .activate=false});
+  state.ckbox_states.try_emplace(FnLabel::kSpySpy,             CheckboxState{.enable=true, .activate=false});
+  state.ckbox_states.try_emplace(FnLabel::kAdjustGameSpeed,    CheckboxState{.enable=true, .activate=false});
+  state.ckbox_states.try_emplace(FnLabel::kSelectEnemy,        CheckboxState{.enable=true, .activate=false});
+  state.ckbox_states.try_emplace(FnLabel::kPauseGame,          CheckboxState{.enable=true, .activate=false});
 }
 
 namespace {
@@ -580,6 +582,38 @@ bool __fastcall InjectSelectFilterType(
   }
   return false;
 }
+
+void UpdateTacticalView() {
+  DWORD keycode;
+  int mouse_x;
+  int mouse_y;
+  yrpp::GScreenClass::Instance->GetInputAndUpdate(keycode, mouse_x, mouse_y);
+  yrpp::TacticalClass::Instance->Update();
+  __asm {
+    pushad
+    // MessageLoop()
+    mov eax, 0x005D4D50
+    call eax
+    popad
+  }
+}
+
+static void __declspec(naked) __cdecl InjectSwapBuffer() {
+  static constexpr uint32_t jmp_back = GetJumpBack(kHpSwapBuffer);
+  __asm {
+    mov ecx, esi
+    call [edx + 0x44]
+    pushad
+  }
+  std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  UpdateTacticalView();
+  __asm {
+    popad
+    // jump back to first TacticalRender
+    mov eax, 0x004F44CB
+    jmp eax
+  }
+}
 }  // namespace
 
 #define CHECK_MEMAPI_OR_REPORT()                                               \
@@ -605,7 +639,6 @@ Trainer::Trainer(Config* cfg)
       pending_record_(false) {
   DCHECK_NOTNULL(cfg_);
   mem_api_ = std::make_unique<MemoryAPI>();
-  InitStates(state_);
   if (cfg_->auto_record()) {
     // Read checkbox state from record file.
     {
@@ -631,6 +664,8 @@ Trainer::Trainer(Config* cfg)
     // Setup record worker thread.
     g_fs_worker.PostTask([this]() { SetupFilesystemThreadOnce(); });
   }
+  // Loading record would clean states, set default value after it.
+  InitDefaultStates(state_);
 }
 
 Trainer::~Trainer() {}
@@ -705,7 +740,7 @@ void Trainer::Update(double /*delta*/) {
   protected_houses_ = state_.protected_houses;
   PropagateStateIfDirty();
   // Do record.
-  auto now = std::chrono::system_clock::now();
+  auto now = std::chrono::steady_clock::now();
   if (pending_record_ &&
       now - last_record_ts_ > std::chrono::milliseconds(kRecordDurationMs))
       [[unlikely]] {
@@ -773,6 +808,7 @@ void Trainer::OnCheckboxEvent(FnLabel label, bool activate) {
     case FnLabel::kInstChrono:          OnCkboxInstChrono(activate);          break;
     case FnLabel::kSpySpy:              OnCkboxSpySpy(activate);              break;
     case FnLabel::kSelectEnemy:         OnCkboxSelectEnemy(activate);         break;
+    case FnLabel::kPauseGame:           OnCkboxPauseGame(activate);           break;
     default:
       LOG_F(ERROR, "Unknown checkbox event={}", StrFnLabel(label));
   }
@@ -1265,6 +1301,23 @@ void Trainer::OnCkboxSelectEnemy(bool activate) {
     CHECK_REPORT(mem_api_->RestoreHook(kHpSelectFilterHouse8));
   }
   UpdateCheckboxState(FnLabel::kSelectEnemy, activate);
+}
+
+void Trainer::OnCkboxPauseGame(bool activate) {
+  DLOG_F(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
+  DCHECK(IsWithinGameLoopThread());
+  CHECK_MEMAPI_OR_REPORT();
+  if (activate) {
+    // TODO
+    CHECK_REPORT(mem_api_->HookJump(kHpSwapBuffer, InjectSwapBuffer));
+    // CHECK_REPORT(mem_api_->HookJump(
+    //     kHpLogicClassUpdate,
+    //     reinterpret_cast<void*>(GetJumpBack(kHpLogicClassUpdate))));
+  } else {
+    // CHECK_REPORT(mem_api_->RestoreHook(kHpLogicClassUpdate));
+    CHECK_REPORT(mem_api_->RestoreHook(kHpSwapBuffer));
+  }
+  UpdateCheckboxState(FnLabel::kPauseGame, activate);
 }
 
 #define CHECK_MEMAPI_OR_RETURN_FALSE()                                         \
