@@ -236,7 +236,7 @@ class Websocketpp(exccpkg.Package):
 
 class YRpp(exccpkg.Package):
     name = "YRpp"
-    version = "c0a6d06d"
+    version = "64a79696"
 
     @override
     def grab(self, ctx: Context) -> Path:
