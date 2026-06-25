@@ -10,7 +10,7 @@
   "author": "adjwang",
   "license": "ISC",
   "devDependencies": {
-    "vite": "^8.0.2",
-    "vite-plugin-singlefile": "^2.3.2"
+    "vite": "^8.1.0",
+    "vite-plugin-singlefile": "^2.3.3"
   }
 }
