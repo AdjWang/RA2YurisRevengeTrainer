@@ -6,25 +6,11 @@
 #include "base/thread.h"
 #include "nlohmann/json.hpp"
 using json = nlohmann::json;
-#ifdef YRTR_ENABLE_WEB
 #include "protocol/main_page.h"
-#endif
 
 namespace yrtr {
 
 namespace {
-static constexpr std::string_view kEmptyPageHtml = R"(
-<!DOCTYPE html>
-<html>
-<head>
-    <title>YRTR Assist Tool</title>
-</head>
-<body>
-    Web frontend disabled.
-</body>
-</html>
-)";
-
 std::string CheckReadFile(const fs::path& path) {
   CHECK_F(fs::exists(path), "Not found file={}", path.string());
   std::ifstream ifs;
@@ -152,7 +138,6 @@ void Server::OnHttpRequest(WebsocketServer& /*svr*/,
           ec.message());
     return;
   }
-#if defined(YRTR_ENABLE_WEB)
   if (index_path_.empty()) {
     conn->set_body(std::string(reinterpret_cast<const char*>(kMainPageHtml)));
   } else {
@@ -160,9 +145,6 @@ void Server::OnHttpRequest(WebsocketServer& /*svr*/,
     std::string main_page_html = CheckReadFile(index_path_);
     conn->set_body(main_page_html);
   }
-#else
-  conn->set_body(std::string(kEmptyPageHtml));
-#endif
   conn->set_status(websocketpp::http::status_code::ok);
 }
 
