@@ -228,3 +228,10 @@ button:disabled {
   opacity: 0.6;
   pointer-events: none;
 }
+
+.help-text {
+  margin: 8px 0 12px;
+  color: #555;
+  font-size: 13px;
+  line-height: 1.4;
+}

@@ -254,6 +254,8 @@ function applyLocalization() {
     "ProtectedHouseList",
     "AddAll",
     "ClearAll",
+    "FilterHelp",
+    "MoneyHelp",
   ];
   gui_labels.forEach(label => {
     let element = document.getElementById(label);
@@ -261,6 +263,9 @@ function applyLocalization() {
       element.textContent = localization.getGuiStr(label);
     }
   });
+  document.documentElement.lang = localization.lang === 'zh' ? 'zh-CN' : 'en';
+  document.getElementById('money-input').placeholder = localization.getGuiStr('MoneyPlaceholder');
+  document.getElementById('AdjustGameSpeed-label').textContent = localization.getFnStr('AdjustGameSpeed');
 }
 
 document.addEventListener('DOMContentLoaded', async () => {

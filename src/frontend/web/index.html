@@ -16,6 +16,7 @@
     </div>
 
     <div id="filter" class="tab-content active">
+      <p id="FilterHelp" class="help-text">Select one of your units in-game, then add its faction to Protected factions. Faction-based cheats affect protected factions only.</p>
       <div class="split-view">
         <div class="panel">
           <div class="panel-header">
@@ -41,10 +42,11 @@
 
     <div id="assist" class="tab-content">
       <div class="input-group">
-        <label for="money-input" id="Money">Money</label>
-        <input type="number" id="money-input" placeholder="Enter amount">
-        <button id="Apply">Apply</button>
+        <label for="money-input" id="Money">Cash to add</label>
+        <input type="number" id="money-input" placeholder="Amount">
+        <button id="Apply">Add cash</button>
       </div>
+      <p id="MoneyHelp" class="help-text">Adds cash to protected factions. Add your faction on the Filter tab first.</p>
 
       <div id="btn-list">
         <!-- Add dynamically -->
@@ -55,7 +57,7 @@
       </div>
 
       <div id="slider-list">
-        <label id="AdjustGameSpeed-label" for="AdjustGameSpeed">Adjust game speed</label>
+        <label id="AdjustGameSpeed-label" for="AdjustGameSpeed">Game speed</label>
         <input type="range" id="AdjustGameSpeed" min="1" max="6" step="1" value="1">
       </div>
     </div>
