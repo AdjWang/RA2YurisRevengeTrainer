@@ -85,9 +85,9 @@ Enter an amount and click **Add cash** to add it to protected factions. If the a
 | Win now | Complete the current mission. |
 | Delete selected units | Remove the units selected in-game. |
 | Reveal map | Reveal the map. To see through gap generators, also enable **Disable gap generators**. |
-| Grant nuclear strike | Grant one nuclear strike. It is unaffected by **No superweapon cooldown** and does not work if a nuclear silo is present. |
-| Level up selected units | Raise selected units by three levels; works on a group. |
-| Speed up selected units | Increase the movement speed of selected units; works on a group. |
+| Get one nuke | Grant one nuclear strike. It is unaffected by **No superweapon cooldown** and does not work if a nuclear silo is present. |
+| Make selected elite | Set selected units to elite rank; works on a group. |
+| Speed up selected | Increase the movement speed of selected units; works on a group. |
 | Fast build | Increase construction speed. |
 | Claim selected units | Transfer selected units to your faction. |
 
@@ -95,25 +95,25 @@ Enter an amount and click **Add cash** to add it to protected factions. If the a
 
 | Option | Effect |
 | --- | --- |
-| Invulnerable | Prevent damage and chronoshift effects, but not engineer capture. Use **Claim engineer captures** for captures. |
-| Instant construction | Finish construction immediately. |
-| No superweapon cooldown | Reuse superweapons and paratroopers without waiting. Does not affect **Grant nuclear strike**. |
+| Invulnerable | Prevent damage and chronoshift effects, but not engineer capture. Use **Claim captures** for captures. |
+| Instant build | Finish construction immediately. |
+| No superweapon cooldown | Reuse superweapons and paratroopers without waiting. Does not affect **Get one nuke**. |
 | Maximum fire rate | Maximize attack speed. |
 | Instant rotation | Maximize vehicle and turret rotation speed. |
 | Maximum attack range | Maximize attack range; units do not automatically guard at that range. |
 | Maximum guard range | Maximize automatic guard range when **Maximum attack range** is enabled. |
 | Disable gap generators | Stop gap generators from obscuring the map. |
-| Sell any unit or building | Allow selling units and buildings across the map, including enemy and neutral ones. |
+| Sell any unit/building | Allow selling units and buildings across the map, including enemy and neutral ones. |
 | Build anywhere | Ignore placement restrictions such as adjacency and terrain. |
 | Automatic repairs | Repair buildings, including captured neutral buildings. |
 | Mind control protection | Enemy Yuri units attempting to control your units become yours. Units controlled by your Yuri do not revert when that Yuri dies. |
-| Claim engineer captures | Transfer the target of any capture event to your faction. |
-| Claim garrisoned buildings | Transfer garrisoned buildings to your faction; units inside retain their original faction. |
-| Attack enemy buildings automatically | Let your units automatically attack enemy buildings. |
-| Unlock all technology | Unlock all technology. Build something after enabling it for the effect to take hold. |
-| Maximum ammo and reload | Maximize reload speed and increase ammunition capacity to 15. |
-| Instant chronoshift | Remove movement and attack cooldowns for chronoshift units. |
-| Gain enemy tech from spies | Gain enemy technology when an enemy spy infiltrates you. |
+| Claim captures | Transfer the target of any capture event to your faction. |
+| Claim garrisons | Transfer garrisoned buildings to your faction; units inside retain their original faction. |
+| Auto-attack buildings | Let your units automatically attack enemy buildings. |
+| Unlock all tech | Unlock all technology. Build something after enabling it for the effect to take hold. |
+| Fast reload + 15 ammo | Maximize reload speed and increase ammunition capacity to 15. Rebuild units for the ammo change to take effect. |
+| No chrono cooldown | Remove movement and attack cooldowns for chronoshift units. |
+| Enemy spies grant tech | Gain enemy technology when an enemy spy infiltrates you. |
 | Select enemy units | Allow `T` to select multiple enemy units or buildings. |
 | Pause game | Pause during battle while still allowing you to inspect the map and select units. |
 | Game speed | Adjust the game's speed with the slider. |
