@@ -1,5 +1,7 @@
 # RA2YurisRevengeTrainer
 
+[English](README.en.md) | 简体中文
+
 红警2尤里的复仇内存修改器, 适用于 尤里的复仇 1.001 原版及 Ares 版本。
 
 ## 编译
