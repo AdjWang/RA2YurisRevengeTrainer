@@ -251,23 +251,23 @@ static bool IsGAGAP(yrpp::TechnoClass* target) {
 
 static void __declspec(naked) __cdecl InjectFreezeGapGenerator() {
   static const uint32_t jmp_original = GetJumpBack(kHpFreezeGapGenerator);
+  static const uint32_t jmp_return = 0x0070EFDD;
   static yrpp::TechnoClass* target;
   __asm {
-    mov [target], esi
-    pushad
+    mov [target], ecx
   }
   if (Trainer::is_active_disable_gagap() && IsGAGAP(target) &&
       !Trainer::ShouldProtect(target)) {
     __asm {
       popad
-      mov eax, 2
-      jmp [jmp_original]
+      mov eax, 1
+      jmp [jmp_return]
     }
   } else {
     // Original code.
     __asm {
       popad
-      mov eax, [esi + 0x504]  // EMPLockRemaining
+      mov edx, [ecx + 0x504]
       jmp [jmp_original]
     }
   }
@@ -605,13 +605,15 @@ static void __declspec(naked) __cdecl InjectSwapBuffer() {
     call [edx + 0x44]
     pushad
   }
-  std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  // DEBUG
+  // std::this_thread::sleep_for(std::chrono::milliseconds(10));
   UpdateTacticalView();
   __asm {
     popad
-    // jump back to first TacticalRender
-    mov eax, 0x004F44CB
-    jmp eax
+    // // jump back to first TacticalRender
+    // mov eax, 0x004F44CB
+    // jmp eax
+    jmp [jmp_back]
   }
 }
 }  // namespace
@@ -1308,13 +1310,12 @@ void Trainer::OnCkboxPauseGame(bool activate) {
   DCHECK(IsWithinGameLoopThread());
   CHECK_MEMAPI_OR_REPORT();
   if (activate) {
-    // TODO
     CHECK_REPORT(mem_api_->HookJump(kHpSwapBuffer, InjectSwapBuffer));
-    // CHECK_REPORT(mem_api_->HookJump(
-    //     kHpLogicClassUpdate,
-    //     reinterpret_cast<void*>(GetJumpBack(kHpLogicClassUpdate))));
+    CHECK_REPORT(mem_api_->HookJump(
+        kHpLogicClassUpdate,
+        reinterpret_cast<void*>(GetJumpBack(kHpLogicClassUpdate))));
   } else {
-    // CHECK_REPORT(mem_api_->RestoreHook(kHpLogicClassUpdate));
+    CHECK_REPORT(mem_api_->RestoreHook(kHpLogicClassUpdate));
     CHECK_REPORT(mem_api_->RestoreHook(kHpSwapBuffer));
   }
   UpdateCheckboxState(FnLabel::kPauseGame, activate);
