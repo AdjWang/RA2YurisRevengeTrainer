@@ -33,6 +33,7 @@ static bool g_enable_beep = true;
 
 SideMap Trainer::protected_houses_;
 bool Trainer::activate_disable_gagap_ = false;
+bool Trainer::paused_ = false;
 
 bool GetBeepEnable() {
   return g_enable_beep;
@@ -250,24 +251,47 @@ static bool IsGAGAP(yrpp::TechnoClass* target) {
 }
 
 static void __declspec(naked) __cdecl InjectFreezeGapGenerator() {
-  static const uint32_t jmp_original = GetJumpBack(kHpFreezeGapGenerator);
-  static const uint32_t jmp_return = 0x0070EFDD;
+  static const uint32_t jmp_original = GetJumpBack(kHpIsUnderEMP);
   static yrpp::TechnoClass* target;
   __asm {
     mov [target], ecx
+    pushad
   }
-  if (Trainer::is_active_disable_gagap() && IsGAGAP(target) &&
-      !Trainer::ShouldProtect(target)) {
+  if (Trainer::is_paused() ||
+      (Trainer::is_activate_disable_gagap() && IsGAGAP(target) &&
+       !Trainer::ShouldProtect(target))) {
     __asm {
       popad
       mov eax, 1
-      jmp [jmp_return]
+      jmp [jmp_original]
+    }
+  }
+  else {
+    // Original code.
+    __asm {
+      popad
+      mov edx, [ecx + 0x504]
+      jmp [jmp_original]
+    }
+  }
+}
+
+static void __declspec(naked) __cdecl InjectLocomotionProcess() {
+  static const uint32_t jmp_original = GetJumpBack(kHpLocomotionProcess);
+  static const uint32_t jmp_skip = 0x004DAA01;
+  __asm {
+    pushad
+  }
+  if (Trainer::is_paused()) {
+    __asm {
+      popad
+      jmp [jmp_skip]
     }
   } else {
     // Original code.
     __asm {
       popad
-      mov edx, [ecx + 0x504]
+      mov eax, [esi + 0x674]
       jmp [jmp_original]
     }
   }
@@ -598,24 +622,25 @@ void UpdateTacticalView() {
   }
 }
 
-static void __declspec(naked) __cdecl InjectSwapBuffer() {
-  static constexpr uint32_t jmp_back = GetJumpBack(kHpSwapBuffer);
-  __asm {
-    mov ecx, esi
-    call [edx + 0x44]
-    pushad
-  }
-  // DEBUG
-  // std::this_thread::sleep_for(std::chrono::milliseconds(10));
-  UpdateTacticalView();
-  __asm {
-    popad
-    // // jump back to first TacticalRender
-    // mov eax, 0x004F44CB
-    // jmp eax
-    jmp [jmp_back]
-  }
-}
+// TODO
+// static void __declspec(naked) __cdecl InjectSwapBuffer() {
+//   static constexpr uint32_t jmp_back = GetJumpBack(kHpSwapBuffer);
+//   __asm {
+//     mov ecx, esi
+//     call [edx + 0x44]
+//     pushad
+//   }
+//   // DEBUG
+//   // std::this_thread::sleep_for(std::chrono::milliseconds(10));
+//   UpdateTacticalView();
+//   __asm {
+//     popad
+//     // // jump back to first TacticalRender
+//     // mov eax, 0x004F44CB
+//     // jmp eax
+//     jmp [jmp_back]
+//   }
+// }
 }  // namespace
 
 #define CHECK_MEMAPI_OR_REPORT()                                               \
@@ -1079,11 +1104,11 @@ void Trainer::OnCkboxFreezeGapGenerator(bool activate) {
   DCHECK(IsWithinGameLoopThread());
   CHECK_MEMAPI_OR_REPORT();
   if (activate) {
-    CHECK_REPORT(
-        mem_api_->HookJump(kHpFreezeGapGenerator, InjectFreezeGapGenerator));
+    CHECK_REPORT(mem_api_->HookJump(kHpIsUnderEMP, InjectFreezeGapGenerator));
   } else {
-    CHECK_REPORT(mem_api_->RestoreHook(kHpFreezeGapGenerator));
+    CHECK_REPORT(mem_api_->RestoreHook(kHpIsUnderEMP));
   }
+  activate_disable_gagap_ = activate;
   UpdateCheckboxState(FnLabel::kFreezeGapGenerator, activate);
 }
 
@@ -1310,14 +1335,18 @@ void Trainer::OnCkboxPauseGame(bool activate) {
   DCHECK(IsWithinGameLoopThread());
   CHECK_MEMAPI_OR_REPORT();
   if (activate) {
-    CHECK_REPORT(mem_api_->HookJump(kHpSwapBuffer, InjectSwapBuffer));
-    CHECK_REPORT(mem_api_->HookJump(
-        kHpLogicClassUpdate,
-        reinterpret_cast<void*>(GetJumpBack(kHpLogicClassUpdate))));
+    CHECK_REPORT(
+        mem_api_->HookJump(kHpLocomotionProcess, InjectLocomotionProcess));
+    if (!activate_disable_gagap_) {
+      CHECK_REPORT(mem_api_->HookJump(kHpIsUnderEMP, InjectFreezeGapGenerator));
+    }
   } else {
-    CHECK_REPORT(mem_api_->RestoreHook(kHpLogicClassUpdate));
-    CHECK_REPORT(mem_api_->RestoreHook(kHpSwapBuffer));
+    CHECK_REPORT(mem_api_->RestoreHook(kHpLocomotionProcess));
+    if (!activate_disable_gagap_) {
+      CHECK_REPORT(mem_api_->RestoreHook(kHpIsUnderEMP));
+    }
   }
+  paused_ = activate;
   UpdateCheckboxState(FnLabel::kPauseGame, activate);
 }
 

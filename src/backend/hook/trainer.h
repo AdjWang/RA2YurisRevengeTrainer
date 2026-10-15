@@ -48,7 +48,8 @@ class ITrainer {
 
 class Trainer : public ITrainer {
  public:
-  static bool is_active_disable_gagap() { return activate_disable_gagap_; }
+  static bool is_activate_disable_gagap() { return activate_disable_gagap_; }
+  static bool is_paused() { return paused_; }
   static bool ShouldProtect(yrpp::AbstractClass* obj);
   static bool ShouldProtect(yrpp::HouseClass* house);
   static bool ShouldEnableTech(yrpp::BuildingTypeClass* tech);
@@ -79,6 +80,7 @@ class Trainer : public ITrainer {
   // Update from state before use.
   static SideMap protected_houses_;
   static bool activate_disable_gagap_;
+  static bool paused_;
 
   Config* cfg_;
   State state_;
