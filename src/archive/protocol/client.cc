@@ -93,7 +93,7 @@ Client::Client(frontend::Gui& gui, uint16_t port)
   BIND_CHECKBOX(InstChrono);
   BIND_CHECKBOX(SpySpy);
   BIND_CHECKBOX(SelectEnemy);
-  BIND_CHECKBOX(PauseGame);
+  BIND_CHECKBOX(FreezeGame);
 }
 
 #undef BIND_BUTTON

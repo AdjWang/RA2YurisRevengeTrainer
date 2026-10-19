@@ -39,7 +39,7 @@ export const FnLabel = {
   kInstChrono: 26,
   kSpySpy: 27,
   kSelectEnemy: 28,
-  kPauseGame: 29,
+  kFreezeGame: 29,
   // Slider
   kAdjustGameSpeed: 30,
   kCount: 31
@@ -81,7 +81,7 @@ export function strFnLabel(label) {
     case FnLabel.kInstChrono: return "InstChrono";
     case FnLabel.kSpySpy: return "SpySpy";
     case FnLabel.kSelectEnemy: return "SelectEnemy";
-    case FnLabel.kPauseGame: return "PauseGame";
+    case FnLabel.kFreezeGame: return "FreezeGame";
     // Slider
     case FnLabel.kAdjustGameSpeed: return "AdjustGameSpeed";
     case FnLabel.kCount: return "Count";

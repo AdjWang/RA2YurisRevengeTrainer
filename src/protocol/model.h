@@ -49,7 +49,7 @@ enum class FnLabel {
   kInstChrono,
   kSpySpy,
   kSelectEnemy,
-  kPauseGame,
+  kFreezeGame,
   // Slider
   kAdjustGameSpeed,
   kCount,
@@ -89,7 +89,7 @@ constexpr std::string_view StrFnLabel(FnLabel label) {
     case FnLabel::kInstChrono:          return "InstChrono";
     case FnLabel::kSpySpy:              return "SpySpy";
     case FnLabel::kSelectEnemy:         return "SelectEnemy";
-    case FnLabel::kPauseGame:           return "PauseGame";
+    case FnLabel::kFreezeGame:           return "FreezeGame";
     // Slider
     case FnLabel::kAdjustGameSpeed:     return "AdjustGameSpeed";
     case FnLabel::kCount:               return "Count";
@@ -129,7 +129,7 @@ inline FnLabel StrToFnLabel(std::string_view str) {
   if (str == "InstChrono")         return FnLabel::kInstChrono;
   if (str == "SpySpy")             return FnLabel::kSpySpy;
   if (str == "SelectEnemy")        return FnLabel::kSelectEnemy;
-  if (str == "PauseGame")          return FnLabel::kPauseGame;
+  if (str == "FreezeGame")          return FnLabel::kFreezeGame;
   // Slider
   if (str == "AdjustGameSpeed")    return FnLabel::kAdjustGameSpeed;
   return FnLabel::kInvalid;

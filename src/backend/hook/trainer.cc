@@ -84,7 +84,7 @@ void InitDefaultStates(State& state) {
   state.ckbox_states.try_emplace(FnLabel::kSpySpy,             CheckboxState{.enable=true, .activate=false});
   state.ckbox_states.try_emplace(FnLabel::kAdjustGameSpeed,    CheckboxState{.enable=true, .activate=false});
   state.ckbox_states.try_emplace(FnLabel::kSelectEnemy,        CheckboxState{.enable=true, .activate=false});
-  state.ckbox_states.try_emplace(FnLabel::kPauseGame,          CheckboxState{.enable=true, .activate=false});
+  state.ckbox_states.try_emplace(FnLabel::kFreezeGame,          CheckboxState{.enable=true, .activate=false});
 }
 
 namespace {
@@ -835,7 +835,7 @@ void Trainer::OnCheckboxEvent(FnLabel label, bool activate) {
     case FnLabel::kInstChrono:          OnCkboxInstChrono(activate);          break;
     case FnLabel::kSpySpy:              OnCkboxSpySpy(activate);              break;
     case FnLabel::kSelectEnemy:         OnCkboxSelectEnemy(activate);         break;
-    case FnLabel::kPauseGame:           OnCkboxPauseGame(activate);           break;
+    case FnLabel::kFreezeGame:           OnCkboxFreezeGame(activate);           break;
     default:
       LOG_F(ERROR, "Unknown checkbox event={}", StrFnLabel(label));
   }
@@ -1330,7 +1330,7 @@ void Trainer::OnCkboxSelectEnemy(bool activate) {
   UpdateCheckboxState(FnLabel::kSelectEnemy, activate);
 }
 
-void Trainer::OnCkboxPauseGame(bool activate) {
+void Trainer::OnCkboxFreezeGame(bool activate) {
   DLOG_F(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
   DCHECK(IsWithinGameLoopThread());
   CHECK_MEMAPI_OR_REPORT();
@@ -1347,7 +1347,7 @@ void Trainer::OnCkboxPauseGame(bool activate) {
     }
   }
   paused_ = activate;
-  UpdateCheckboxState(FnLabel::kPauseGame, activate);
+  UpdateCheckboxState(FnLabel::kFreezeGame, activate);
 }
 
 #define CHECK_MEMAPI_OR_RETURN_FALSE()                                         \

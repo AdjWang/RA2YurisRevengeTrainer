@@ -115,7 +115,7 @@ Enter an amount and click **Add cash** to add it to protected factions. If the a
 | No chrono cooldown | Remove movement and attack cooldowns for chronoshift units. |
 | Enemy spies grant tech | Gain enemy technology when an enemy spy infiltrates you. |
 | Select enemy units | Allow `T` to select multiple enemy units or buildings. |
-| Pause game | Pause during battle while still allowing you to inspect the map and select units. |
+| Freeze game | Freeze all units while allowing you to inspect the map and select units. |
 | Game speed | Adjust the game's speed with the slider. |
 
 ## Notes and known issues

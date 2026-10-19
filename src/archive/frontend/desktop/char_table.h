@@ -113,7 +113,7 @@ constexpr const char8_t* GetFnStrZh(FnLabel label) {
     case FnLabel::kSpySpy:              return u8"无间道";
     case FnLabel::kAdjustGameSpeed:     return u8"任务调速";
     case FnLabel::kSelectEnemy:         return u8"多选敌方单位";
-    case FnLabel::kPauseGame:           return u8"暂停游戏";
+    case FnLabel::kFreezeGame:           return u8"暂停游戏";
     default:                            return u8"unknown";
   }
 }
@@ -150,7 +150,7 @@ constexpr const char8_t* GetFnStrEn(FnLabel label) {
     case FnLabel::kSpySpy:              return u8"Spy spy";
     case FnLabel::kAdjustGameSpeed:     return u8"Enable game speed adjustment";
     case FnLabel::kSelectEnemy:         return u8"Enable enemy selecting";
-    case FnLabel::kPauseGame:           return u8"Pause game";
+    case FnLabel::kFreezeGame:           return u8"Freeze game";
     default:                            return u8"unknown";
   }
 }

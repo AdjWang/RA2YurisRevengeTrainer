@@ -36,4 +36,4 @@ UnlimitFirePower   = "KeyB"
 InstChrono         = "KeyN"
 SpySpy             = "KeyM"
 SelectEnemy        = "Comma"   # ,
-PauseGame          = "Slash"   # /
+FreezeGame          = "Slash"   # /

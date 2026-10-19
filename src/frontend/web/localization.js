@@ -67,7 +67,7 @@ export class Localization {
         InstChrono: "瞬间超时空",
         SpySpy: "无间道",
         SelectEnemy: "多选敌方单位",
-        PauseGame: "暂停游戏",
+        FreezeGame: "暂停游戏",
         AdjustGameSpeed: "任务调速"
       },
       en: {
@@ -100,7 +100,7 @@ export class Localization {
         InstChrono: "No chrono cooldown",
         SpySpy: "Enemy spies grant tech",
         SelectEnemy: "Multi-select enemy units",
-        PauseGame: "Pause game",
+        FreezeGame: "Freeze game",
         AdjustGameSpeed: "Game speed"
       }
     };
