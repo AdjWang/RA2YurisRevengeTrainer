@@ -1,10 +1,10 @@
-
+// [from, to]
 export const BtnFnLabelFirst = 1;
 export const BtnFnLabelLast = 8;
 export const CheckboxFnLabelFirst = 9;
-export const CheckboxFnLabelLast = 29;
-export const SliderFnLabelFirst = 30;
-export const SliderFnLabelLast = 30;
+export const CheckboxFnLabelLast = 30;
+export const SliderFnLabelFirst = 31;
+export const SliderFnLabelLast = 31;
 // Enum mapping
 export const FnLabel = {
   kInvalid: -1,
@@ -20,29 +20,30 @@ export const FnLabel = {
   kThisIsMine: 8,
   // Checkbox
   kGod: 9,
-  kInstBuild: 10,
-  kUnlimitSuperWeapon: 11,
-  kInstFire: 12,
-  kInstTurn: 13,
-  kRangeToYourBase: 14,
-  kFireToYourBase: 15,
-  kFreezeGapGenerator: 16,
-  kSellTheWorld: 17,
-  kBuildEveryWhere: 18,
-  kAutoRepair: 19,
-  kSocialismMajesty: 20,
-  kMakeCapturedMine: 21,
-  kMakeGarrisonedMine: 22,
-  kInvadeMode: 23,
-  kUnlimitTech: 24,
-  kUnlimitFirePower: 25,
-  kInstChrono: 26,
-  kSpySpy: 27,
-  kSelectEnemy: 28,
-  kFreezeGame: 29,
+  kNoPowerDrain: 10,
+  kInstBuild: 11,
+  kUnlimitSuperWeapon: 12,
+  kInstFire: 13,
+  kInstTurn: 14,
+  kRangeToYourBase: 15,
+  kFireToYourBase: 16,
+  kFreezeGapGenerator: 17,
+  kSellTheWorld: 18,
+  kBuildEveryWhere: 19,
+  kAutoRepair: 20,
+  kSocialismMajesty: 21,
+  kMakeCapturedMine: 22,
+  kMakeGarrisonedMine: 23,
+  kInvadeMode: 24,
+  kUnlimitTech: 25,
+  kUnlimitFirePower: 26,
+  kInstChrono: 27,
+  kSpySpy: 28,
+  kSelectEnemy: 29,
+  kFreezeGame: 30,
   // Slider
-  kAdjustGameSpeed: 30,
-  kCount: 31
+  kAdjustGameSpeed: 31,
+  kCount: 32
 };
 
 // Helper function to get string representation of FnLabel. Only for internal
@@ -62,6 +63,7 @@ export function strFnLabel(label) {
     case FnLabel.kThisIsMine: return "ThisIsMine";
     // Checkbox
     case FnLabel.kGod: return "God";
+    case FnLabel.kNoPowerDrain: return "NoPowerDrain";
     case FnLabel.kInstBuild: return "InstBuild";
     case FnLabel.kUnlimitSuperWeapon: return "UnlimitSuperWeapon";
     case FnLabel.kInstFire: return "InstFire";

@@ -6,6 +6,7 @@ using json = nlohmann::json;
 namespace yrtr {
 static void InitDefaultStates(State& state) {
   state.ckbox_states.emplace(FnLabel::kGod,                CheckboxState{.enable=true, .activate=false});
+  state.ckbox_states.emplace(FnLabel::kNoPowerDrain,       CheckboxState{.enable=true, .activate=false});
   state.ckbox_states.emplace(FnLabel::kInstBuild,          CheckboxState{.enable=true, .activate=false});
   state.ckbox_states.emplace(FnLabel::kUnlimitSuperWeapon, CheckboxState{.enable=true, .activate=false});
   state.ckbox_states.emplace(FnLabel::kInstFire,           CheckboxState{.enable=true, .activate=false});
@@ -25,7 +26,7 @@ static void InitDefaultStates(State& state) {
   state.ckbox_states.emplace(FnLabel::kSpySpy,             CheckboxState{.enable=true, .activate=false});
   state.ckbox_states.emplace(FnLabel::kAdjustGameSpeed,    CheckboxState{.enable=true, .activate=false});
   state.ckbox_states.emplace(FnLabel::kSelectEnemy,        CheckboxState{.enable=true, .activate=false});
-  state.ckbox_states.emplace(FnLabel::kFreezeGame,          CheckboxState{.enable=true, .activate=false});
+  state.ckbox_states.emplace(FnLabel::kFreezeGame,         CheckboxState{.enable=true, .activate=false});
   state.selecting_houses.emplace(456, SideDesc{456, "456"});
   state.protected_houses.emplace(123, SideDesc{123, "123"});
 }

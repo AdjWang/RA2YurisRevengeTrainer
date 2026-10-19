@@ -65,6 +65,7 @@ void PlayBeepDeactivate() {
 
 void InitDefaultStates(State& state) {
   state.ckbox_states.try_emplace(FnLabel::kGod,                CheckboxState{.enable=true, .activate=false});
+  state.ckbox_states.try_emplace(FnLabel::kNoPowerDrain,       CheckboxState{.enable=true, .activate=false});
   state.ckbox_states.try_emplace(FnLabel::kInstBuild,          CheckboxState{.enable=true, .activate=false});
   state.ckbox_states.try_emplace(FnLabel::kUnlimitSuperWeapon, CheckboxState{.enable=true, .activate=false});
   state.ckbox_states.try_emplace(FnLabel::kInstFire,           CheckboxState{.enable=true, .activate=false});
@@ -171,6 +172,27 @@ static void __declspec(naked) __cdecl InjectCanWrapTarget() {
       call dword ptr [eax + 0x2C]
       jmp [jmp_original]
     }
+  }
+}
+
+static void __declspec(naked) __cdecl InjectPowerDrain() {
+  static const uint32_t jmp_original = GetJumpBack(kHpPowerDrain);
+  static yrpp::HouseClass* house;
+  __asm {
+    mov [house], esi
+    pushad
+  }
+  if (Trainer::ShouldProtect(house)) {
+    __asm {
+      popad
+      mov edx, 0
+      pushad
+    }
+  }
+  __asm {
+    popad
+    mov [esi + 0x53A8], edx
+    jmp [jmp_original]
   }
 }
 
@@ -816,6 +838,7 @@ void Trainer::OnCheckboxEvent(FnLabel label, bool activate) {
   DCHECK(IsWithinGameLoopThread());
   switch (label) {
     case FnLabel::kGod:                 OnCkboxGod(activate);                 break;
+    case FnLabel::kNoPowerDrain:        OnCkboxNoPowerDrain(activate);        break;
     case FnLabel::kInstBuild:           OnCkboxInstBuild(activate);           break;
     case FnLabel::kUnlimitSuperWeapon:  OnCkboxUnlimitSuperWeapon(activate);  break;
     case FnLabel::kInstFire:            OnCkboxInstFire(activate);            break;
@@ -835,7 +858,7 @@ void Trainer::OnCheckboxEvent(FnLabel label, bool activate) {
     case FnLabel::kInstChrono:          OnCkboxInstChrono(activate);          break;
     case FnLabel::kSpySpy:              OnCkboxSpySpy(activate);              break;
     case FnLabel::kSelectEnemy:         OnCkboxSelectEnemy(activate);         break;
-    case FnLabel::kFreezeGame:           OnCkboxFreezeGame(activate);           break;
+    case FnLabel::kFreezeGame:          OnCkboxFreezeGame(activate);          break;
     default:
       LOG_F(ERROR, "Unknown checkbox event={}", StrFnLabel(label));
   }
@@ -1028,6 +1051,18 @@ void Trainer::OnCkboxGod(bool activate) {
     CHECK_REPORT(mem_api_->RestoreHook(kHpCanWrapTarget));
   }
   UpdateCheckboxState(FnLabel::kGod, activate);
+}
+
+void Trainer::OnCkboxNoPowerDrain(bool activate) {
+  DLOG_F(INFO, "Trigger {} activate={}", __FUNCTION__, activate);
+  DCHECK(IsWithinGameLoopThread());
+  CHECK_MEMAPI_OR_REPORT();
+  if (activate) {
+    CHECK_REPORT(mem_api_->HookJump(kHpPowerDrain, InjectPowerDrain));
+  } else {
+    CHECK_REPORT(mem_api_->RestoreHook(kHpPowerDrain));
+  }
+  UpdateCheckboxState(FnLabel::kNoPowerDrain, activate);
 }
 
 void Trainer::OnCkboxInstBuild(bool activate) {

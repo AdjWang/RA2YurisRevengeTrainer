@@ -96,6 +96,7 @@ Enter an amount and click **Add cash** to add it to protected factions. If the a
 | Option | Effect |
 | --- | --- |
 | Invulnerable | Prevent damage and chronoshift effects, but not engineer capture. Use **Claim captures** for captures. |
+| No power drain | No power drain. |
 | Instant build | Finish construction immediately. |
 | No superweapon cooldown | Reuse superweapons and paratroopers without waiting. Does not affect **Get one nuke**. |
 | Maximum fire rate | Maximize attack speed. |

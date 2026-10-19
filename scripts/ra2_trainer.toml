@@ -17,6 +17,7 @@ ThisIsMine  = "Digit9"
 
 # Checkboxes
 God                = "KeyQ"
+NoPowerDrain       = "KeyP"
 InstBuild          = "KeyW"
 UnlimitSuperWeapon = "KeyE"
 InstFire           = "KeyT"
@@ -36,4 +37,4 @@ UnlimitFirePower   = "KeyB"
 InstChrono         = "KeyN"
 SpySpy             = "KeyM"
 SelectEnemy        = "Comma"   # ,
-FreezeGame          = "Slash"   # /
+FreezeGame         = "Slash"   # /

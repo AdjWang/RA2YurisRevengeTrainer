@@ -25,6 +25,7 @@ static constexpr HookPoint kHpSellTheWorldCursor    = {0x006929D1, 7};
 static constexpr HookPoint kHpSellTheWorldBlong     = {0x004C6F48, 6};
 static constexpr HookPoint kHpSellTheWorldBuilder   = {0x0044711B, 6};
 static constexpr HookPoint kHpGodPlayer             = {0x005F5509, 7};
+static constexpr HookPoint kHpPowerDrain            = {0x00508D18, 6};
 // Chrono legionnaire check attackable.
 static constexpr HookPoint kHpCanWrapTarget         = {0x0071AE9D, 7};
 static constexpr HookPoint kHpInstBuild             = {0x004C9B92, 5};

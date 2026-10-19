@@ -30,6 +30,7 @@ enum class FnLabel {
   kThisIsMine,
   // Checkbox
   kGod,
+  kNoPowerDrain,
   kInstBuild,
   kUnlimitSuperWeapon,
   kInstFire,
@@ -70,6 +71,7 @@ constexpr std::string_view StrFnLabel(FnLabel label) {
     case FnLabel::kThisIsMine:          return "ThisIsMine";
     // Checkbox
     case FnLabel::kGod:                 return "God";
+    case FnLabel::kNoPowerDrain:        return "NoPowerDrain";
     case FnLabel::kInstBuild:           return "InstBuild";
     case FnLabel::kUnlimitSuperWeapon:  return "UnlimitSuperWeapon";
     case FnLabel::kInstFire:            return "InstFire";
@@ -110,6 +112,7 @@ inline FnLabel StrToFnLabel(std::string_view str) {
   if (str == "ThisIsMine")         return FnLabel::kThisIsMine;
   // Checkbox
   if (str == "God")                return FnLabel::kGod;
+  if (str == "NoPowerDrain")       return FnLabel::kNoPowerDrain;
   if (str == "InstBuild")          return FnLabel::kInstBuild;
   if (str == "UnlimitSuperWeapon") return FnLabel::kUnlimitSuperWeapon;
   if (str == "InstFire")           return FnLabel::kInstFire;

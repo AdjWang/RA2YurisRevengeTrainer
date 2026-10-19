@@ -120,6 +120,7 @@ class Trainer : public ITrainer {
   void OnBtnThisIsMine();
 
   void OnCkboxGod(bool activate);
+  void OnCkboxNoPowerDrain(bool activate);
   void OnCkboxInstBuild(bool activate);
   void OnCkboxUnlimitSuperWeapon(bool activate);
   void OnCkboxInstFire(bool activate);
