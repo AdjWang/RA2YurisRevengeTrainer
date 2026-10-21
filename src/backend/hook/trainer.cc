@@ -619,10 +619,24 @@ bool __fastcall InjectSelectFilterType(
     const yrpp::DynamicVectorClass<const char*>& id_names) {
   for (int i = 0; i < id_names.Count; ++i) {
     const char* id_name = id_names[i];
-    // LOG_F(INFO, "Filter id_name={} obj={:p} obj_name={}", id_name, (void*)obj,
-    //       obj->GetType()->ID);
-    if (strcmp(obj->GetType()->ID, id_name) == 0 &&
-        obj->GetType()->Selectable && obj->Owner == selecting_house) {
+    // Reimplement ares.TacticalClass_CollectSelectedIDs at 0x00732D47.
+    const char* obj_id_name = obj->GetType()->ID;
+    auto ares_unknown = reinterpret_cast<const char*>(obj->GetTechnoType()->align_2FC);
+    if (ares_unknown != nullptr) {
+      const char* ares_override = ares_unknown + 0x250;
+      if (ares_override[0] != '\0') {
+        obj_id_name = ares_override;
+      }
+    }
+    // For debugging.
+    // LOG_F(INFO,
+    //       "Filter id_name={} obj={:p} obj_name={} selectable={} "
+    //       "owner={:p} "
+    //       "selecting_house={:p}",
+    //       id_name, (void*)obj, obj_id_name, obj->GetType()->Selectable,
+    //       (void*)obj->Owner, (void*)selecting_house);
+    if (strcmp(obj_id_name, id_name) == 0 && obj->GetType()->Selectable &&
+        obj->Owner == selecting_house) {
       return true;
     }
   }
