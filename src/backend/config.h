@@ -5,8 +5,8 @@ namespace fs = std::filesystem;
 #include <memory>
 #include <string>
 #include <string_view>
+#include <unordered_set>
 
-#include "backend/tech.h"
 #include "base/macro.h"
 __YRTR_BEGIN_THIRD_PARTY_HEADERS
 #include "absl/container/flat_hash_set.h"
@@ -31,7 +31,7 @@ class Config {
   const fs::path& hotreload_dir() const { return hotreload_dir_; }
   bool auto_record() const { return auto_record_; }
   fs::path record_path() const { return cfg_dir_ / kDefaultRecordFilename; }
-  const TechList& tech_list() const { return tech_list_; }
+  const std::unordered_set<std::string>& tech_list() const { return tech_list_; }
 
   // Inputs a relative path, return absolute path relative to configuration file
   // directory.
@@ -51,7 +51,7 @@ class Config {
   uint16_t port_;
   fs::path hotreload_dir_;
   bool auto_record_;
-  TechList tech_list_;
+  std::unordered_set<std::string> tech_list_;
 
   void LoadDebug(const toml::table& debug);
   void LoadGlobal(const toml::table& global);

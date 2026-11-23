@@ -21,7 +21,6 @@ __YRTR_BEGIN_THIRD_PARTY_HEADERS
 __YRTR_END_THIRD_PARTY_HEADERS
 #include "backend/hook/hook_point.h"
 #include "backend/record.h"
-#include "backend/tech.h"
 #include "base/logging.h"
 
 namespace yrtr {
@@ -472,6 +471,7 @@ static void __declspec(naked) __cdecl InjectGarrisonedMine() {
 }
 
 static void __declspec(naked) __cdecl InjectUnlimitTech() {
+  static const uint32_t jmp_back = GetJumpBack(kHpUnlimitTech);
   static yrpp::BuildingTypeClass* tech;
   static int should_enable;
   __asm {
@@ -480,10 +480,19 @@ static void __declspec(naked) __cdecl InjectUnlimitTech() {
     pushad
   }
   should_enable = static_cast<int>(Trainer::ShouldEnableTech(tech));
-  __asm {
-    popad
-    mov eax, [should_enable]
-    ret 0x0C
+  if (should_enable) {
+    __asm {
+      popad
+      mov eax, [should_enable]
+      ret 0x0C
+    }
+  } else {
+    __asm {
+      popad
+      sub esp, 0x3C
+      mov al, byte ptr [esp + 0x44]
+      jmp [jmp_back]
+    }
   }
 }
 
@@ -761,14 +770,7 @@ bool Trainer::ShouldProtect(yrpp::HouseClass* house) {
 
 bool Trainer::ShouldEnableTech(yrpp::BuildingTypeClass* tech) {
   std::string_view key(tech->ID);
-  Tech tech_key = GetTech(key);
-  if (tech_key == Tech::kUnknown) [[unlikely]] {
-    return false;
-  }
-  DCHECK_NOTNULL(Config::instance());
-  const TechList& tech_list = Config::instance()->tech_list();
-  DCHECK_LT_F(static_cast<uint32_t>(tech_key), tech_list.size(), "key={}", key);
-  return tech_list[static_cast<uint32_t>(tech_key)];
+  return Config::instance()->tech_list().contains(std::string(key));
 }
 
 void Trainer::Update(double /*delta*/) {

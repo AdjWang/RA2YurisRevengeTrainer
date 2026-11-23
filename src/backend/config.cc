@@ -100,12 +100,12 @@ void Config::LoadGlobal(const toml::table& global) {
 void Config::LoadTechList(const toml::table& tech_tb) {
   for (auto [k, v] : tech_tb) {
     std::string_view key = k.str();
-    Tech tech = GetTech(key);
-    CHECK(tech != Tech::kUnknown && tech != Tech::kCount);
     auto raw_val = v.as<bool>();
     CHECK_NOTNULL(raw_val);
     bool enable = raw_val->get();
-    tech_list_[static_cast<int>(tech)] = enable;
+    if (enable) {
+      tech_list_.emplace(key);
+    }
   }
 }
 
