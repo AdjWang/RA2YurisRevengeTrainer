@@ -1,6 +1,6 @@
 [project]
 name = "Ra2YurisRevengeTrainer"
-version = "6.0.1"
+version = "6.0.2"
 description = ""
 readme = "README.md"
 requires-python = ">=3.12"

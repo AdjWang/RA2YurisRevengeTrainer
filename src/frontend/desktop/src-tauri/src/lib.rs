@@ -1,5 +1,5 @@
 use global_hotkey::HotKeyState;
-use log::{LevelFilter, debug, error, info, warn};
+use log::{debug, error, info, warn, LevelFilter};
 use once_cell::sync::OnceCell;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -20,6 +20,8 @@ use tauri_plugin_log::{Target, TargetKind};
 static CONFIG_FILENAME: &str = "ra2_trainer.toml";
 static RUNTIME_CONFIG_FILENAME: &str = "ra2_trainer_runtime.toml";
 static DEBOUNCE_DURATION: Duration = Duration::from_millis(1000);
+static MIN_WINDOW_WIDTH: u32 = 50;
+static MIN_WINDOW_HEIGHT: u32 = 50;
 
 #[derive(Default)]
 struct AppState {
@@ -52,7 +54,7 @@ struct RuntimeConfig {
     window: WindowConfig, // New window config section
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 struct WindowConfig {
     width: u32,
     height: u32,
@@ -92,6 +94,15 @@ fn get_key_name_by_label(state: tauri::State<'_, Mutex<AppState>>, label_name: &
 // =============================================================================
 // Internal functions.
 // =============================================================================
+
+fn clamp_window_size(window: &mut WindowConfig) {
+    if window.width < MIN_WINDOW_WIDTH {
+        window.width = MIN_WINDOW_WIDTH;
+    }
+    if window.height < MIN_WINDOW_HEIGHT {
+        window.height = MIN_WINDOW_HEIGHT;
+    }
+}
 
 fn read_config() -> Result<Config, String> {
     let exe_path = std::env::current_exe().map_err(|e| format!("Failed to get exe path: {}", e))?;
@@ -141,8 +152,20 @@ fn read_runtime_config() -> Result<RuntimeConfig, String> {
             ))
         }
     };
-    match toml::from_str(&config_content) {
-        Ok(c) => Ok(c),
+    match toml::from_str::<RuntimeConfig>(&config_content) {
+        Ok(mut config) => {
+            // Clamp window size so the saved file never keeps values below the minimums.
+            let original_window = config.window.clone();
+            clamp_window_size(&mut config.window);
+            if config.window != original_window {
+                warn!(
+                    "Runtime config window size was below minimum, clamped to {}x{}",
+                    config.window.width, config.window.height
+                );
+                save_runtime_config_to_path(&config_path, &config)?;
+            }
+            Ok(config)
+        }
         Err(e) => Err(format!("Failed to parse runtime config: {}", e)),
     }
 }
@@ -265,6 +288,11 @@ pub fn run() {
                 // Load runtime config.
                 match read_runtime_config() {
                     Ok(config) => {
+                        // Enforce minimum window size in runtime.
+                        let _ = window.set_min_size(Some(tauri::PhysicalSize::new(
+                            MIN_WINDOW_WIDTH,
+                            MIN_WINDOW_HEIGHT,
+                        )));
                         // Apply window size.
                         let _ = window.set_size(tauri::PhysicalSize::new(
                             config.window.width,
@@ -286,8 +314,9 @@ pub fn run() {
                                 let mut state_guard = state.lock().unwrap();
                                 match state_guard.rt_cfg.as_mut() {
                                     Some(rt_cft) => {
-                                        rt_cft.window.width = size.width;
-                                        rt_cft.window.height = size.height;
+                                        // Never record a size below the minimums.
+                                        rt_cft.window.width = size.width.max(MIN_WINDOW_WIDTH);
+                                        rt_cft.window.height = size.height.max(MIN_WINDOW_HEIGHT);
                                     }
                                     None => error!("Runtime config not loaded"),
                                 };
